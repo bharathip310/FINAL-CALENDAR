@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meenakshi Sundararajan Engineering College - Academic Calendar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0f172a;
+            /* Slate 900 */
+            --accent-blue: #2563eb;
+            /* Blue 600 */
+            --primary-red: #dc2626;
+            /* Red 600 */
+            --accent-red: #ef4444;
+            /* Red 500 */
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #eff6ff 0%, #fef2f2 100%);
+            /* Soft Blue to Red fade */
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            color: var(--text-dark);
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(to right, #1e3a8a, #dc2626);
+            color: var(--white);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            /* Increased from 1.6rem */
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #ffffff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-badge {
+            font-size: 0.85rem;
+            font-weight: 500;
+            opacity: 0.9;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            width: fit-content;
+            backdrop-filter: blur(4px);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .logout-btn {
+            background: #ffffff;
+            color: #ef4444;
+            /* Red accent */
+            border: 2px solid transparent;
+            padding: 12px 32px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 700;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .logout-btn:hover {
+            background: #ef4444;
+            color: #ffffff;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            border-color: #ffffff;
+        }
+
+        /* Footer Logout Button */
+        footer {
+            background: linear-gradient(135deg, #1e3a8a 0%, #dc2626 50%, #b91c1c 100%);
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: auto;
+            box-shadow: 0 -8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .footer-logout-btn {
+            background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #ef4444 100%);
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-logout-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .footer-logout-btn:hover {
+            background: linear-gradient(135deg, #f97316 0%, #ef4444 50%, #dc2626 100%);
+            transform: translateY(-4px) scale(1.08);
+            box-shadow: 0 15px 35px rgba(239, 68, 68, 0.6);
+        }
+
+        .footer-logout-btn:hover::before {
+            left: 100%;
+        }
+
+        .footer-logout-btn:active {
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            flex: 1;
+            max-width: 1400px;
+            width: 95%;
+            margin: 2rem auto;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px -12px rgba(37, 99, 235, 0.25);
+            overflow: hidden;
+            position: relative;
+            animation: fadeIn 0.8s ease-out, floatContainer 6s ease-in-out infinite;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes floatContainer {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Calendar Side */
+        .calendar-section {
+            flex: 2;
+            padding: 2.5rem;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .month-year-display {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .month-year-display:hover {
+            background-color: #fff;
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .month-year-display::after {
+            content: '\f078';
+            /* FontAwesome Chevron Down */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 0.8rem;
+            color: var(--accent-blue);
+        }
+
+        .nav-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: var(--text-muted);
+            font-size: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-btn:hover {
+            background-color: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+            transform: scale(1.05);
+        }
+
+        /* Calendar Grid */
+        .calendar-grid-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            margin-bottom: 1rem;
+        }
+
+        .day-label {
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 12px;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            border-radius: 16px;
+            /* softer corners */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            position: relative;
+            background: #ffffff;
+            border: 1px solid #f1f5f9;
+            backdrop-filter: blur(4px);
+            transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .day:hover {
+            background: #ffffff;
+            border-color: var(--accent-blue);
+            transform: translateY(-5px) scale(1.05);
+            /* Red and Blue Glow */
+            box-shadow:
+                0 10px 15px -3px rgba(37, 99, 235, 0.2),
+                0 4px 6px -2px rgba(239, 68, 68, 0.1);
+            z-index: 10;
+        }
+
+        .day.selected {
+            background: linear-gradient(135deg, var(--accent-blue), #1e40af);
+            color: var(--white);
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            border: none;
+        }
+
+        .day.today {
+            border: 2px solid var(--accent-blue);
+            background: #eff6ff;
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+                border-color: var(--accent-blue);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(37, 99, 235, 0);
+                border-color: rgba(37, 99, 235, 0.6);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+                border-color: var(--accent-blue);
+            }
+        }
+
+        .day.selected.today {
+            background: linear-gradient(135deg, var(--accent-blue), #1e40af);
+            border: none;
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.4);
+            animation: none;
+            /* override pulse if selected */
+        }
+
+        .day-icon {
+            font-size: 1rem;
+            margin-top: 6px;
+            color: var(--text-muted);
+        }
+
+        .day.selected .day-icon {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Legend */
+        /* Legend Section - Enhanced Card Design */
+        .legend-container {
+            margin-top: auto;
+            padding-top: 2rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .legend-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .legend-title i {
+            font-size: 1.2rem;
+            color: var(--accent-blue);
+            animation: pulse-icon 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-icon {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.7;
+                transform: scale(1.1);
+            }
+        }
+
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .legend-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: currentColor;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .legend-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-color: currentColor;
+        }
+
+        .legend-item:hover::before {
+            opacity: 1;
+        }
+
+        .legend-icon {
+            font-size: 1.5rem;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--icon-color-light, #eff6ff), var(--icon-color-lighter, #dbeafe));
+            color: var(--icon-color, var(--accent-blue));
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .legend-item:hover .legend-icon {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Color-coded legend items */
+        .legend-item.class-item {
+            --icon-color: #2563eb;
+            --icon-color-light: #eff6ff;
+            --icon-color-lighter: #dbeafe;
+            color: #2563eb;
+        }
+
+        .legend-item.holiday-item {
+            --icon-color: #f59e0b;
+            --icon-color-light: #fef3c7;
+            --icon-color-lighter: #fde68a;
+            color: #f59e0b;
+        }
+
+        .legend-item.exam-item {
+            --icon-color: #dc2626;
+            --icon-color-light: #fee2e2;
+            --icon-color-lighter: #fecaca;
+            color: #dc2626;
+        }
+
+        .legend-item.event-item {
+            --icon-color: #059669;
+            --icon-color-light: #d1fae5;
+            --icon-color-lighter: #a7f3d0;
+            color: #059669;
+        }
+
+        .legend-item.meeting-item {
+            --icon-color: #7c3aed;
+            --icon-color-light: #ede9fe;
+            --icon-color-lighter: #ddd6fe;
+            color: #7c3aed;
+        }
+
+        /* Right Side: Plan */
+        .plan-section {
+            flex: 1;
+            padding: 2.5rem;
+            background-color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #e2e8f0;
+        }
+
+        .plan-header {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .date-info h2 {
+            font-size: 2rem;
+            color: var(--primary-blue);
+            margin: 0 0 0.5rem 0;
+            line-height: 1.1;
+            font-weight: 800;
+        }
+
+        .selected-day-subtitle {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .add-event-btn {
+            background: linear-gradient(135deg, var(--accent-blue), #1e40af);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: none;
+            /* Controlled by JS */
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        .add-event-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .events-container {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding-right: 5px;
+            /* For scrollbar space */
+        }
+
+        /* Custom Scrollbar */
+        .events-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .events-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .events-container::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .event-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 5px solid var(--accent-blue);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+            border-left-width: 5px;
+        }
+
+        .event-card:hover {
+            transform: translateY(-4px) translateX(4px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-actions-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px dashed #e2e8f0;
+        }
+
+        .admin-action-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-edit {
+            background-color: #eff6ff;
+            color: var(--accent-blue);
+        }
+
+        .btn-edit:hover {
+            background-color: #dbeafe;
+        }
+
+        .btn-delete {
+            background-color: #fef2f2;
+            color: #ef4444;
+        }
+
+        .btn-delete:hover {
+            background-color: #fee2e2;
+        }
+
+        /* Modals - Enhanced Design */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal {
+            background: white;
+            color: var(--text-dark);
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 520px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalSlide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-header-bar {
+            background: linear-gradient(135deg, #1e3a8a 0%, #dc2626 100%);
+            padding: 1.75rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-header-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,%3Csvg width="40" height="40" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M0 0h40v40H0z" fill="none"/%3E%3Cpath d="M20 0L0 20l20 20 20-20z" fill="%23ffffff" opacity="0.05"/%3E%3C/svg%3E');
+            opacity: 0.3;
+        }
+
+        .modal h3 {
+            margin: 0;
+            color: white;
+            font-size: 1.75rem;
+            font-weight: 800;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal h3 i {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group label i {
+            color: var(--accent-blue);
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            box-sizing: border-box;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, var(--accent-blue), #1e40af);
+            color: white;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .save-btn:active {
+            transform: translateY(0);
+        }
+
+        .cancel-btn {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .cancel-btn:hover {
+            background: #e2e8f0;
+            color: #475569;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+        }
+
+        /* Quick Nav Popup - Enhanced */
+        .quick-nav-popup {
+            position: absolute;
+            top: 90px;
+            left: 2.5rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            padding: 0;
+            z-index: 50;
+            display: none;
+            width: 360px;
+            animation: popupSlide 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes popupSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .quick-nav-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #dc2626 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-nav-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .quick-nav-header span {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.5px;
+        }
+
+        .quick-nav-header .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            backdrop-filter: blur(10px);
+            z-index: 1;
+        }
+
+        .quick-nav-header .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
+        }
+
+        .month-grid-container {
+            padding: 1.5rem;
+        }
+
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .month-btn {
+            padding: 14px 10px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .month-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .month-btn.active {
+            background: linear-gradient(135deg, var(--accent-blue), #1e40af);
+            color: white;
+            border-color: var(--accent-blue);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
+            transform: translateY(-2px);
+            font-weight: 700;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                margin: 0;
+                width: 100%;
+                border-radius: 0;
+                max-width: 100%;
+                height: auto;
+                overflow-y: auto;
+            }
+
+            .calendar-section {
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+                padding: 1.5rem;
+            }
+
+            .day-label {
+                font-size: 0.8rem;
+            }
+
+            .plan-section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-left">
+            <h1>Meenakshi Sundararajan Engineering College</h1>
+            <div style="display: flex; gap: 15px; align-items: center; margin-top: 5px;">
+                <div id="userBadge" class="user-badge"><i class="fas fa-user-circle"></i> Guest</div>
+                <a href="dashboard.html"
+                    style="color: rgba(255,255,255,0.9); text-decoration: none; font-size: 0.85rem; border-bottom: 1px dotted rgba(255,255,255,0.5); transition: all 0.2s; display: flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Calendar Section -->
+        <div class="calendar-section">
+            <div class="calendar-header">
+                <button class="nav-btn" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+                <div class="month-year-display" onclick="toggleQuickNav()" id="monthDisplay">Month Year</div>
+                <button class="nav-btn" onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <!-- Quick Nav Popup (Hidden by default) -->
+            <div class="quick-nav-popup" id="quickNavPopup">
+                <div class="quick-nav-header">
+                    <button class="nav-btn" onclick="navYear(-1)" style="width: 32px; height: 32px;"><i
+                            class="fas fa-chevron-left"></i></button>
+                    <span id="quickNavYear">2026</span>
+                    <button class="nav-btn" onclick="navYear(1)" style="width: 32px; height: 32px;"><i
+                            class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="month-grid-container">
+                    <div class="month-grid">
+                        <button class="month-btn" onclick="selectQuickMonth(0)">Jan</button>
+                        <button class="month-btn" onclick="selectQuickMonth(1)">Feb</button>
+                        <button class="month-btn" onclick="selectQuickMonth(2)">Mar</button>
+                        <button class="month-btn" onclick="selectQuickMonth(3)">Apr</button>
+                        <button class="month-btn" onclick="selectQuickMonth(4)">May</button>
+                        <button class="month-btn" onclick="selectQuickMonth(5)">Jun</button>
+                        <button class="month-btn" onclick="selectQuickMonth(6)">Jul</button>
+                        <button class="month-btn" onclick="selectQuickMonth(7)">Aug</button>
+                        <button class="month-btn" onclick="selectQuickMonth(8)">Sep</button>
+                        <button class="month-btn" onclick="selectQuickMonth(9)">Oct</button>
+                        <button class="month-btn" onclick="selectQuickMonth(10)">Nov</button>
+                        <button class="month-btn" onclick="selectQuickMonth(11)">Dec</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="calendar-grid-header">
+                <div class="day-label">Sun</div>
+                <div class="day-label">Mon</div>
+                <div class="day-label">Tue</div>
+                <div class="day-label">Wed</div>
+                <div class="day-label">Thu</div>
+                <div class="day-label">Fri</div>
+                <div class="day-label">Sat</div>
+            </div>
+
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- JS Populated -->
+            </div>
+
+            <!-- Legend for Icons -->
+            <div class="legend-container">
+                <div class="legend-title"><i class="fas fa-info-circle"></i> Calendar Key</div>
+                <div class="legend-items">
+                    <div class="legend-item class-item">
+                        <span class="legend-icon"><i class="fas fa-chalkboard-teacher"></i></span>
+                        <span>Class</span>
+                    </div>
+                    <div class="legend-item holiday-item">
+                        <span class="legend-icon"><i class="fas fa-umbrella-beach"></i></span>
+                        <span>Holiday</span>
+                    </div>
+                    <div class="legend-item exam-item">
+                        <span class="legend-icon"><i class="fas fa-file-alt"></i></span>
+                        <span>Exam</span>
+                    </div>
+                    <div class="legend-item event-item">
+                        <span class="legend-icon"><i class="fas fa-calendar-check"></i></span>
+                        <span>Event</span>
+                    </div>
+                    <div class="legend-item meeting-item">
+                        <span class="legend-icon"><i class="fas fa-users"></i></span>
+                        <span>Meeting</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plan Section -->
+        <div class="plan-section">
+            <div class="plan-header">
+                <div class="date-info">
+                    <h2 id="displayDate">Select a Date</h2>
+                    <p class="selected-day-subtitle" id="displayDay"><i class="far fa-hand-pointer"></i> Select a date
+                        to view schedule</p>
+                </div>
+                <!-- Admin Only Button -->
+                <button id="addEventBtn" class="add-event-btn" onclick="openModal()"><i class="fas fa-plus"></i> Add
+                    Event</button>
+            </div>
+            <div id="eventsList" class="events-container">
+                <!-- Events go here -->
+                <div
+                    style="text-align: center; color: #94a3b8; margin-top: 3rem; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                    <i class="fas fa-calendar-day" style="font-size: 3rem; opacity: 0.2;"></i>
+                    <p>No date selected</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit/Add Modal -->
+    <div id="eventModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header-bar">
+                <h3 id="modalTitle"><i class="fas fa-calendar-plus"></i> Add Event</h3>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> Event Type</label>
+                    <select id="eventType">
+                        <option value="class">Class (Lecture/Lab)</option>
+                        <option value="holiday">Holiday</option>
+                        <option value="exam">Exam / Test</option>
+                        <option value="event">Campus Event</option>
+                        <option value="meeting">Meeting</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-heading"></i> Title</label>
+                    <input type="text" id="eventTitle" placeholder="e.g., Physics Lecture, Symposium">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> Description</label>
+                    <textarea id="eventDesc" rows="3" placeholder="Enter details..."></textarea>
+                </div>
+                <input type="hidden" id="editIndex" value="-1">
+                <div class="modal-actions">
+                    <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+                    <button class="save-btn" onclick="saveEvent()"><i class="fas fa-save"></i> Save Event</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. CONFIG & AUTH ---
+        // Replacing Emojis with FontAwesome Classes
+        const eventIcons = {
+            'class': '<i class="fas fa-chalkboard-teacher"></i>',
+            'holiday': '<i class="fas fa-umbrella-beach"></i>',
+            'exam': '<i class="fas fa-file-alt"></i>',
+            'event': '<i class="fas fa-calendar-check"></i>',
+            'meeting': '<i class="fas fa-users"></i>',
+            'other': '<i class="fas fa-calendar"></i>'
+        };
+
+        const userRole = localStorage.getItem('userRole') || 'guest';
+        if (userRole === 'guest') {
+            // If we enforced login: window.location.href = 'login.html';
+        }
+
+        // Setup User View
+        document.getElementById('userBadge').innerText = `Role: ${userRole.charAt(0).toUpperCase() + userRole.slice(1)}`;
+        if (userRole === 'admin') {
+            document.getElementById('addEventBtn').style.display = 'block';
+        }
+
+        // Data Storage - Now using server API
+        let eventData = {}; // Will be populated from API
+        let allEvents = []; // Store all events from server
+
+        let currentDate = new Date();
+        let navigationYear = currentDate.getFullYear(); // For the quick nav popup
+        let selectedDate = null;
+
+        // --- FETCH EVENTS FROM SERVER ---
+        async function loadEventsFromServer() {
+            try {
+                const response = await fetch('/api/events', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    allEvents = data.events;
+                    // Convert to date-keyed format for renderer
+                    eventData = {};
+                    data.events.forEach(event => {
+                        if (!eventData[event.eventDate]) {
+                            eventData[event.eventDate] = [];
+                        }
+                        eventData[event.eventDate].push({
+                            id: event.id,
+                            type: event.type,
+                            title: event.title,
+                            desc: event.description,
+                            emoji: eventIcons[event.type],
+                            createdBy: event.createdByName
+                        });
+                    });
+                    renderCalendar();
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+        }
+
+        // Load events when page loads
+        loadEventsFromServer();
+
+        // --- 2. CALENDER RENDERING ---
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const monthDisplay = document.getElementById('monthDisplay');
+
+            // Clear grid
+            grid.innerHTML = '';
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            // Setup Header Text
+            const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(currentDate);
+            monthDisplay.innerHTML = `${monthName} ${year}`;
+
+            // Sync Quick Nav
+            navigationYear = year;
+            updateQuickNavUI();
+
+            // Calendar Logic
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Blank spaces
+            for (let i = 0; i < firstDayIndex; i++) {
+                grid.appendChild(document.createElement('div'));
+            }
+
+            // Days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayEl = document.createElement('div');
+                dayEl.className = 'day';
+                dayEl.innerHTML = `<span>${day}</span>`;
+
+                // Highlight Today
+                const today = new Date();
+                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    dayEl.classList.add('today');
+                }
+
+                // Check Events
+                if (eventData[dateKey] && eventData[dateKey].length > 0) {
+                    dayEl.classList.add('has-event');
+                    // Priority Icon
+                    const events = eventData[dateKey];
+                    const icon = getPriorityIcon(events);
+                    dayEl.innerHTML += `<div class="day-icon">${icon}</div>`;
+                }
+
+
+                // Highlight Selected
+                if (selectedDate === dateKey) {
+                    dayEl.classList.add('selected');
+                }
+
+                dayEl.onclick = () => onDateClick(year, month, day);
+                grid.appendChild(dayEl);
+            }
+        }
+
+        function getPriorityIcon(events) {
+            // Priority: Exam > Holiday > Event > Meeting > Class
+            if (events.some(e => e.type === 'exam')) return eventIcons['exam'];
+            if (events.some(e => e.type === 'holiday')) return eventIcons['holiday'];
+            if (events.some(e => e.type === 'event')) return eventIcons['event'];
+            if (events.some(e => e.type === 'meeting')) return eventIcons['meeting'];
+            if (events.some(e => e.type === 'class')) return eventIcons['class'];
+            return events[0].emoji || eventIcons['other'];
+        }
+
+        function changeMonth(step) {
+            currentDate.setMonth(currentDate.getMonth() + step);
+            renderCalendar();
+        }
+
+        function onDateClick(year, month, day) {
+            selectedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            renderCalendar(); // Update selection styles
+            renderEventList(selectedDate);
+        }
+
+        // --- 3. EVENT LIST & ADMIN ACTIONS ---
+        function renderEventList(dateKey) {
+            const listEl = document.getElementById('eventsList');
+            const displayDateEl = document.getElementById('displayDate');
+            const displayDayEl = document.getElementById('displayDay');
+
+            const [y, m, d] = dateKey.split('-').map(Number);
+            const dateObj = new Date(y, m - 1, d); // Construct Date
+
+            // Update Header
+            displayDateEl.innerText = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            displayDayEl.innerText = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
+
+            listEl.innerHTML = '';
+
+            const events = eventData[dateKey] || [];
+            if (events.length === 0) {
+                listEl.innerHTML = `<div style="text-align: center; color: #94a3b8; margin-top: 2rem; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                    <i class="fas fa-calendar-times" style="font-size: 2rem; opacity: 0.3;"></i>
+                    <p>No events scheduled for this day.</p>
+                </div>`;
+                return;
+            }
+
+            events.forEach((event, index) => {
+                const card = document.createElement('div');
+                card.className = 'event-card';
+
+                // Color Code Border
+                let color = '#3b82f6';
+                if (event.type === 'exam') color = '#ef4444';
+                else if (event.type === 'holiday') color = '#10b981';
+                else if (event.type === 'event') color = '#8b5cf6'; // Purple for Events
+
+                card.style.borderLeftColor = color;
+
+                // Admin Controls
+                let controls = '';
+                if (userRole === 'admin') {
+                    controls = `
+                        <div class="admin-actions-row">
+                            <button class="admin-action-btn btn-edit" onclick="editEvent('${dateKey}', ${index})">
+                                <i class="fas fa-edit"></i> Update
+                            </button>
+                            <button class="admin-action-btn btn-delete" onclick="deleteEvent('${dateKey}', ${index})">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </button>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div style="margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                        <span style="background: ${color}20; color: ${color}; font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${event.type}</span>
+                        <span style="font-size: 1.2rem; color: ${color};">${event.emoji || eventIcons[event.type]}</span>
+                    </div>
+                    <div style="font-weight: 700; font-size: 1.15rem; margin-bottom: 6px; color: var(--text-dark);">${event.title}</div>
+                    <div style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.5;">${event.desc}</div>
+                    ${controls}
+                `;
+                listEl.appendChild(card);
+            });
+        }
+
+        // --- 4. CRUD OPERATIONS ---
+        function openModal() {
+            if (!selectedDate) { alert('Please select a date first!'); return; }
+            document.getElementById('eventModal').style.display = 'flex';
+
+            // Reset Form for "Add"
+            document.getElementById('modalTitle').innerText = 'Add Event';
+            document.getElementById('editIndex').value = '-1';
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventDesc').value = '';
+            document.getElementById('eventType').value = 'class';
+        }
+
+        function editEvent(dateKey, index) {
+            const event = eventData[dateKey][index];
+            document.getElementById('modalTitle').innerText = 'Edit Event';
+            document.getElementById('editIndex').value = index;
+            document.getElementById('eventType').value = event.type;
+            document.getElementById('eventTitle').value = event.title;
+            document.getElementById('eventDesc').value = event.desc;
+
+            document.getElementById('eventModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('eventModal').style.display = 'none';
+        }
+
+        function saveEvent() {
+            if (!selectedDate) return;
+
+            const index = document.getElementById('editIndex').value;
+            const title = document.getElementById('eventTitle').value;
+            const desc = document.getElementById('eventDesc').value;
+            const type = document.getElementById('eventType').value;
+
+            if (!title) {
+                alert('Please enter a title');
+                return;
+            }
+
+            // If editing, update via API
+            if (index !== '-1') {
+                const event = eventData[selectedDate][index];
+                fetch(`/api/events/${event.id}`, {
+                    method: 'PUT',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        description: desc,
+                        type: type
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        loadEventsFromServer(); // Reload from server
+                        renderCalendar();
+                        renderEventList(selectedDate);
+                        closeModal();
+                    } else {
+                        alert('Error updating event: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('Error updating event: ' + err.message);
+                });
+            } else {
+                // Create new event via API
+                fetch('/api/events', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        eventDate: selectedDate,
+                        title: title,
+                        description: desc,
+                        type: type
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        loadEventsFromServer(); // Reload from server
+                        renderCalendar();
+                        renderEventList(selectedDate);
+                        closeModal();
+                        alert('Event created successfully!');
+                    } else {
+                        alert('Error creating event: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('Error creating event: ' + err.message);
+                });
+            }
+        }
+
+        function deleteEvent(dateKey, index) {
+            if (confirm('Delete this event?')) {
+                const event = eventData[dateKey][index];
+                fetch(`/api/events/${event.id}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        loadEventsFromServer(); // Reload from server
+                        renderCalendar();
+                        renderEventList(dateKey);
+                    } else {
+                        alert('Error deleting event: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('Error deleting event: ' + err.message);
+                });
+            }
+        }
+
+        // --- 5. QUICK NAVIGATION (Month/Year Picker) ---
+        function toggleQuickNav() {
+            const popup = document.getElementById('quickNavPopup');
+            popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+
+            // Highlight current month in picker
+            const currentMonth = currentDate.getMonth();
+            const btns = document.querySelectorAll('.month-btn');
+            btns.forEach((btn, idx) => {
+                if (idx === currentMonth) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        }
+
+        function navYear(step) {
+            navigationYear += step;
+            document.getElementById('quickNavYear').innerText = navigationYear;
+        }
+
+        function updateQuickNavUI() {
+            document.getElementById('quickNavYear').innerText = currentDate.getFullYear();
+        }
+
+        function selectQuickMonth(monthIndex) {
+            currentDate.setFullYear(navigationYear);
+            currentDate.setMonth(monthIndex);
+            renderCalendar();
+            document.getElementById('quickNavPopup').style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.removeItem('userRole');
+            window.location.href = 'login.html';
+        }
+
+        // --- INITIALIZATION ---
+        // Close modal on outside click
+        window.onclick = function (event) {
+            const modal = document.getElementById('eventModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+            // Close quick nav if clicked outside header
+            const navPopup = document.getElementById('quickNavPopup');
+            const monthDisplay = document.getElementById('monthDisplay');
+            if (event.target !== navPopup && event.target !== monthDisplay && !navPopup.contains(event.target)) {
+                navPopup.style.display = 'none';
+            }
+        }
+
+        // Start
+        // Default select today
+        const t = new Date();
+        onDateClick(t.getFullYear(), t.getMonth(), t.getDate());
+
+    </script>
+</body>
+
+<footer>
+    <button class="footer-logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+</footer>
+
+</html>

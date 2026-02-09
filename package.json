@@ -1,0 +1,21 @@
+{
+  "name": "calendar-authentication",
+  "version": "1.0.0",
+  "description": "Secure authentication system for academic calendar",
+  "main": "calender/server.js",
+  "scripts": {
+    "start": "node calender/server.js",
+    "dev": "nodemon calender/server.js"
+  },
+  "keywords": ["calendar", "authentication", "express"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "bcryptjs": "^2.4.3",
+    "express-session": "^1.17.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

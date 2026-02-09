@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - User Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #dc2626 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #0f172a;
+            font-size: 2rem;
+        }
+
+        .header p {
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 58, 138, 0.4);
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #0f172a;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 58, 138, 0.4);
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .users-table th {
+            background: #f1f5f9;
+            padding: 12px;
+            text-align: left;
+            color: #0f172a;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .users-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #475569;
+        }
+
+        .users-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .role-admin {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .role-student {
+            background: #bfdbfe;
+            color: #1e40af;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-delete {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .btn-delete:hover {
+            background: #fca5a5;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #0f172a;
+            font-size: 1.5rem;
+        }
+
+        .close {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close:hover {
+            color: #0f172a;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .no-users {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+        }
+
+        .no-users i {
+            font-size: 3rem;
+            opacity: 0.3;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-buttons {
+                margin-top: 20px;
+                justify-content: center;
+            }
+
+            .users-table {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-shield-alt"></i> Admin Panel</h1>
+                <p id="adminName" style="color: #0f172a; font-weight: 600;">Loading...</p>
+            </div>
+            <div class="header-buttons">
+                <button class="btn btn-primary" onclick="goToDashboard()">
+                    <i class="fas fa-calendar-alt"></i> Back to Dashboard
+                </button>
+                <button class="btn btn-danger" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Register New User -->
+            <div class="card">
+                <h2><i class="fas fa-user-plus"></i> Register New User</h2>
+                <div id="registerAlert"></div>
+                <form onsubmit="registerUser(event)">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="role">Role</label>
+                        <select id="role" required>
+                            <option value="">Select Role...</option>
+                            <option value="student">Student</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-check"></i> Register User
+                    </button>
+                </form>
+            </div>
+
+            <!-- Users List -->
+            <div class="card">
+                <h2><i class="fas fa-users"></i> Registered Users</h2>
+                <div id="usersAlert"></div>
+                <div id="usersList" style="overflow-x: auto;">
+                    <p style="text-align: center; color: #94a3b8;">Loading users...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        function checkAuth() {
+            const userRole = localStorage.getItem('userRole');
+            const userId = localStorage.getItem('userId');
+            const userName = localStorage.getItem('userName');
+
+            if (!userId || userRole !== 'admin') {
+                alert('Access Denied! Only admins can access this page.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('adminName').innerText = `Welcome, ${userName}! (Admin)`;
+        }
+
+        // Load users
+        function loadUsers() {
+            fetch('/api/users', {
+                credentials: 'include'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        displayUsers(data.users);
+                    } else {
+                        showAlert('usersAlert', data.message, 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    showAlert('usersAlert', 'Failed to load users', 'error');
+                });
+        }
+
+        // Display users in table
+        function displayUsers(users) {
+            const usersList = document.getElementById('usersList');
+            
+            if (users.length === 0) {
+                usersList.innerHTML = `
+                    <div class="no-users">
+                        <i class="fas fa-user-slash"></i>
+                        <p>No users registered yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<table class="users-table"><thead><tr>';
+            html += '<th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Action</th>';
+            html += '</tr></thead><tbody>';
+
+            users.forEach(user => {
+                const roleBadge = user.role === 'admin' 
+                    ? '<span class="role-badge role-admin">Admin</span>'
+                    : '<span class="role-badge role-student">Student</span>';
+                
+                html += `<tr>
+                    <td>${user.name}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>${roleBadge}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-small btn-delete" onclick="deleteUser(${user.id}, '${user.username}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            usersList.innerHTML = html;
+        }
+
+        // Register user
+        function registerUser(event) {
+            event.preventDefault();
+
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+
+            fetch('/api/register', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, username, password, name: fullName, role })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('registerAlert', `✅ User "${username}" registered successfully!`, 'success');
+                    document.querySelector('form').reset();
+                    setTimeout(loadUsers, 1000);
+                } else {
+                    showAlert('registerAlert', data.message, 'error');
+                }
+            })
+            .catch(err => {
+                showAlert('registerAlert', 'Error registering user', 'error');
+            });
+        }
+
+        // Delete user
+        function deleteUser(userId, username) {
+            if (confirm(`Are you sure you want to delete user "${username}"?`)) {
+                fetch(`/api/users/${userId}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('usersAlert', `✅ User "${username}" deleted successfully!`, 'success');
+                        setTimeout(loadUsers, 1000);
+                    } else {
+                        showAlert('usersAlert', data.message, 'error');
+                    }
+                })
+                .catch(err => {
+                    showAlert('usersAlert', 'Error deleting user', 'error');
+                });
+            }
+        }
+
+        // Show alert
+        function showAlert(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => { el.innerHTML = ''; }, 4000);
+        }
+
+        // Go to dashboard
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Logout
+        function logout() {
+            fetch('/api/logout', { 
+                method: 'POST',
+                credentials: 'include'
+            })
+                .then(() => {
+                    localStorage.removeItem('userRole');
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('userId');
+                    window.location.href = 'login.html';
+                })
+                .catch(() => {
+                    localStorage.removeItem('userRole');
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('userId');
+                    window.location.href = 'login.html';
+                });
+        }
+
+        // Initialize
+        checkAuth();
+        loadUsers();
+    </script>
+</body>
+</html>

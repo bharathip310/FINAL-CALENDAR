@@ -1,0 +1,36 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "$2a$10$0zDFPNxP9z2gGEMW0BNv8..hkj273wBipJAKpY.ozB3ANuGbXV0Ri",
+      "role": "admin",
+      "email": "admin@college.edu",
+      "name": "Administrator"
+    },
+    {
+      "id": 2,
+      "username": "student1",
+      "password": "$2a$10$J5SkAb4Q2Ancx9LazvwuV.ZCh0JzfyvS9Zf4HVn6ft/F1xeAmCCZi",
+      "role": "student",
+      "email": "student1@college.edu",
+      "name": "John Doe"
+    },
+    {
+      "id": 3,
+      "username": "student2",
+      "password": "$2a$10$/AN72QwY7NIxToQmX3QbEeiumZ4SC1SUibHQgVUwyxUOs3zA7NkZS",
+      "role": "student",
+      "email": "student2@college.edu",
+      "name": "Jane Smith"
+    },
+    {
+      "id": 4,
+      "username": "bharathi",
+      "password": "$2a$10$O5pOlAFVcl.ue0rpTnh./uT5lc9ym4pCK.q0ziKMi9B66LQAsRmC.",
+      "email": "243115104013@msec.edu.in",
+      "name": "bharathi",
+      "role": "admin"
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+⚡ QUICK START GUIDE - 5 MINUTES
+================================
+
+Step 1️⃣: INSTALL NODE.JS
+------------------------
+Go to: https://nodejs.org/
+Download LTS version → Run installer → Complete setup
+
+Step 2️⃣: OPEN COMMAND PROMPT  
+-----------
+Press: Windows Key + R
+Type: cmd
+Press: Enter
+
+Step 3️⃣: NAVIGATE TO CALENDAR FOLDER
+------------------------------------
+Copy & Paste:
+cd "C:\Users\welcome\Downloads\FINAL CALENDER\calender"
+
+Then Press: Enter
+
+Step 4️⃣: INSTALL DEPENDENCIES
+------------------------------
+Type: npm install
+Press: Enter
+Wait for completion (1-2 minutes)
+
+Step 5️⃣: START SERVER
+---------------------
+Type: npm start
+Press: Enter
+
+⏳ Wait for message: "🔒 Calendar Server Running on http://localhost:3000"
+
+Step 6️⃣: OPEN CALENDAR
+----------------------
+Open Browser (Chrome, Firefox, etc.)
+Go to: http://localhost:3000
+
+Step 7️⃣: LOGIN
+--------------
+Username: admin
+Password: admin123
+Role: Select "Admin"
+Click: Login
+
+✅ DONE! 
+---
+The calendar is now running with secure authentication! 🎉
+
+📝 TEST ACCOUNTS:
+-----------------
+Admin:
+  Username: admin
+  Password: admin123
+
+Student 1:
+  Username: student1  
+  Password: student123
+
+Student 2:
+  Username: student2
+  Password: password123
+
+🔧 TROUBLESHOOTING
+-------------------
+
+❌ "npm: command not found"
+→ Node.js not installed correctly
+→ Restart Command Prompt
+→ Verify: type "node --version"
+
+❌ "Cannot find module"
+→ Run: npm install (again)
+
+❌ "Port 3000 already in use"
+→ Change PORT in server.js to 3001
+→ Access: http://localhost:3001
+
+❌ "Connection Error on login"
+→ Make sure Command Prompt window is still open
+→ Server must be running
+→ Check: npm start was successful
+
+❌ Login doesn't work
+→ Check username is exact (case-sensitive)
+→ Check password is exact (case-sensitive)
+→ Make sure you selected correct role (Admin/Student)
+
+⚠️ IMPORTANT
+------------
+Keep the Command Prompt window open while using calendar!
+If it closes, the calendar won't work.
+To restart: just type "npm start" again
+
+🚀 WHAT'S NEXT?
+----------------
+1. Login and explore calendar
+2. As Admin: Try "Manage Users" button
+3. Add new student accounts
+4. Test login with new accounts
+5. Try calendar features
+6. When done: Press Ctrl+C in Command Prompt to stop server
+
+📊 FEATURES AVAILABLE
+-----------------------
+✅ Secure login with password
+✅ Admin and Student accounts
+✅ Add/Edit/Delete calendar events
+✅ User management (admin only)
+✅ Automatic logout after 24 hours
+✅ Works on desktop and mobile
+
+🎯 YOUR CALENDAR IS READY TO USE! 🎉

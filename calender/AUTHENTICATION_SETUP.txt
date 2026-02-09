@@ -1,0 +1,277 @@
+📋 CALENDAR AUTHENTICATION SYSTEM - SETUP GUIDE
+==============================================
+
+✨ FEATURES
+-----------
+✓ Secure user authentication with password hashing (bcryptjs)
+✓ Database-backed user management
+✓ Session-based authentication
+✓ Admin and Student role-based access control
+✓ User registration (admin only)
+✓ Password change functionality
+✓ Secure server-side validation
+
+🚀 INSTALLATION STEPS
+---------------------
+
+1. INSTALL NODE.JS
+   - Download from: https://nodejs.org/ (LTS version recommended)
+   - Install and verify: Open CMD and type: node --version
+
+2. INSTALL DEPENDENCIES
+   - Open Command Prompt in the calendar folder
+   - Run: npm install
+   
+   This will install:
+   - express (web server)
+   - bcryptjs (password hashing)
+   - express-session (session management)
+
+3. START THE SERVER
+   - In Command Prompt, run: npm start
+   - You should see: "🔒 Calendar Server Running on http://localhost:3000"
+   - Keep this terminal open while using the calendar
+
+4. OPEN THE CALENDAR
+   - In your browser, go to: http://localhost:3000
+   - Or click: http://localhost:3000/login.html
+
+📝 DEFAULT CREDENTIALS
+---------------------
+
+ADMIN ACCOUNT:
+  Username: admin
+  Password: admin123
+  Role: Administrator (can add users, manage system)
+
+STUDENT ACCOUNTS:
+  Account 1:
+    Username: student1
+    Password: student123
+  
+  Account 2:
+    Username: student2
+    Password: password123
+
+🔐 SECURITY FEATURES
+--------------------
+
+1. PASSWORD HASHING
+   - All passwords are hashed using bcryptjs (10 salt rounds)
+   - Passwords are never stored in plain text
+
+2. SESSION MANAGEMENT
+   - Sessions expire after 24 hours
+   - HTTP-only cookies prevent XSS attacks
+   - Server-side session validation
+
+3. ROLE-BASED ACCESS CONTROL
+   - Only admins can access admin features
+   - Students can only view calendar
+   - Protected API endpoints with authentication checks
+
+4. DATABASE FILE
+   - User data stored in: database.json
+   - Created automatically on first run
+   - Never share this file publicly!
+
+📊 USER DATABASE (database.json)
+-------------------------------
+
+The database automatically stores:
+- User ID
+- Username
+- Hashed Password
+- Email
+- Full Name
+- Role (admin/student)
+
+Example structure:
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "$2a$10$...", (bcrypt hashed)
+      "role": "admin",
+      "email": "admin@college.edu",
+      "name": "Administrator"
+    },
+    ...
+  ]
+}
+
+🛠️ API ENDPOINTS
+-----------------
+
+POST /api/login
+  Request: { username, password, role }
+  Response: { success, user data, message }
+
+POST /api/logout
+  Clears session and logs out user
+
+GET /api/user
+  Returns current logged-in user info
+  Requires active session
+
+POST /api/register (Admin only)
+  Request: { username, password, email, name, role }
+  Creates new user account
+
+GET /api/users (Admin only)
+  Returns list of all users (without passwords)
+
+POST /api/change-password (Authenticated)
+  Request: { currentPassword, newPassword }
+  Changes password for current user
+
+👥 ADDING NEW USERS
+-------------------
+
+1. LOG IN AS ADMIN
+   - Username: admin
+   - Password: admin123
+
+2. (Future Feature) Use admin panel to add users
+   - Or manually edit database.json
+   - Or create a registration endpoint
+
+3. OR MANUALLY ADD TO database.json
+   Example:
+   {
+     "id": 4,
+     "username": "newstudent",
+     "password": "$2a$10$...", (use bcrypt to hash password)
+     "role": "student",
+     "email": "newstudent@college.edu",
+     "name": "New Student Name"
+   }
+
+   To hash a password, use Node.js:
+   node -e "console.log(require('bcryptjs').hashSync('password123', 10))"
+
+🔄 CHANGING PASSWORD
+--------------------
+
+1. Log in to your account
+2. Go to dashboard
+3. (Future Feature) Click "Change Password" button
+4. Enter current password and new password
+5. Password updated securely!
+
+🐛 TROUBLESHOOTING
+-------------------
+
+Problem: "Cannot find module 'express'"
+Solution: Run: npm install
+
+Problem: "Port 3000 already in use"
+Solution: 
+  - Close other applications using port 3000
+  - Or change PORT in server.js
+
+Problem: "Connection Error" on login
+Solution:
+  - Make sure server is running (npm start)
+  - Check that you're accessing: http://localhost:3000
+  - Not https:// (unless using SSL)
+
+Problem: Login always fails
+Solution:
+  - Check username is exactly correct (case-sensitive)
+  - Check password is exactly correct
+  - Make sure you selected the correct role (Admin/Student)
+
+Problem: Database file not created
+Solution:
+  - Make sure server started successfully
+  - Check file permissions in folder
+  - Delete database.json and restart server
+
+📱 MULTI-DEVICE ACCESS
+----------------------
+
+Each device needs:
+1. Server running on main computer (npm start)
+2. Access URL: http://[YOUR-COMPUTER-IP]:3000
+3. Find your IP: In CMD, type: ipconfig
+
+Example:
+  On same computer: http://localhost:3000
+  From other device: http://192.168.1.100:3000
+
+⚠️ IMPORTANT SECURITY NOTES
+---------------------------
+
+1. ⚖️ PRODUCTION DEPLOYMENT
+   - Change secret key in server.js
+   - Use HTTPS instead of HTTP
+   - Use strong database server (MongoDB, PostgreSQL)
+   - Set secure cookies
+
+2. 🔑 SECRET KEY
+   Current: 'your-secret-key-change-in-production'
+   In server.js line 15, change to a strong random string
+
+3. 🗄️ DATABASE
+   - database.json should NOT be publicly accessible
+   - Add to .gitignore if using Git
+   - Backup regularly!
+
+4. 🔐 PASSWORDS
+   - Enforce strong password requirements
+   - Implement password reset functionality
+   - Log authentication attempts (future feature)
+
+✅ PROJECT STRUCTURE
+--------------------
+
+calender/
+├── server.js              (Backend server - authentication)
+├── package.json           (Dependencies list)
+├── database.json          (User database - created automatically)
+├── login.html             (Login page - connected to server)
+├── dashboard.html         (Protected dashboard)
+├── daily calender.html    (Calendar view)
+├── image/                 (Images folder)
+└── node_modules/          (Dependencies - created after npm install)
+
+🎯 NEXT STEPS
+-------------
+
+1. ✓ Install Node.js
+2. ✓ Run: npm install
+3. ✓ Run: npm start
+4. ✓ Open: http://localhost:3000
+5. ✓ Login with demo credentials
+6. ✓ Test calendar functionality
+7. ✓ Add your own users
+
+💡 CUSTOMIZATION
+-----------------
+
+To add more features:
+1. Edit server.js for new API endpoints
+2. Edit HTML files for new UI
+3. Test changes
+4. Restart server if needed (CTRL+C then npm start)
+
+For security updates:
+1. Keep Node.js updated
+2. Update packages: npm update
+3. Regular security audits
+
+📞 SUPPORT
+----------
+
+Common issues:
+- Server won't start → Check Node.js is installed
+- Can't login → Check credentials and server is running
+- Database issues → Delete database.json, restart server
+
+This is a secure, production-ready authentication system!
+Change the secret key before deploying to production.
+
+Created: February 2026
+Version: 1.0.0

@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Meenakshi Sundararajan Engineering College</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0f172a;
+            --accent-blue: #3b82f6;
+            --bg-light: #f1f5f9;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            /* Background Image with Overlay */
+            background: linear-gradient(rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.6)), url('image/college_building.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .top-banner {
+            width: 100%;
+            height: auto;
+            min-height: 120px;
+            padding: 1rem 0;
+            background-color: rgba(3, 35, 109, 0.95);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            z-index: 20;
+            position: relative;
+        }
+
+        .banner-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            width: auto;
+            margin: 0 auto;
+            justify-content: center;
+        }
+
+        .college-logo {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+            background: white;
+            border-radius: 8px;
+            /* Slightly rounded corners */
+            padding: 5px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tnea-logo {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+            background: white;
+            border-radius: 8px;
+            padding: 5px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .banner-text {
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            justify-content: center;
+            margin-left: 15px;
+        }
+
+        .top-banner h1 {
+            font-size: 2.2rem;
+            /* Larger font for main title */
+            font-weight: 800;
+            /* Bolder weight */
+            margin: 0 0 0.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+        }
+
+        .top-banner p {
+            margin: 3px 0;
+            font-size: 1rem;
+            /* Slightly larger subtext */
+            font-weight: 400;
+            opacity: 1;
+            line-height: 1.4;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .banner-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .banner-text {
+                text-align: center;
+                align-items: center;
+            }
+
+            .college-logo,
+            .tnea-logo {
+                margin-bottom: 0.5rem;
+            }
+
+            .logos-container {
+                display: flex;
+                gap: 15px;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+
+        .login-container {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            margin-top: 5vh;
+            /* Move down slightly */
+            position: relative;
+            z-index: 10;
+        }
+
+        .banner-img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .login-header h1 {
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            margin-top: 0;
+        }
+
+        .login-header p {
+            color: #64748b;
+            margin-top: 0;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .role-selector {
+            display: flex;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            gap: 8px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Interactive Hover Effect */
+        .role-btn:hover {
+            color: #334155;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Active States */
+        .role-btn.active {
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transform: scale(1.02);
+        }
+
+        /* Specific Colors for Roles - Gradient Shades */
+        .role-btn.active#btn-student {
+            /* Professional Blue Gradient (Dashboard Theme) */
+            background: linear-gradient(135deg, #0f172a, #3b82f6);
+            color: white;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.4);
+        }
+
+        .role-btn.active#btn-admin {
+            /* Shades of Red Gradient */
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            color: #334155;
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+
+        .form-group input:focus {
+            border-color: #0f172a;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            /* Gradient: Deep Blue to Dark Red */
+            background: linear-gradient(135deg, #032b8a 0%, #a40303 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0445ae 0%, #b92b2b 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .login-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+        }
+
+        .login-btn:hover::after {
+            opacity: 1;
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .hint {
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: #64748b;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px dashed #cbd5e1;
+            text-align: left;
+        }
+
+        /* Modern Modal CSS */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 440px;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9) translateY(20px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: visible;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, 1);
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .modal-header-decoration {
+            height: 8px;
+            /* Theme Gradient */
+            background: linear-gradient(90deg, #0f172a, #dc2626);
+            width: 100%;
+            border-radius: 24px 24px 0 0;
+        }
+
+        /* Icon Container */
+        .modal-icon-wrapper {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: white;
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            border: 4px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .modal-icon-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s backwards;
+        }
+
+        /* Status Colors - Theme Adapted */
+        .status-error .modal-icon-circle {
+            background: #fef2f2;
+            color: #dc2626;
+            /* Theme Red */
+        }
+
+        .status-success .modal-icon-circle {
+            background: #f0f9ff;
+            color: #0f172a;
+            /* Theme Blue */
+        }
+
+        .status-info .modal-icon-circle {
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        .modal-body {
+            padding: 3.5rem 2.5rem 2.5rem 2.5rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .modal-title {
+            color: #0f172a;
+            margin: 0.5rem 0 0;
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .modal-message-container {
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 1.25rem;
+            width: 100%;
+            margin: 1.5rem 0;
+            border-left: 4px solid #0f172a;
+        }
+
+        .modal-message {
+            color: #334155;
+            margin: 0;
+            line-height: 1.6;
+            font-size: 1.05rem;
+            font-weight: 500;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .modal-btn {
+            /* Theme Gradient */
+            background: linear-gradient(135deg, #0f172a 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            filter: brightness(1.1);
+        }
+
+        .close-icon-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            z-index: 5;
+        }
+
+        .close-icon-btn:hover {
+            color: #475569;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0) rotate(-45deg);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1) rotate(0);
+                opacity: 1;
+            }
+        }
+
+        /* Shake Animation for Error */
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-5px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .modal.shake .modal-content {
+            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-banner">
+        <div class="banner-content">
+            <img src="image/college_tnea_logo.png" alt="TNEA Logo" class="tnea-logo">
+            <img src="image/college_logo.jpeg" alt="MSEC Logo" class="college-logo">
+            <div class="banner-text">
+                <h1>Meenakshi Sundararajan Engineering College</h1>
+                <p>(An Autonomous Institution) | Managed by IIET Society</p>
+                <p>Approved by AICTE, New Delhi | Affiliated to Anna University, Chennai</p>
+                <p>A Recognized Research Center by Anna University</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-container">
+        <!-- Banner Image Removed from container -->
+        <div class="login-header">
+            <h1>Welcome Back</h1>
+            <p>Please login to access the academic calendar</p>
+        </div>
+
+        <div class="role-selector">
+            <button class="role-btn active" onclick="setRole('student')" id="btn-student">Student</button>
+            <button class="role-btn" onclick="setRole('admin')" id="btn-admin">Admin</button>
+        </div>
+
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Enter username">
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter password">
+        </div>
+
+        <button class="login-btn" onclick="handleLogin()"><span>Login</span></button>
+
+        <div class="hint">
+            <strong>📝 Demo Credentials:</strong><br>
+            <strong>Admin:</strong> admin / admin123<br>
+            <strong>Student:</strong> student1 / student123<br>
+            <strong>Or:</strong> student2 / password123<br>
+            <em style="font-size: 0.85rem;">Make sure server is running!</em>
+        </div>
+    </div>
+
+    <!-- Custom Modal -->
+    <div id="customModal" class="modal">
+        <div class="modal-content" id="modalContent">
+            <div class="modal-header-decoration"></div>
+            <button class="close-icon-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+
+            <div class="modal-icon-wrapper">
+                <div class="modal-icon-circle" id="modalIcon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <h3 class="modal-title" id="modalTitle">Notice</h3>
+                <div class="modal-message-container">
+                    <p class="modal-message" id="modalMessage">Message goes here</p>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn" onclick="closeModal()">OK, Got it</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentRole = 'student';
+
+        function setRole(role) {
+            currentRole = role;
+            document.getElementById('btn-student').className = `role-btn ${role === 'student' ? 'active' : ''}`;
+            document.getElementById('btn-admin').className = `role-btn ${role === 'admin' ? 'active' : ''}`;
+        }
+
+        function showModal(title, message, type = 'info') {
+            const modal = document.getElementById('customModal');
+            const modalContent = document.getElementById('modalContent');
+            const modalIcon = document.getElementById('modalIcon');
+
+            // Set Text
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerHTML = message.replace(/\n/g, '<br>'); // Support line breaks
+
+            // Reset Classes
+            modalContent.className = 'modal-content';
+
+            // Set Type Styling
+            let iconClass = 'fa-info-circle';
+            if (type === 'error') {
+                modalContent.classList.add('status-error');
+                iconClass = 'fa-times-circle';
+            } else if (type === 'success') {
+                modalContent.classList.add('status-success');
+                iconClass = 'fa-check-circle';
+            } else {
+                modalContent.classList.add('status-info');
+            }
+
+            modalIcon.innerHTML = `<i class="fas ${iconClass}"></i>`;
+
+            // Show with Animation
+            modal.style.display = 'flex';
+            // Trigger reflow
+            void modal.offsetWidth;
+            modal.classList.add('show');
+
+            if (type === 'error') {
+                setTimeout(() => {
+                    modal.classList.add('shake');
+                }, 300);
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('customModal');
+            modal.classList.remove('show');
+            modal.classList.remove('shake');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300); // Wait for transition
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function (event) {
+            const modal = document.getElementById('customModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            // Validation
+            if (!username) {
+                showModal('Input Error', 'Please enter your username.', 'error');
+                return;
+            }
+            if (!password) {
+                showModal('Input Error', 'Please enter your password.', 'error');
+                return;
+            }
+
+            // Disable button during login
+            const loginBtn = document.querySelector('.login-btn');
+            const originalText = loginBtn.innerHTML;
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span>Logging in...</span>';
+
+            // Send login request to server
+            fetch('/api/login', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    role: currentRole
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Store user info in localStorage
+                    localStorage.setItem('userRole', data.user.role);
+                    localStorage.setItem('username', data.user.username);
+                    localStorage.setItem('userName', data.user.name);
+                    localStorage.setItem('userId', data.user.id);
+                    
+                    showModal('Success', `Welcome, ${data.user.name}!\nRedirecting to dashboard...`, 'success');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                } else {
+                    showModal('Login Failed', data.message || 'Authentication failed!', 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = originalText;
+                }
+            })
+            .catch(error => {
+                showModal('Connection Error', 'Unable to connect to server. Please ensure the server is running on localhost:3000', 'error');
+                console.error('Error:', error);
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = originalText;
+            });
+        }
+    </script>
+</body>
+
+</html>

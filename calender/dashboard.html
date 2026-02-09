@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Meenakshi Sundararajan Engineering College</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0f172a;
+            /* Slate 900 */
+            --accent-blue: #2563eb;
+            /* Blue 600 */
+            --primary-red: #dc2626;
+            /* Red 600 */
+            --accent-red: #ef4444;
+            /* Red 500 */
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        /* Navbar */
+        nav {
+            background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 25%, #dc2626 75%, #991b1c 100%);
+            color: var(--white);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: navGlow 8s ease-in-out infinite;
+        }
+
+        @keyframes navGlow {
+            0%, 100% {
+                box-shadow: var(--shadow-md);
+            }
+            50% {
+                box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3), 0 4px 6px rgba(220, 38, 38, 0.2);
+            }
+        }
+
+        .nav-brand {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #ffffff, #e2e8f0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: var(--white);
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(8px);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            padding: 12px 32px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .nav-btn:hover {
+            background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #ef4444 100%);
+            color: white;
+            transform: translateY(-3px) scale(1.08);
+            box-shadow: 0 15px 30px rgba(239, 68, 68, 0.4);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+
+        .logout-btn {
+            background: #ffffff;
+            color: #ef4444;
+            border: 2px solid transparent;
+            padding: 12px 32px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 700;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #ffffff;
+            transform: translateY(-3px) scale(1.08);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border-color: #ffffff;
+        }
+
+        /* Footer Logout Button */
+        footer {
+            background: linear-gradient(135deg, #1e3a8a 0%, #dc2626 50%, #b91c1c 100%);
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: auto;
+            box-shadow: 0 -8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .footer-logout-btn {
+            background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #ef4444 100%);
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-logout-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .footer-logout-btn:hover {
+            background: linear-gradient(135deg, #f97316 0%, #ef4444 50%, #dc2626 100%);
+            transform: translateY(-4px) scale(1.08);
+            box-shadow: 0 15px 35px rgba(239, 68, 68, 0.6);
+        }
+
+        .footer-logout-btn:hover::before {
+            left: 100%;
+        }
+
+        .footer-logout-btn:active {
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            max-width: 1280px;
+            margin: 3rem auto;
+            width: 95%;
+            padding-bottom: 3rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 3rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 1.5rem;
+        }
+
+        .dashboard-title h1 {
+            color: var(--primary-blue);
+            margin: 0;
+            font-size: 2.25rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: -webkit-linear-gradient(45deg, var(--primary-blue), var(--accent-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dashboard-subtitle {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .admin-controls {
+            display: none;
+            /* Hidden for students */
+        }
+
+        .add-post-btn {
+            background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #ef4444 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-post-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .add-post-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.45);
+            filter: brightness(1.1);
+        }
+
+        .add-post-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Grid Layout */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .post-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            border: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .post-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            border-color: #bfdbfe;
+        }
+
+        .post-media {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .post-media img,
+        .post-media video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .post-card:hover .post-media img,
+        .post-card:hover .post-media video {
+            transform: scale(1.05);
+        }
+
+        .media-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text-dark);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .post-content {
+            padding: 1.75rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0 0 0.75rem 0;
+            line-height: 1.4;
+        }
+
+        .post-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            flex: 1;
+        }
+
+        .post-date {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Admin Buttons */
+        .admin-actions-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 1.25rem;
+            padding-top: 1rem;
+            border-top: 1px dashed #e2e8f0;
+        }
+
+        .admin-action-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-edit {
+            background-color: #eff6ff;
+            color: var(--accent-blue);
+        }
+
+        .btn-edit:hover {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .btn-delete {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+
+        .btn-delete:hover {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* Reports Section */
+        .reports-section {
+            margin-top: 3rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .reports-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 1rem;
+        }
+
+        .report-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .report-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #f1f5f9;
+            margin-bottom: 0.75rem;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .report-item:hover {
+            background: #f8fafc;
+        }
+
+        .report-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .report-title {
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .report-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-download {
+            background-color: var(--bg-light);
+            color: var(--accent-blue);
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            margin-top: 1rem !important;
+        }
+
+        .btn-download:hover {
+            background-color: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        /* Modal - Enhanced Design */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal {
+            background: white;
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 520px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalSlide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-header-bar {
+            background: linear-gradient(135deg, #1e3a8a 0%, #dc2626 100%);
+            padding: 1.75rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-header-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,%3Csvg width="40" height="40" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M0 0h40v40H0z" fill="none"/%3E%3Cpath d="M20 0L0 20l20 20 20-20z" fill="%23ffffff" opacity="0.05"/%3E%3C/svg%3E');
+            opacity: 0.3;
+        }
+
+        .modal-title {
+            margin: 0;
+            color: white;
+            font-size: 1.75rem;
+            font-weight: 800;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-title i {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            max-height: calc(90vh - 200px);
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group label i {
+            color: var(--accent-blue);
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 2.5rem;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid #f1f5f9;
+            background: white;
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .btn-cancel {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+            color: #475569;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, var(--accent-blue), #1e40af);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .btn-save:active {
+            transform: translateY(0);
+        }
+
+        /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 12px;
+            border: 2px dashed #e2e8f0;
+            color: var(--text-muted);
+        }
+
+        /* Report Card Styles */
+        .report-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 5px solid var(--accent-blue);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+            animation: slideUp 0.5s ease-out forwards;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid #e2e8f0;
+            border-left-width: 5px;
+        }
+
+        .report-card:nth-child(1) { animation-delay: 0.1s; }
+        .report-card:nth-child(2) { animation-delay: 0.2s; }
+        .report-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .report-card:hover {
+            box-shadow: 0 12px 28px rgba(37, 99, 235, 0.25);
+            transform: translateY(-6px);
+            border-left-color: #f97316;
+            background: linear-gradient(135deg, #f0f9ff 0%, #f9fafb 100%);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .report-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+        }
+
+        .report-meta {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .report-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .report-content {
+            color: #475569;
+            line-height: 1.6;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .btn-download {
+            padding: 0.6rem 1.2rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-delete-report {
+            padding: 0.6rem 1.2rem;
+            background: #fee2e2;
+            color: #991b1b;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-delete-report:hover {
+            background: #fca5a5;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #0f172a;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-brand">Meenakshi Sundararajan Engineering College</div>
+        <div class="nav-links">
+            <a href="daily calender.html" class="nav-btn"><i class="fas fa-calendar-alt"></i> Academic Calendar</a>
+            <span id="userGreeting" style="font-size: 0.95rem; font-weight: 500; opacity: 0.95;"></span>
+        </div>
+    </nav>
+
+    <main>
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <h1>Campus Highlights</h1>
+                <p class="dashboard-subtitle">Latest videos, photos, and event overviews from around campus.</p>
+            </div>
+            <div class="admin-controls" id="adminControls">
+                <button class="add-post-btn" onclick="openModal()">
+                    <i class="fas fa-plus"></i> Add New Post
+                </button>
+                <button class="add-post-btn" onclick="goToAdminPanel()" style="background: linear-gradient(135deg, #1e3a8a 0%, #b91c1c 100%);">
+                    <i class="fas fa-users-cog"></i> Manage Users
+                </button>
+                <button class="add-post-btn" onclick="openReportModal()" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+                    <i class="fas fa-file-pdf"></i> Submit Report
+                </button>
+            </div>
+        </div>
+
+        <div class="posts-grid" id="postsGrid">
+            <!-- Posts will be injected here -->
+        </div>
+
+        <!-- Reports Section -->
+        <div style="margin-top: 4rem; padding: 0 2rem;">
+            <div class="dashboard-header" style="margin-bottom: 2rem;">
+                <div class="dashboard-title">
+                    <h1><i class="fas fa-file-alt"></i> Event Reports</h1>
+                    <p class="dashboard-subtitle">View and download submitted event reports</p>
+                </div>
+            </div>
+
+            <!-- Date Filter -->
+            <div style="margin-bottom: 2rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                <input type="date" id="reportDateFilter" style="padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-family: 'Poppins', sans-serif;">
+                <button onclick="filterReportsByDate()" style="background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%); color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    <i class="fas fa-search"></i> Filter by Date
+                </button>
+                <button onclick="loadAllReports()" style="background: #64748b; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    <i class="fas fa-times"></i> Clear Filter
+                </button>
+            </div>
+
+            <!-- Reports Grid -->
+            <div class="posts-grid" id="reportsGrid">
+                <div class="empty-state">
+                    <p><i class="fas fa-clipboard-list" style="font-size: 2rem; opacity: 0.3; display: block; margin-bottom: 0.5rem;"></i>No reports yet</p>
+                </div>
+
+    </main>
+
+
+
+    <!-- Modal for Admin -->
+    <div class="modal-overlay" id="postModal">
+        <div class="modal">
+            <div class="modal-header-bar">
+                <h2 class="modal-title" id="modalTitle"><i class="fas fa-plus-circle"></i> Add New Post</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label><i class="fas fa-image"></i> Media Type</label>
+                    <select id="mediaType">
+                        <option value="image">Image</option>
+                        <option value="video">Video</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-file-upload"></i> Upload Media (Image or Video)</label>
+                    <input type="file" id="mediaFile" accept="image/*,video/*">
+                    <input type="hidden" id="existingUrl">
+                    <small style="color: #64748b; font-size: 0.8rem;">Supported formats: JPG, PNG, MP4, WebM</small>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-file-pdf"></i> Attach Report (Optional PDF)</label>
+                    <input type="file" id="postReportFile" accept="application/pdf">
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-heading"></i> Title</label>
+                    <input type="text" id="postTitle" placeholder="Event Title">
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> Overview / Description</label>
+                    <textarea id="postDesc" rows="4" placeholder="Write a brief overview of the event..."></textarea>
+                </div>
+
+                <input type="hidden" id="editIndex" value="-1">
+
+                <div class="modal-actions">
+                    <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button class="btn-save" onclick="savePost()"><i class="fas fa-save"></i> Save Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal">
+            <div class="modal-header-bar">
+                <h2 class="modal-title"><i class="fas fa-file-pdf"></i> Submit Event Report</h2>
+                <button class="modal-close" onclick="closeReportModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label><i class="fas fa-calendar"></i> Event Date</label>
+                    <input type="date" id="reportEventDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-heading"></i> Event Name</label>
+                    <input type="text" id="reportEventName" placeholder="Event name or title" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-heading"></i> Report Title</label>
+                    <input type="text" id="reportTitle" placeholder="Report title" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> Report Content</label>
+                    <textarea id="reportContent" rows="6" placeholder="Write the event report details here..." required></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-cancel" onclick="closeReportModal()">Cancel</button>
+                    <button class="btn-save" onclick="submitReport()"><i class="fas fa-paper-plane"></i> Submit Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Auth & Initialization ---
+        let userRole = localStorage.getItem('userRole') || 'guest';
+        let userName = localStorage.getItem('userName') || 'Guest';
+        let userId = localStorage.getItem('userId') || null;
+
+        // Check authentication with server
+        function checkAuthentication() {
+            // If no user info in localStorage, redirect to login
+            if (!userId) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Verify with server
+            fetch('/api/user', {
+                credentials: 'include'
+            })
+                .then(response => {
+                    if (response.status === 401) {
+                        // Not authenticated on server, redirect to login
+                        localStorage.removeItem('userRole');
+                        localStorage.removeItem('userName');
+                        localStorage.removeItem('userId');
+                        window.location.href = 'login.html';
+                        return null;
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && data.success) {
+                        // Update local data with server data
+                        userRole = data.user.role;
+                        userName = data.user.username;
+                        userId = data.user.id;
+                        initUI();
+                    }
+                })
+                .catch(error => {
+                    // If can't reach server, still initialize with localStorage
+                    initUI();
+                });
+        }
+
+        function initUI() {
+            // Update UI based on role
+            document.getElementById('userGreeting').innerText = `Hello, ${userName}!`;
+
+            if (userRole === 'admin') {
+                document.getElementById('adminControls').style.display = 'block';
+            }
+        }
+
+        // Check authentication on page load
+        checkAuthentication();
+
+        // --- 2. Data Management (LocalStorage + IndexedDB) ---
+
+        // IndexedDB Helper
+        const dbName = 'SchoolDashboardDB';
+        const storeName = 'mediaFiles';
+        let db;
+
+        const initDB = () => {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(dbName, 1);
+                request.onupgradeneeded = (event) => {
+                    db = event.target.result;
+                    if (!db.objectStoreNames.contains(storeName)) {
+                        db.createObjectStore(storeName, { keyPath: 'id' });
+                    }
+                };
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    resolve(db);
+                };
+                request.onerror = (event) => {
+                    console.error("IndexedDB error:", event.target.error);
+                    reject(event.target.error);
+                };
+            });
+        };
+
+        const saveFileToDB = (id, file) => {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.put({ id: id, file: file }); // Store the File object/Blob directly
+                request.onsuccess = () => resolve();
+                request.onerror = (e) => reject(e.target.error);
+            });
+        };
+
+        const getFileFromDB = (id) => {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                const request = store.get(id);
+                request.onsuccess = (event) => {
+                    const result = event.target.result;
+                    resolve(result ? result.file : null);
+                };
+                request.onerror = (e) => reject(e.target.error);
+            });
+        };
+
+        const deleteFileFromDB = (id) => {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.delete(id);
+                request.onsuccess = () => resolve();
+                request.onerror = (e) => reject(e.target.error);
+            });
+        };
+
+
+        // Seed initial data if empty
+        const initialPosts = [
+            {
+                id: 'init_1',
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+                title: 'Graduation Day 2025',
+                desc: 'Congratulations to the Class of 2025! A wonderful ceremony celebrating the achievements of our engineering graduates.',
+                date: '2025-05-15',
+                isLocal: false
+            },
+            {
+                id: 'init_2',
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+                title: 'Tech Symposium Keynote',
+                desc: 'Industry leaders gathered to discuss the future of AI and Robotics in our annual symposium.',
+                date: '2025-09-10',
+                isLocal: false
+            },
+            {
+                id: 'init_3',
+                type: 'video',
+                url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+                title: 'Campus Tour',
+                desc: 'Take a virtual walk through our state-of-the-art labs, library, and green campus.',
+                date: '2026-01-20',
+                isLocal: false
+            }
+        ];
+
+        let posts = JSON.parse(localStorage.getItem('dashboardPosts'));
+        if (!posts || posts.length === 0) {
+            posts = initialPosts;
+            localStorage.setItem('dashboardPosts', JSON.stringify(posts));
+        }
+
+        // --- 3. Rendering ---
+        async function renderPosts() {
+            const grid = document.getElementById('postsGrid');
+            grid.innerHTML = '';
+
+            if (posts.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No posts yet</h3>
+                        <p>Admins can add new event highlights using the button above.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            for (let i = 0; i < posts.length; i++) {
+                const post = posts[i];
+                const index = i;
+
+                const card = document.createElement('div');
+                card.className = 'post-card';
+
+                // Resolve URL
+                let displayUrl = post.url;
+                if (post.isLocal) {
+                    try {
+                        const fileBlob = await getFileFromDB(post.id);
+                        if (fileBlob) {
+                            displayUrl = URL.createObjectURL(fileBlob);
+                        } else {
+                            displayUrl = '';
+                        }
+                    } catch (e) {
+                        console.error("Error loading file", e);
+                    }
+                }
+
+                // Media Element
+                let mediaHtml = '';
+                if (!displayUrl) {
+                    mediaHtml = `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:#cbd5e1; color:#64748b;">Media deleted or missing</div>`;
+                } else if (post.type === 'video') {
+                    mediaHtml = `
+                        <video controls>
+                            <source src="${displayUrl}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <span class="media-badge"><i class="fas fa-video"></i> Video</span>
+                    `;
+                } else {
+                    mediaHtml = `
+                        <img src="${displayUrl}" alt="${post.title}" onerror="this.src='https://placehold.co/600x400?text=Image+Error'">
+                        <span class="media-badge"><i class="fas fa-image"></i> Image</span>
+                    `;
+                }
+
+                // Admin Controls Footer
+                let adminControlsHtml = '';
+                if (userRole === 'admin') {
+                    adminControlsHtml = `
+                        <div class="admin-actions-row">
+                            <button class="admin-action-btn btn-edit" onclick="editPost(${index})">
+                                <i class="fas fa-edit"></i> Update
+                            </button>
+                            <button class="admin-action-btn btn-delete" onclick="deletePost(${index})">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </button>
+                        </div>
+                    `;
+                }
+
+                // Report Button
+                let reportHtml = '';
+                if (post.hasReport) {
+                    reportHtml = `
+                        <button class="btn-download" onclick="downloadPostReport('${post.id}', '${post.reportName || 'report.pdf'}')">
+                            <i class="fas fa-file-pdf"></i> Download Report
+                        </button>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="post-media">
+                        ${mediaHtml}
+                    </div>
+                    <div class="post-content">
+                        <h3 class="post-title">${post.title}</h3>
+                        <p class="post-desc">${post.desc}</p>
+                        ${reportHtml}
+                        <div class="post-date"><i class="far fa-clock"></i> Posted on ${post.date || new Date().toLocaleDateString()}</div>
+                        ${adminControlsHtml}
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        function goToAdminPanel() {
+            window.location.href = 'admin-panel.html';
+        }
+
+        // --- 4. CRUD Actions ---
+        function openModal() {
+            document.getElementById('postModal').style.display = 'flex';
+
+            // Reset for Add
+            document.getElementById('modalTitle').innerText = 'Add New Post';
+            document.getElementById('editIndex').value = '-1';
+            document.getElementById('mediaType').value = 'image';
+            document.getElementById('mediaFile').value = '';
+            document.getElementById('postReportFile').value = ''; // Reset report input
+            document.getElementById('existingUrl').value = '';
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postDesc').value = '';
+        }
+
+        function closeModal() {
+            document.getElementById('postModal').style.display = 'none';
+        }
+
+        async function savePost() {
+            const index = parseInt(document.getElementById('editIndex').value);
+            const title = document.getElementById('postTitle').value;
+            const desc = document.getElementById('postDesc').value;
+            const fileInput = document.getElementById('mediaFile');
+            const reportInput = document.getElementById('postReportFile');
+            const existingUrl = document.getElementById('existingUrl').value;
+
+            if (!title) {
+                alert('Please provide a Title.');
+                return;
+            }
+
+            // Generate ID for new posts
+            const id = (index === -1) ? `post_${Date.now()}` : posts[index].id || `post_${Date.now()}`;
+            let type = 'image';
+            let isLocal = false;
+            let finalUrl = existingUrl;
+            let hasReport = (index !== -1) ? posts[index].hasReport : false;
+            let reportName = (index !== -1) ? posts[index].reportName : '';
+
+            // Handle Media File
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                type = file.type.startsWith('video/') ? 'video' : 'image';
+                isLocal = true;
+
+                try {
+                    await saveFileToDB(id, file); // Save Blob to IndexedDB
+                    finalUrl = 'indexed_db_blob';
+                } catch (e) {
+                    alert("Error saving media to database: " + e.message);
+                    return;
+                }
+            } else if (index !== -1) {
+                // Keep existing values
+                type = posts[index].type;
+                isLocal = posts[index].isLocal;
+                finalUrl = posts[index].url;
+            } else {
+                alert('Please upload an image or video.');
+                return;
+            }
+
+            // Handle Report File
+            if (reportInput.files && reportInput.files[0]) {
+                const reportFile = reportInput.files[0];
+                try {
+                    await saveFileToDB(`${id}_report`, reportFile);
+                    hasReport = true;
+                    reportName = reportFile.name;
+                } catch (e) {
+                    console.error("Error saving report", e);
+                    alert("Warning: Report could not be saved.");
+                }
+            }
+
+            const newPost = {
+                id,
+                type,
+                url: finalUrl,
+                title,
+                desc,
+                date: new Date().toLocaleDateString('en-CA'),
+                isLocal,
+                hasReport,
+                reportName
+            };
+
+            if (index === -1) {
+                posts.unshift(newPost);
+            } else {
+                posts[index] = newPost;
+            }
+
+            localStorage.setItem('dashboardPosts', JSON.stringify(posts));
+            await renderPosts();
+            closeModal();
+        }
+
+        async function downloadPostReport(id, fileName) {
+            try {
+                const fileBlob = await getFileFromDB(`${id}_report`);
+                if (!fileBlob) {
+                    alert('Report file not found associated with this post.');
+                    return;
+                }
+
+                const url = URL.createObjectURL(fileBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (e) {
+                console.error("Download error", e);
+                alert("Error downloading report.");
+            }
+        }
+
+        function editPost(index) {
+            const post = posts[index];
+            document.getElementById('postModal').style.display = 'flex';
+
+            document.getElementById('modalTitle').innerText = 'Edit Post';
+            document.getElementById('editIndex').value = index;
+            document.getElementById('mediaType').value = post.type;
+            document.getElementById('mediaFile').value = '';
+            document.getElementById('postReportFile').value = ''; // Always clear file inputs on edit
+            document.getElementById('existingUrl').value = post.url;
+            document.getElementById('postTitle').value = post.title;
+            document.getElementById('postDesc').value = post.desc;
+        }
+
+        async function deletePost(index) {
+            if (confirm("Are you sure you want to delete this post?")) {
+                const post = posts[index];
+
+                // Delete media
+                if (post.isLocal && post.id) {
+                    try {
+                        await deleteFileFromDB(post.id);
+                    } catch (e) {
+                        console.error("Failed to cleanup DB media", e);
+                    }
+                }
+
+                // Delete report if exists
+                if (post.hasReport) {
+                    try {
+                        await deleteFileFromDB(`${post.id}_report`);
+                    } catch (e) {
+                        console.error("Failed to cleanup DB report", e);
+                    }
+                }
+
+                posts.splice(index, 1);
+                localStorage.setItem('dashboardPosts', JSON.stringify(posts));
+                await renderPosts();
+            }
+        }
+
+        function logout() {
+            // Call server logout endpoint
+            fetch('/api/logout', {
+                method: 'POST',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Clear local storage
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userId');
+                // Redirect to login
+                window.location.href = 'login.html';
+            })
+            .catch(error => {
+                console.error('Logout error:', error);
+                // Even if error, clear local storage and redirect
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userId');
+                window.location.href = 'login.html';
+            });
+        }
+
+        // Close modal on outside click
+        window.onclick = function (event) {
+            const modal = document.getElementById('postModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // ===== REPORT FUNCTIONS =====
+
+        function openReportModal() {
+            document.getElementById('reportModal').style.display = 'flex';
+            document.getElementById('reportEventDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        function closeReportModal() {
+            document.getElementById('reportModal').style.display = 'none';
+            // Clear form
+            document.getElementById('reportEventDate').value = '';
+            document.getElementById('reportEventName').value = '';
+            document.getElementById('reportTitle').value = '';
+            document.getElementById('reportContent').value = '';
+        }
+
+        function submitReport() {
+            const eventDate = document.getElementById('reportEventDate').value;
+            const eventName = document.getElementById('reportEventName').value;
+            const reportTitle = document.getElementById('reportTitle').value;
+            const reportContent = document.getElementById('reportContent').value;
+
+            if (!eventDate || !eventName || !reportTitle || !reportContent) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            fetch('/api/reports', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    eventDate, eventName, reportTitle, reportContent
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Report submitted successfully! ✅');
+                    closeReportModal();
+                    loadAllReports();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(err => {
+                alert('Error submitting report: ' + err);
+            });
+        }
+
+        function loadAllReports() {
+            fetch('/api/reports', {
+                credentials: 'include'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        displayReports(data.reports);
+                    }
+                })
+                .catch(err => console.error('Error loading reports:', err));
+        }
+
+        function filterReportsByDate() {
+            const dateFilter = document.getElementById('reportDateFilter').value;
+            if (!dateFilter) {
+                alert('Please select a date');
+                return;
+            }
+
+            fetch(`/api/reports/date/${dateFilter}`, {
+                credentials: 'include'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        displayReports(data.reports, dateFilter);
+                    }
+                })
+                .catch(err => console.error('Error filtering reports:', err));
+        }
+
+        function displayReports(reports, filterDate = null) {
+            const reportsGrid = document.getElementById('reportsGrid');
+            
+            if (!reports || reports.length === 0) {
+                reportsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <p><i class="fas fa-clipboard-list" style="font-size: 2rem; opacity: 0.3; display: block; margin-bottom: 0.5rem;"></i>
+                        ${filterDate ? 'No reports found for this date' : 'No reports yet'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            reports.forEach(report => {
+                const submittedDate = new Date(report.submittedDate).toLocaleString();
+                const eventDate = report.eventDate;
+                
+                let adminActions = '';
+                if (userRole === 'admin') {
+                    adminActions = `
+                        <button class="btn-delete-report" onclick="deleteReport('${report.id}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    `;
+                }
+
+                html += `
+                    <div class="report-card">
+                        <div class="report-header">
+                            <h3 class="report-title">${report.reportTitle}</h3>
+                        </div>
+                        <div class="report-meta">
+                            <div class="report-meta-item">
+                                <i class="fas fa-calendar"></i> 
+                                <strong>Event Date:</strong> ${eventDate}
+                            </div>
+                            <div class="report-meta-item">
+                                <i class="fas fa-tag"></i> 
+                                <strong>Event:</strong> ${report.eventName}
+                            </div>
+                            <div class="report-meta-item">
+                                <i class="fas fa-user"></i> 
+                                <strong>By:</strong> ${report.submittedBy}
+                            </div>
+                            <div class="report-meta-item">
+                                <i class="fas fa-clock"></i> 
+                                <strong>Submitted:</strong> ${submittedDate}
+                            </div>
+                        </div>
+                        <div class="report-content">${report.reportContent}</div>
+                        <div class="report-actions">
+                            <button class="btn-download" onclick="downloadReport('${report.id}', '${report.reportTitle}')">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                            ${adminActions}
+                        </div>
+                    </div>
+                `;
+            });
+
+            reportsGrid.innerHTML = html;
+        }
+
+        function downloadReport(reportId, reportTitle) {
+            window.location.href = `/api/reports/download/${reportId}`;
+        }
+
+        function deleteReport(reportId) {
+            if (confirm('Are you sure you want to delete this report?')) {
+                fetch(`/api/reports/${reportId}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Report deleted successfully ✅');
+                        loadAllReports();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(err => alert('Error deleting report: ' + err));
+            }
+        }
+
+        // Init
+        initDB().then(() => {
+            renderPosts();
+            loadAllReports();
+        });
+    </script>
+</body>
+
+<footer>
+    <button class="footer-logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+</footer>
+
+</html>

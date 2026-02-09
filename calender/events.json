@@ -1,0 +1,37 @@
+{
+  "events": [
+    {
+      "id": "1770622881453",
+      "eventDate": "2026-02-09",
+      "title": "iat1",
+      "description": "study well",
+      "type": "exam",
+      "createdBy": "bharathi",
+      "createdByName": "bharathi",
+      "createdDate": "2026-02-09T07:41:21.453Z",
+      "updated": false
+    },
+    {
+      "id": "1770622947657",
+      "eventDate": "2026-02-10",
+      "title": "enjoy",
+      "description": "",
+      "type": "holiday",
+      "createdBy": "bharathi",
+      "createdByName": "bharathi",
+      "createdDate": "2026-02-09T07:42:27.657Z",
+      "updated": false
+    },
+    {
+      "id": "1770628919679",
+      "eventDate": "2026-02-11",
+      "title": "hod",
+      "description": "",
+      "type": "meeting",
+      "createdBy": "admin",
+      "createdByName": "Administrator",
+      "createdDate": "2026-02-09T09:21:59.679Z",
+      "updated": false
+    }
+  ]
+}

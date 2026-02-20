@@ -1,320 +1,454 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Meenakshi Sundararajan Engineering College</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-blue: #0f172a;
-            --accent-blue: #3b82f6;
-            --bg-light: #f1f5f9;
-            --white: #ffffff;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            /* Background Image with Overlay */
-            background: linear-gradient(rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.6)), url('image/college_building.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 25%, #1e40af 50%, #dc2626 75%, #b91c1c 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
-        }
-
-        .top-banner {
-            width: 100%;
-            height: auto;
-            min-height: 120px;
-            padding: 1rem 0;
-            background-color: rgba(3, 35, 109, 0.95);
-            backdrop-filter: blur(5px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            z-index: 20;
-            position: relative;
-        }
-
-        .banner-content {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            width: auto;
-            margin: 0 auto;
-            justify-content: center;
-        }
-
-        .college-logo {
-            width: 110px;
-            height: 110px;
-            object-fit: contain;
-            background: white;
-            border-radius: 8px;
-            /* Slightly rounded corners */
-            padding: 5px;
-            flex-shrink: 0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .tnea-logo {
-            width: 110px;
-            height: 110px;
-            object-fit: contain;
-            background: white;
-            border-radius: 8px;
-            padding: 5px;
-            flex-shrink: 0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .banner-text {
             display: flex;
             flex-direction: column;
-            text-align: center;
-            justify-content: center;
-            margin-left: 15px;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        .top-banner h1 {
-            font-size: 2.2rem;
-            /* Larger font for main title */
-            font-weight: 800;
-            /* Bolder weight */
-            margin: 0 0 0.5rem 0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            line-height: 1.1;
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        .top-banner p {
-            margin: 3px 0;
-            font-size: 1rem;
-            /* Slightly larger subtext */
-            font-weight: 400;
-            opacity: 1;
-            line-height: 1.4;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .banner-content {
-                flex-direction: column;
-                text-align: center;
-                gap: 10px;
-            }
-
-            .banner-text {
-                text-align: center;
-                align-items: center;
-            }
-
-            .college-logo,
-            .tnea-logo {
-                margin-bottom: 0.5rem;
-            }
-
-            .logos-container {
-                display: flex;
-                gap: 15px;
-                justify-content: center;
-                align-items: center;
-            }
-        }
-
-        .login-container {
-            background: var(--white);
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        /* Animated background elements */
+        .bg-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 420px;
-            text-align: center;
-            margin-top: 5vh;
-            /* Move down slightly */
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.05;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: white;
+            border-radius: 50%;
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: white;
+            border-radius: 50%;
+            bottom: -50px;
+            right: -50px;
+            animation-delay: 3s;
+        }
+
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            background: white;
+            bottom: 20%;
+            left: 10%;
+            border-radius: 50%;
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(30px) rotate(180deg); }
+        }
+
+        .container-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
             position: relative;
             z-index: 10;
         }
 
-        .banner-img {
+        /* Header Banner */
+        .header-banner {
             width: 100%;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            display: block;
+            max-width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            padding: 30px 20px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideDown 0.8s ease-out;
         }
 
-        .login-header h1 {
-            color: var(--primary-blue);
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .banner-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .logo-section {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .logo-item {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 16px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: scaleIn 0.6s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .logo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .text-section {
+            text-align: center;
+            color: white;
+        }
+
+        .text-section h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+            animation: slideDownText 0.8s ease-out 0.4s forwards;
+        }
+
+        .text-section p {
             font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            margin-top: 0;
+            font-weight: 700;
+            opacity: 1;
+            letter-spacing: 0.2px;
+            line-height: 1.5;
+            animation: slideDownText 0.8s ease-out 0.2s forwards;
+        }
+
+        @keyframes slideDownText {
+            from {
+                opacity: 1;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Login Form Container */
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 48px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+            animation: scaleInForm 0.8s ease-out 0.2s backwards;
+        }
+
+        @keyframes scaleInForm {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
         }
 
         .login-header p {
-            color: #64748b;
-            margin-top: 0;
-            margin-bottom: 2rem;
             font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 400;
         }
 
-        .role-selector {
+        /* Role Selection */
+        .role-selection {
             display: flex;
-            background: #f1f5f9;
-            padding: 6px;
+            gap: 12px;
+            margin-bottom: 32px;
+            background: #f8fafc;
+            padding: 8px;
             border-radius: 12px;
-            margin-bottom: 2rem;
-            gap: 8px;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .role-btn {
             flex: 1;
-            padding: 12px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            border-radius: 8px;
-            font-weight: 600;
+            padding: 12px 16px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            background: white;
             color: #64748b;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
         }
 
-        /* Interactive Hover Effect */
-        .role-btn:hover {
-            color: #334155;
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        /* Active States */
-        .role-btn.active {
-            color: white;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transform: scale(1.02);
-        }
-
-        /* Specific Colors for Roles - Gradient Shades */
-        .role-btn.active#btn-student {
-            /* Professional Blue Gradient (Dashboard Theme) */
-            background: linear-gradient(135deg, #0f172a, #3b82f6);
-            color: white;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.4);
-        }
-
-        .role-btn.active#btn-admin {
-            /* Shades of Red Gradient */
-            background: linear-gradient(135deg, #dc2626, #991b1b);
-            color: white;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
-        }
-
-        .form-group {
-            margin-bottom: 1.25rem;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.6rem;
-            color: #334155;
-            font-size: 0.95rem;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px 14px;
-            border: 2px solid #cbd5e1;
-            border-radius: 10px;
-            font-size: 1rem;
-            box-sizing: border-box;
-            outline: none;
-            transition: all 0.2s;
-            background: #f8fafc;
-        }
-
-        .form-group input:focus {
-            border-color: #0f172a;
-            background: white;
-            box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.1);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 14px;
-            /* Gradient: Deep Blue to Dark Red */
-            background: linear-gradient(135deg, #032b8a 0%, #a40303 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 1.5rem;
-            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.4);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-btn::after {
+        .role-btn::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
+            left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #0445ae 0%, #b92b2b 100%);
-            opacity: 0;
-            transition: opacity 0.3s;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
         }
 
-        .login-btn span {
+        .role-btn:hover {
+            background: #f1f5f9;
+        }
+
+        .role-btn.active {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(30, 58, 138, 0.3);
+            border-color: transparent;
+        }
+
+        .role-btn.active#btn-admin {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-of-type {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.3px;
+        }
+
+        .input-wrapper {
             position: relative;
-            z-index: 1;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            background: white;
+            color: #1e293b;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            background: #f8fafc;
+        }
+
+        input::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px 8px;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-password:hover {
+            color: #1e293b;
+        }
+
+        /* Login Button */
+        .login-btn {
+            width: 100%;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #1ea0eb 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
         }
 
         .login-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.4);
         }
 
-        .login-btn:hover::after {
-            opacity: 1;
+        .login-btn:hover::before {
+            left: 100%;
         }
 
         .login-btn:active {
             transform: translateY(0);
         }
 
-        .hint {
-            margin-top: 2rem;
-            font-size: 0.85rem;
-            color: #64748b;
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px dashed #cbd5e1;
-            text-align: left;
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2);
         }
 
-        /* Modern Modal CSS */
+        /* Demo Credentials Info */
+        .credentials-info {
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(37, 99, 235, 0.05) 100%);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .credentials-info strong {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .credentials-info em {
+            display: block;
+            margin-top: 8px;
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -337,18 +471,17 @@
         }
 
         .modal-content {
-            background: var(--white);
-            border-radius: 24px;
+            background: white;
+            border-radius: 20px;
             width: 90%;
-            max-width: 440px;
-            position: relative;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-width: 420px;
+            padding: 40px 32px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             transform: scale(0.9) translateY(20px);
             opacity: 0;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            overflow: visible;
-            padding: 0;
-            border: 1px solid rgba(255, 255, 255, 1);
+            position: relative;
         }
 
         .modal.show .modal-content {
@@ -356,251 +489,416 @@
             opacity: 1;
         }
 
-        .modal-header-decoration {
-            height: 8px;
-            /* Theme Gradient */
-            background: linear-gradient(90deg, #0f172a, #dc2626);
-            width: 100%;
-            border-radius: 24px 24px 0 0;
-        }
-
-        /* Icon Container */
-        .modal-icon-wrapper {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background: white;
-            position: absolute;
-            top: -45px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-            border: 4px solid rgba(255, 255, 255, 0.8);
-        }
-
         .modal-icon-circle {
-            width: 70px;
-            height: 70px;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.2rem;
-            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s backwards;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            background: #f1f5f9;
+            color: #2563eb;
         }
 
-        /* Status Colors - Theme Adapted */
-        .status-error .modal-icon-circle {
-            background: #fef2f2;
+        .modal-content.status-success .modal-icon-circle {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .modal-content.status-error .modal-icon-circle {
+            background: #fee2e2;
             color: #dc2626;
-            /* Theme Red */
-        }
-
-        .status-success .modal-icon-circle {
-            background: #f0f9ff;
-            color: #0f172a;
-            /* Theme Blue */
-        }
-
-        .status-info .modal-icon-circle {
-            background: #f8fafc;
-            color: #0f172a;
-        }
-
-        .modal-body {
-            padding: 3.5rem 2.5rem 2.5rem 2.5rem;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
         .modal-title {
+            font-size: 1.3rem;
+            font-weight: 700;
             color: #0f172a;
-            margin: 0.5rem 0 0;
-            font-size: 1.75rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-
-        .modal-message-container {
-            background: #f1f5f9;
-            border-radius: 12px;
-            padding: 1.25rem;
-            width: 100%;
-            margin: 1.5rem 0;
-            border-left: 4px solid #0f172a;
+            margin-bottom: 12px;
         }
 
         .modal-message {
-            color: #334155;
-            margin: 0;
+            color: #64748b;
+            font-size: 0.95rem;
             line-height: 1.6;
-            font-size: 1.05rem;
-            font-weight: 500;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            width: 100%;
+            margin-bottom: 24px;
         }
 
         .modal-btn {
-            /* Theme Gradient */
-            background: linear-gradient(135deg, #0f172a 0%, #dc2626 100%);
+            width: 100%;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
             color: white;
             border: none;
-            padding: 14px 32px;
-            border-radius: 12px;
-            cursor: pointer;
+            border-radius: 10px;
             font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
         }
 
         .modal-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-            filter: brightness(1.1);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
         }
 
-        .close-icon-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: color 0.2s;
-            z-index: 5;
+        .modal.show.shake {
+            animation: shake 0.4s ease;
         }
 
-        .close-icon-btn:hover {
-            color: #475569;
-        }
-
-        @keyframes popIn {
-            0% {
-                transform: scale(0) rotate(-45deg);
-                opacity: 0;
-            }
-
-            100% {
-                transform: scale(1) rotate(0);
-                opacity: 1;
-            }
-        }
-
-        /* Shake Animation for Error */
         @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
 
-            0%,
-            100% {
-                transform: translateX(0);
+        /* Chatbot Widget */
+        .chatbot-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16);
+            display: none;
+            flex-direction: column;
+            z-index: 999;
+            font-family: 'Inter', sans-serif;
+            border: 1px solid #e2e8f0;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .chatbot-widget.active {
+            display: flex;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f8fafc;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 8px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .chat-message.bot .message-content {
+            background: white;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .chat-message.user .message-content {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .chatbot-input-area {
+            padding: 12px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 8px;
+            background: white;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .chatbot-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .chatbot-toggle-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 998;
+        }
+
+        .chatbot-toggle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+        }
+
+        .chatbot-toggle-btn.active {
+            display: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-banner {
+                padding: 20px 15px;
+                margin-bottom: 30px;
             }
 
-            10%,
-            30%,
-            50%,
-            70%,
-            90% {
-                transform: translateX(-5px);
+            .banner-content {
+                gap: 15px;
             }
 
-            20%,
-            40%,
-            60%,
-            80% {
-                transform: translateX(5px);
+            .logo-item {
+                width: 60px;
+                height: 60px;
+            }
+
+            .text-section h1 {
+                font-size: 1.6rem;
+                animation: fadeInDown 0.8s ease-out 0.4s both;
+            }
+
+            .text-section p {
+                font-size: 1.1rem;
+                animation: fadeInDown 0.8s ease-out 0.2s both;
+            }
+
+            .login-card {
+                padding: 40px 24px;
+                max-width: 100%;
+                margin: 0 20px;
+            }
+
+            .login-header h2 {
+                font-size: 1.5rem;
             }
         }
 
-        .modal.shake .modal-content {
-            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+        @media (max-width: 480px) {
+            .container-wrapper {
+                padding: 16px;
+            }
+
+            .header-banner {
+                margin-bottom: 20px;
+            }
+
+            .banner-content {
+                gap: 10px;
+            }
+
+            .logo-item {
+                width: 50px;
+                height: 50px;
+            }
+
+            .text-section h1 {
+                font-size: 1.3rem;
+                animation: fadeInDown 0.8s ease-out 0.4s both;
+            }
+
+            .text-section p {
+                font-size: 1rem;
+                animation: fadeInDown 0.8s ease-out 0.2s both;
+            }
+
+            .login-card {
+                padding: 28px 20px;
+            }
+
+            .login-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .login-header p {
+                font-size: 0.8rem;
+            }
+
+            .credentials-info {
+                font-size: 0.75rem;
+            }
+
+            .chatbot-widget {
+                width: calc(100% - 30px);
+                height: 400px;
+                left: 15px;
+                right: 15px;
+                bottom: 80px;
+            }
+
+            .chatbot-toggle-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>
-
 <body>
-    <div class="top-banner">
-        <div class="banner-content">
-            <img src="image/college_tnea_logo.png" alt="TNEA Logo" class="tnea-logo">
-            <img src="image/college_logo.jpeg" alt="MSEC Logo" class="college-logo">
-            <div class="banner-text">
-                <h1>Meenakshi Sundararajan Engineering College</h1>
-                <p>(An Autonomous Institution) | Managed by IIET Society</p>
-                <p>Approved by AICTE, New Delhi | Affiliated to Anna University, Chennai</p>
-                <p>A Recognized Research Center by Anna University</p>
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="container-wrapper">
+        <!-- Header Banner -->
+        <div class="header-banner">
+            <div class="banner-content">
+                <div class="logo-section">
+                    <div class="logo-item">
+                        <img src="image/college_logo.jpeg" alt="College Logo" onerror="this.style.display='none'">
+                    </div>
+                    <div class="logo-item">
+                        <img src="image/college_tnea_logo.png" alt="TNEA Logo" onerror="this.style.display='none'">
+                    </div>
+                </div>
+                <div class="text-section">
+                    <p>Meenakshi Sundararajan Engineering College</p>
+                    <h1>Login Portal</h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Form -->
+        <div class="login-card">
+            <div class="login-header">
+                <h2>Welcome Back</h2>
+                <p>Sign in to your account to continue</p>
+            </div>
+
+            <!-- Role Selection -->
+            <div class="role-selection">
+                <button class="role-btn active" onclick="setRole('student')" id="btn-student">
+                    <i class="fas fa-user-graduate" style="margin-right: 6px;"></i> Student
+                </button>
+                <button class="role-btn" onclick="setRole('admin')" id="btn-admin">
+                    <i class="fas fa-lock" style="margin-right: 6px;"></i> Admin
+                </button>
+            </div>
+
+            <!-- Username Field -->
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-wrapper">
+                    <input type="text" id="username" placeholder="Enter your username" autocomplete="username">
+                </div>
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password">
+                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('password')">
+                        <i class="fas fa-eye" id="password-icon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Login Button -->
+            <button class="login-btn" onclick="handleLogin()">
+                <span>Sign In</span>
+            </button>
+
+            <!-- Demo Credentials -->
+            <div class="credentials-info">
+                <strong>📝 Demo Credentials:</strong><br>
+                <strong>Admin:</strong> admin / admin123<br>
+                <strong>Student:</strong> student1 / student123<br>
+                <em>Make sure the server is running on localhost:3000!</em>
             </div>
         </div>
     </div>
 
-    <div class="login-container">
-        <!-- Banner Image Removed from container -->
-        <div class="login-header">
-            <h1>Welcome Back</h1>
-            <p>Please login to access the academic calendar</p>
-        </div>
-
-        <div class="role-selector">
-            <button class="role-btn active" onclick="setRole('student')" id="btn-student">Student</button>
-            <button class="role-btn" onclick="setRole('admin')" id="btn-admin">Admin</button>
-        </div>
-
-        <div class="form-group">
-            <label>Username</label>
-            <input type="text" id="username" placeholder="Enter username">
-        </div>
-
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="password" placeholder="Enter password">
-        </div>
-
-        <button class="login-btn" onclick="handleLogin()"><span>Login</span></button>
-
-        <div class="hint">
-            <strong>📝 Demo Credentials:</strong><br>
-            <strong>Admin:</strong> admin / admin123<br>
-            <strong>Student:</strong> student1 / student123<br>
-            <strong>Or:</strong> student2 / password123<br>
-            <em style="font-size: 0.85rem;">Make sure server is running!</em>
-        </div>
-    </div>
-
-    <!-- Custom Modal -->
+    <!-- Modal -->
     <div id="customModal" class="modal">
         <div class="modal-content" id="modalContent">
-            <div class="modal-header-decoration"></div>
-            <button class="close-icon-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            <div class="modal-icon-circle" id="modalIcon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <h3 class="modal-title" id="modalTitle">Notice</h3>
+            <p class="modal-message" id="modalMessage">Message goes here</p>
+            <button class="modal-btn" onclick="closeModal()">OK, Got it</button>
+        </div>
+    </div>
 
-            <div class="modal-icon-wrapper">
-                <div class="modal-icon-circle" id="modalIcon">
-                    <i class="fas fa-exclamation-triangle"></i>
+    <!-- Chatbot Toggle Button -->
+    <button class="chatbot-toggle-btn" id="chatbotToggle" onclick="toggleChatbot()">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <!-- Chatbot Widget -->
+    <div class="chatbot-widget" id="chatbotWidget">
+        <div class="chatbot-header">
+            <h3><i class="fas fa-robot"></i> College Assistant</h3>
+            <button style="background: rgba(255,255,255,0.2); border: none; color: white; cursor: pointer; border-radius: 6px; padding: 6px 10px;" onclick="toggleChatbot()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chatbot-messages" id="chatMessages">
+            <div class="chat-message bot">
+                <div class="message-content">
+                    👋 Hello! I'm your college assistant. Ask me anything about admissions, events, calendar, courses, campus facilities, or how to access the dashboard!
                 </div>
             </div>
-
-            <div class="modal-body">
-                <h3 class="modal-title" id="modalTitle">Notice</h3>
-                <div class="modal-message-container">
-                    <p class="modal-message" id="modalMessage">Message goes here</p>
-                </div>
-                <div class="modal-actions">
-                    <button class="modal-btn" onclick="closeModal()">OK, Got it</button>
-                </div>
-            </div>
+        </div>
+        <div class="chatbot-input-area">
+            <input type="text" class="chatbot-input" id="chatInput" placeholder="Type your message..." onkeypress="handleChatKeyPress(event)">
+            <button style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; border: none; border-radius: 8px; padding: 10px 14px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" onclick="sendChatMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
         </div>
     </div>
 
@@ -618,14 +916,11 @@
             const modalContent = document.getElementById('modalContent');
             const modalIcon = document.getElementById('modalIcon');
 
-            // Set Text
             document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalMessage').innerHTML = message.replace(/\n/g, '<br>'); // Support line breaks
+            document.getElementById('modalMessage').innerHTML = message.replace(/\n/g, '<br>');
 
-            // Reset Classes
             modalContent.className = 'modal-content';
 
-            // Set Type Styling
             let iconClass = 'fa-info-circle';
             if (type === 'error') {
                 modalContent.classList.add('status-error');
@@ -639,9 +934,7 @@
 
             modalIcon.innerHTML = `<i class="fas ${iconClass}"></i>`;
 
-            // Show with Animation
             modal.style.display = 'flex';
-            // Trigger reflow
             void modal.offsetWidth;
             modal.classList.add('show');
 
@@ -658,10 +951,24 @@
             modal.classList.remove('shake');
             setTimeout(() => {
                 modal.style.display = 'none';
-            }, 300); // Wait for transition
+            }, 300);
         }
 
-        // Close modal when clicking outside
+        function togglePasswordVisibility(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = document.getElementById(inputId + '-icon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
         window.onclick = function (event) {
             const modal = document.getElementById('customModal');
             if (event.target == modal) {
@@ -673,7 +980,6 @@
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
 
-            // Validation
             if (!username) {
                 showModal('Input Error', 'Please enter your username.', 'error');
                 return;
@@ -683,13 +989,11 @@
                 return;
             }
 
-            // Disable button during login
             const loginBtn = document.querySelector('.login-btn');
             const originalText = loginBtn.innerHTML;
             loginBtn.disabled = true;
-            loginBtn.innerHTML = '<span>Logging in...</span>';
+            loginBtn.innerHTML = '<span>Signing in...</span>';
 
-            // Send login request to server
             fetch('/api/login', {
                 method: 'POST',
                 credentials: 'include',
@@ -705,7 +1009,6 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Store user info in localStorage
                     localStorage.setItem('userRole', data.user.role);
                     localStorage.setItem('username', data.user.username);
                     localStorage.setItem('userName', data.user.name);
@@ -728,7 +1031,67 @@
                 loginBtn.innerHTML = originalText;
             });
         }
+
+        // Chatbot functions
+        function toggleChatbot() {
+            const widget = document.getElementById('chatbotWidget');
+            const toggle = document.getElementById('chatbotToggle');
+            widget.classList.toggle('active');
+            toggle.classList.toggle('active');
+
+            if (widget.classList.contains('active')) {
+                document.getElementById('chatInput').focus();
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (message === '') {
+                return;
+            }
+
+            appendChatMessage('user', message);
+            input.value = '';
+
+            fetch('/api/chat/message', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    setTimeout(() => {
+                        appendChatMessage('bot', data.botResponse);
+                    }, 500);
+                }
+            })
+            .catch(err => console.error('Error:', err));
+        }
+
+        function appendChatMessage(type, text) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageEl = document.createElement('div');
+            messageEl.className = `chat-message ${type}`;
+            messageEl.innerHTML = `<div class="message-content">${escapeHtml(text)}</div>`;
+            messagesDiv.appendChild(messageEl);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
     </script>
 </body>
-
 </html>

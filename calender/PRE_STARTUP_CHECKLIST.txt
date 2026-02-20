@@ -1,0 +1,191 @@
+✅ MONGODB MIGRATION CHECKLIST
+==============================
+
+Before you start the server, verify everything is set up correctly.
+
+📋 PRE-STARTUP CHECKLIST
+=======================
+
+☐ MongoDB is running
+  Local: mongod command is executing
+  Cloud (Atlas): You have internet connection
+
+☐ .env file exists in calendar folder
+  Location: c:\Users\welcome\Downloads\FINAL CALENDER\calender\.env
+  
+☐ MONGODB_URI is set in .env
+  Option 1 - Local MongoDB:
+    MONGODB_URI=mongodb://localhost:27017/calendar_db
+  
+  Option 2 - MongoDB Atlas:
+    MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/calendar_db
+
+☐ npm dependencies installed
+  Run: npm list
+  Should show: mongodb, connect-mongo, dotenv, express, bcryptjs, etc.
+
+☐ server.js is updated to MongoDB version
+  Check: server.js contains 'const MongoClient = require("mongodb")'
+
+🚀 STARTUP COMMANDS
+===================
+
+Step 1: Navigate to calendar folder
+$ cd "c:\Users\welcome\Downloads\FINAL CALENDER\calender"
+
+Step 2: Start MongoDB (pick one option)
+
+Option A - Local MongoDB:
+$ mongod
+  Output: Waiting for connections on port 27017
+
+Option B - MongoDB Atlas:
+  (Just ensure internet is working)
+
+Step 3: In another terminal, start the server
+$ npm start
+
+Expected Output:
+✅ Connected to MongoDB successfully
+✓ Default users created
+🔒 Calendar Server Running on http://localhost:3000
+📊 Database: MongoDB
+📊 Authentication System: ENABLED
+📝 Default Credentials:
+   Admin: admin / admin123
+   Student 1: student1 / student123
+   Student 2: student2 / password123
+
+Step 4: Test in browser
+Open: http://localhost:3000
+You should see the splash screen!
+
+✅ VERIFY INSTALLATION
+====================
+
+Test 1: Visit splash screen
+GET http://localhost:3000
+Expected: See calendar splash page
+
+Test 2: Try login
+POST http://localhost:3000/api/login
+Body: {"username":"admin","password":"admin123","role":"admin"}
+Expected: success=true with user data
+
+Test 3: Check MongoDB connection
+Look at terminal for: "✅ Connected to MongoDB successfully"
+
+🔧 INSTALL MONGODB (if not done)
+===============================
+
+Windows:
+1. Download: https://www.mongodb.com/try/download/community
+2. Run installer and follow prompts
+3. Install as service (checked by default)
+4. Run: mongod
+5. Should say "Waiting for connections on port 27017"
+
+Mac:
+1. Download: https://www.mongodb.com/try/download/community
+2. Open .tgz file
+3. Follow brew installation or manual steps
+4. Run: mongod
+
+Linux (Ubuntu):
+$ sudo apt-get install mongod
+$ sudo systemctl start mongod
+
+MongoDB Atlas (Cloud - Easiest):
+1. Go to: https://www.mongodb.com/cloud/atlas
+2. Sign up (free tier available)
+3. Create cluster M0 (free forever)
+4. Copy connection string
+5. Paste in .env MONGODB_URI
+
+🐛 DEBUGGING TIPS
+================
+
+If server won't start:
+
+❌ Error: "Cannot connect to MongoDB"
+$ Check: Is MongoDB running?
+$ Check: Is MONGODB_URI correct in .env?
+$ Fix: mongod --version (verify installed)
+
+❌ Error: "EADDRINUSE :::3000"
+$ Another app using port 3000
+$ Fix: Change PORT=3001 in .env
+$ Or kill: netstat -ano | findstr :3000
+
+❌ Error: "MONGODB_URI not found"
+$ Check: .env file exists
+$ Fix: Create .env with correct connection string
+
+❌ Error: "Authentication failed"
+✓ Check MongoDB Atlas credentials
+✓ Check IP whitelist (allow 0.0.0.0/0)
+✓ Check database user permissions
+
+📊 MONITOR CONNECTION
+====================
+
+While app is running:
+
+Check MongoDB version:
+$ mongod --version
+
+Check if MongoDB service is running:
+Windows: Services (search for "MongoDB")
+Mac: brew services list (look for mongodb)
+
+Connect to database directly:
+$ mongosh "mongodb://localhost:27017"
+$ use calendar_db
+$ show collections
+$ db.users.find()
+
+View sessions collection:
+$ db.sessions.find()
+
+🎯 QUICK EXAMPLES
+=================
+
+Create user in MongoDB:
+db.users.insertOne({
+  username: "newuser",
+  password: "hashedpassword",
+  email: "new@example.com",
+  name: "New User",
+  role: "student",
+  createdAt: new Date()
+})
+
+Find all admins:
+db.users.find({ role: "admin" })
+
+Count total users:
+db.users.countDocuments()
+
+Update a user:
+db.users.updateOne(
+  { username: "admin" },
+  { $set: { email: "newemail@example.com" } }
+)
+
+Delete a user:
+db.users.deleteOne({ username: "student1" })
+
+🎉 YOU'RE READY!
+================
+
+Once confirmed:
+1. Start MongoDB
+2. Run npm start
+3. Visit http://localhost:3000
+4. Login with admin/admin123
+5. Enjoy your MongoDB-powered calendar! 🚀
+
+For more help, read:
+- MONGODB_SETUP.txt (detailed setup guide)
+- MIGRATION_SUMMARY.txt (what changed)
+- README.md (general information)

@@ -1,0 +1,178 @@
+🗄️ MONGODB SETUP GUIDE
+======================
+
+Your calendar application has been converted to use MongoDB!
+
+✅ WHAT CHANGED
+===============
+✓ From JSON file database → MongoDB database
+✓ From synchronous operations → Async/await operations
+✓ Sessions now stored in MongoDB (not memory)
+✓ Better performance, scalability, and reliability
+✓ Environment configuration via .env file
+
+🚀 SETUP INSTRUCTIONS
+====================
+
+OPTION 1: LOCAL MONGODB (Windows/Mac/Linux)
+-------------------------------------------
+
+1. Download and Install MongoDB Community Edition
+   📥 Visit: https://www.mongodb.com/try/download/community
+   - Choose your operating system
+   - Follow installation wizard
+   - Start MongoDB service
+
+2. Open Command Prompt/Terminal and verify installation:
+   mongod --version
+
+3. Keep MongoDB running in background
+
+OPTION 2: MONGODB ATLAS (Cloud - Recommended for beginners)
+-----------------------------------------------------------
+
+1. Create Free Account:
+   👉 Visit: https://www.mongodb.com/cloud/atlas
+   - Sign up with Google, GitHub, or email
+   - Create a free tier cluster (M0 - always free)
+
+2. Create Connection String:
+   - Click "Connect" on your cluster
+   - Choose "Connect your application"
+   - Copy the connection string
+   - Replace <username> and <password> with your credentials
+   - Example: mongodb+srv://user:password@cluster.mongodb.net/calendar_db
+
+3. Update .env file:
+   - Open: .env in your calendar folder
+   - Replace MONGODB_URI value with your connection string
+
+📝 CONFIGURE .ENV FILE
+======================
+
+The .env file in your calendar folder has these settings:
+
+# For LOCAL MongoDB:
+MONGODB_URI=mongodb://localhost:27017/calendar_db
+
+# For MONGODB ATLAS (Cloud):
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/calendar_db
+
+# Session secret (change this to random string in production)
+SESSION_SECRET=your-super-secret-session-key-change-in-production
+
+# Server port
+PORT=3000
+
+# Node environment
+NODE_ENV=development
+
+⚡ START THE SERVER
+===================
+
+1. Make sure MongoDB is running:
+   - If local: mongod should be running
+   - If Atlas: Just have internet connection
+
+2. Open Command Prompt in calendar folder:
+   cd "path\to\FINAL CALENDER\calender"
+
+3. Run the server:
+   npm start
+
+4. You should see:
+   ✅ Connected to MongoDB successfully
+   ✓ Default users created
+   🔒 Calendar Server Running on http://localhost:3000
+
+5. Open browser and go to:
+   http://localhost:3000
+
+✅ DEFAULT LOGIN CREDENTIALS
+============================
+
+Admin Account:
+  Username: admin
+  Password: admin123
+  Role: Admin
+
+Student Accounts:
+  Username: student1
+  Password: student123
+  Role: Student
+
+  Username: student2
+  Password: password123
+  Role: Student
+
+🔄 KEY DIFFERENCES FROM JSON DATABASE
+=====================================
+
+OLD (JSON):                          NEW (MongoDB):
+- Synchronous operations            - Async/await operations
+- Files stored on disk (.json)       - Data in MongoDB cloud/local
+- Limited scaling                    - Scales for thousands of users
+- Manual session management          - Built-in session store
+- File-based reporting               - Query-based reporting
+
+🗄️ DATA COLLECTIONS IN MONGODB
+==============================
+
+MongoDB automatically creates these collections:
+
+1. users - Stores user accounts
+   - username, password, role, email, name, createdAt
+
+2. reports - Stores event reports
+   - eventDate, eventName, reportTitle, reportContent, submittedBy
+
+3. events - Stores calendar events
+   - eventDate, title, description, type, createdBy
+
+4. sessions - Stores user session data
+   - Managed automatically by connect-mongo
+
+🛠️ TROUBLESHOOTING
+==================
+
+❌ "Cannot connect to MongoDB":
+   ✓ Make sure MongoDB service is running
+   ✓ Check MONGODB_URI in .env file
+   ✓ Verify MongoDB credentials if using Atlas
+
+❌ "Error: listen EADDRINUSE :::3000":
+   ✓ Another app is using port 3000
+   ✓ Change PORT in .env file to 3001, 3002, etc.
+   ✓ Or stop the other application
+
+❌ "Unique index violation on username":
+   ✓ User already exists in database
+   ✓ Try a different username
+
+❌ "Connection timeout":
+   ✓ MongoDB Atlas: Check IP whitelist (allow all IPs: 0.0.0.0/0)
+   ✓ Check internet connection
+   ✓ Verify MONGODB_URI is correct
+
+📚 ADDITIONAL RESOURCES
+======================
+
+MongoDB Documentation:
+  https://docs.mongodb.com/
+
+Express & MongoDB Integration:
+  https://expressjs.com/
+
+Connect-Mongo (Session Store):
+  https://www.npmjs.com/package/connect-mongo
+
+🎉 YOU'RE ALL SET!
+==================
+
+Your calendar is now powered by MongoDB! 🚀
+
+Questions? Check the console logs or compare with:
+- IMPLEMENTATION_SUMMARY.txt (what was implemented)
+- README.md (general information)
+
+Happy coding! ✨

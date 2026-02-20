@@ -39,35 +39,27 @@
 
         /* Navbar */
         nav {
-            background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 25%, #dc2626 75%, #991b1c 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 25%, #2563eb 50%, #1d4ed8 100%);
+            backdrop-filter: blur(10px);
             color: var(--white);
             padding: 1.5rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 8px 32px rgba(37, 99, 235, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.1);
             position: sticky;
             top: 0;
             z-index: 100;
-            animation: navGlow 8s ease-in-out infinite;
-        }
-
-        @keyframes navGlow {
-            0%, 100% {
-                box-shadow: var(--shadow-md);
-            }
-            50% {
-                box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3), 0 4px 6px rgba(220, 38, 38, 0.2);
-            }
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .nav-brand {
-            font-size: 2.2rem;
+            font-size: 1.5rem;
             font-weight: 800;
-            letter-spacing: 1px;
+            letter-spacing: 0px;
             text-transform: uppercase;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(to right, #ffffff, #e2e8f0);
+            background: linear-gradient(to right, #ffffff, #e0f2fe);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -223,7 +215,7 @@
         main {
             flex: 1;
             max-width: 1280px;
-            margin: 3rem auto;
+            margin: 2.5rem auto;
             width: 95%;
             padding-bottom: 3rem;
             animation: fadeIn 0.6s ease-out;
@@ -241,31 +233,47 @@
             }
         }
 
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .dashboard-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-bottom: 3rem;
-            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 2.5rem;
+            border-bottom: 2px solid #e0f2fe;
             padding-bottom: 1.5rem;
+            gap: 2rem;
+            flex-wrap: wrap;
         }
 
         .dashboard-title h1 {
-            color: var(--primary-blue);
+            color: #0f172a;
             margin: 0;
-            font-size: 2.25rem;
+            font-size: 2rem;
             font-weight: 800;
             letter-spacing: -0.5px;
-            background: -webkit-linear-gradient(45deg, var(--primary-blue), var(--accent-blue));
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
         }
 
         .dashboard-subtitle {
-            color: var(--text-muted);
-            margin-top: 0.5rem;
-            font-size: 1.1rem;
+            color: #64748b;
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 400;
         }
 
         .admin-controls {
@@ -274,7 +282,7 @@
         }
 
         .add-post-btn {
-            background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #ef4444 100%);
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
             color: white;
             border: none;
             padding: 14px 28px;
@@ -285,9 +293,10 @@
             align-items: center;
             gap: 10px;
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
             position: relative;
             overflow: hidden;
+            font-size: 0.95rem;
         }
 
         .add-post-btn::before {
@@ -302,8 +311,8 @@
         }
 
         .add-post-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.45);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4);
             filter: brightness(1.1);
         }
 
@@ -316,44 +325,38 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 2.5rem;
+            margin-bottom: 2rem;
         }
 
         .post-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+            background: white;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
-            border: 1px solid #f1f5f9;
+            border: 1px solid #e0f2fe;
             display: flex;
             flex-direction: column;
             animation: slideUp 0.5s ease-out forwards;
             opacity: 0;
         }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        .post-card:nth-child(1) { animation-delay: 0.1s; }
+        .post-card:nth-child(2) { animation-delay: 0.15s; }
+        .post-card:nth-child(3) { animation-delay: 0.2s; }
+        .post-card:nth-child(n+4) { animation-delay: 0.25s; }
 
         .post-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-            border-color: #bfdbfe;
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15);
+            border-color: #94e2fc;
         }
 
         .post-media {
             width: 100%;
             height: 220px;
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
             position: relative;
             overflow: hidden;
         }
@@ -363,12 +366,12 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .post-card:hover .post-media img,
         .post-card:hover .post-media video {
-            transform: scale(1.05);
+            transform: scale(1.08);
         }
 
         .media-badge {
@@ -562,7 +565,7 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(10px);
             animation: fadeIn 0.3s ease-out;
         }
 
@@ -572,10 +575,10 @@
             border-radius: 20px;
             width: 90%;
             max-width: 520px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);
             animation: modalSlide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(224, 242, 254, 0.6);
         }
 
         @keyframes modalSlide {
@@ -590,18 +593,8 @@
             }
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
         .modal-header-bar {
-            background: linear-gradient(135deg, #1e3a8a 0%, #dc2626 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 25%, #2563eb 75%, #1d4ed8 100%);
             padding: 1.75rem 2rem;
             position: relative;
             overflow: hidden;
@@ -615,25 +608,25 @@
             right: 0;
             bottom: 0;
             background: url('data:image/svg+xml,%3Csvg width="40" height="40" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M0 0h40v40H0z" fill="none"/%3E%3Cpath d="M20 0L0 20l20 20 20-20z" fill="%23ffffff" opacity="0.05"/%3E%3C/svg%3E');
-            opacity: 0.3;
+            opacity: 0.2;
         }
 
         .modal-title {
             margin: 0;
             color: white;
-            font-size: 1.75rem;
+            font-size: 1.65rem;
             font-weight: 800;
             position: relative;
             z-index: 1;
             display: flex;
             align-items: center;
             gap: 12px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .modal-title i {
-            font-size: 1.5rem;
-            opacity: 0.9;
+            font-size: 1.4rem;
+            opacity: 0.95;
         }
 
         .modal-body {
@@ -667,20 +660,25 @@
         .form-group select {
             width: 100%;
             padding: 14px 16px;
-            border: 2px solid #e2e8f0;
+            border: 2px solid #e0f2fe;
             border-radius: 12px;
             font-family: inherit;
             box-sizing: border-box;
             transition: all 0.3s ease;
-            background: #f8fafc;
+            background: #f0f9ff;
             font-size: 1rem;
+        }
+
+        .form-group input[type="file"] {
+            padding: 10px;
+            cursor: pointer;
         }
 
         .form-group input:focus,
         .form-group textarea:focus,
         .form-group select:focus {
             outline: none;
-            border-color: var(--accent-blue);
+            border-color: #2563eb;
             background: white;
             box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
             transform: translateY(-1px);
@@ -725,27 +723,44 @@
         }
 
         .btn-save {
-            background: linear-gradient(135deg, var(--accent-blue), #1e40af);
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
             color: white;
             border: none;
             padding: 14px 32px;
             border-radius: 12px;
             cursor: pointer;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
             display: flex;
             align-items: center;
             gap: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-save::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
         }
 
         .btn-save:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.4);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.45);
             filter: brightness(1.1);
+        }
+
+        .btn-save:hover::before {
+            left: 100%;
         }
 
         .btn-save:active {
@@ -1203,106 +1218,126 @@
             }
         ];
 
-        let posts = JSON.parse(localStorage.getItem('dashboardPosts'));
-        if (!posts || posts.length === 0) {
+        let posts = JSON.parse(localStorage.getItem('dashboardPosts') || 'null');
+        if (!posts || !Array.isArray(posts) || posts.length === 0) {
             posts = initialPosts;
             localStorage.setItem('dashboardPosts', JSON.stringify(posts));
+            console.log('Posts initialized with default posts:', posts.length);
+        } else {
+            console.log('Posts loaded from localStorage:', posts.length);
         }
 
         // --- 3. Rendering ---
         async function renderPosts() {
-            const grid = document.getElementById('postsGrid');
-            grid.innerHTML = '';
-
-            if (posts.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state">
-                        <h3>No posts yet</h3>
-                        <p>Admins can add new event highlights using the button above.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            for (let i = 0; i < posts.length; i++) {
-                const post = posts[i];
-                const index = i;
-
-                const card = document.createElement('div');
-                card.className = 'post-card';
-
-                // Resolve URL
-                let displayUrl = post.url;
-                if (post.isLocal) {
-                    try {
-                        const fileBlob = await getFileFromDB(post.id);
-                        if (fileBlob) {
-                            displayUrl = URL.createObjectURL(fileBlob);
-                        } else {
-                            displayUrl = '';
-                        }
-                    } catch (e) {
-                        console.error("Error loading file", e);
-                    }
+            try {
+                const grid = document.getElementById('postsGrid');
+                if (!grid) {
+                    console.error('Posts grid element not found!');
+                    return;
                 }
+                
+                grid.innerHTML = '';
 
-                // Media Element
-                let mediaHtml = '';
-                if (!displayUrl) {
-                    mediaHtml = `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:#cbd5e1; color:#64748b;">Media deleted or missing</div>`;
-                } else if (post.type === 'video') {
-                    mediaHtml = `
-                        <video controls>
-                            <source src="${displayUrl}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                        <span class="media-badge"><i class="fas fa-video"></i> Video</span>
-                    `;
-                } else {
-                    mediaHtml = `
-                        <img src="${displayUrl}" alt="${post.title}" onerror="this.src='https://placehold.co/600x400?text=Image+Error'">
-                        <span class="media-badge"><i class="fas fa-image"></i> Image</span>
-                    `;
-                }
-
-                // Admin Controls Footer
-                let adminControlsHtml = '';
-                if (userRole === 'admin') {
-                    adminControlsHtml = `
-                        <div class="admin-actions-row">
-                            <button class="admin-action-btn btn-edit" onclick="editPost(${index})">
-                                <i class="fas fa-edit"></i> Update
-                            </button>
-                            <button class="admin-action-btn btn-delete" onclick="deletePost(${index})">
-                                <i class="fas fa-trash-alt"></i> Delete
-                            </button>
+                if (!posts || posts.length === 0) {
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <h3>No posts yet</h3>
+                            <p>Admins can add new event highlights using the button above.</p>
                         </div>
                     `;
+                    return;
                 }
 
-                // Report Button
-                let reportHtml = '';
-                if (post.hasReport) {
-                    reportHtml = `
-                        <button class="btn-download" onclick="downloadPostReport('${post.id}', '${post.reportName || 'report.pdf'}')">
-                            <i class="fas fa-file-pdf"></i> Download Report
-                        </button>
+                for (let i = 0; i < posts.length; i++) {
+                    const post = posts[i];
+                    const index = i;
+
+                    const card = document.createElement('div');
+                    card.className = 'post-card';
+
+                    // Resolve URL
+                    let displayUrl = post.url;
+                    if (post.isLocal && post.url === 'indexed_db_blob') {
+                        try {
+                            const fileBlob = await getFileFromDB(post.id);
+                            if (fileBlob) {
+                                displayUrl = URL.createObjectURL(fileBlob);
+                                console.log('Image URL created from IndexedDB for post:', post.id);
+                            } else {
+                                displayUrl = '';
+                                console.warn('No file found in IndexedDB for post:', post.id);
+                            }
+                        } catch (e) {
+                            console.error("Error loading file from DB for post " + post.id + ":", e);
+                            displayUrl = '';
+                        }
+                    }
+
+                    // Media Element
+                    let mediaHtml = '';
+                    if (!displayUrl) {
+                        mediaHtml = `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:#cbd5e1; color:#64748b;">Media deleted or missing</div>`;
+                    } else if (post.type === 'video') {
+                        mediaHtml = `
+                            <video controls style="width: 100%; height: 100%; object-fit: cover;">
+                                <source src="${displayUrl}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <span class="media-badge"><i class="fas fa-video"></i> Video</span>
+                        `;
+                    } else {
+                        mediaHtml = `
+                            <img src="${displayUrl}" alt="${post.title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://placehold.co/600x400?text=Image+Error'">
+                            <span class="media-badge"><i class="fas fa-image"></i> Image</span>
+                        `;
+                    }
+
+                    // Admin Controls Footer
+                    let adminControlsHtml = '';
+                    if (userRole === 'admin') {
+                        adminControlsHtml = `
+                            <div class="admin-actions-row">
+                                <button class="admin-action-btn btn-edit" onclick="editPost(${index})">
+                                    <i class="fas fa-edit"></i> Update
+                                </button>
+                                <button class="admin-action-btn btn-delete" onclick="deletePost(${index})">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            </div>
+                        `;
+                    }
+
+                    // Report Button
+                    let reportHtml = '';
+                    if (post.hasReport) {
+                        reportHtml = `
+                            <button class="btn-download" onclick="downloadPostReport('${post.id}', '${post.reportName || 'report.pdf'}')">
+                                <i class="fas fa-file-pdf"></i> Download Report
+                            </button>
+                        `;
+                    }
+
+                    card.innerHTML = `
+                        <div class="post-media">
+                            ${mediaHtml}
+                        </div>
+                        <div class="post-content">
+                            <h3 class="post-title">${post.title}</h3>
+                            <p class="post-desc">${post.desc}</p>
+                            ${reportHtml}
+                            <div class="post-date"><i class="far fa-clock"></i> Posted on ${post.date || new Date().toLocaleDateString()}</div>
+                            ${adminControlsHtml}
+                        </div>
                     `;
+                    grid.appendChild(card);
                 }
-
-                card.innerHTML = `
-                    <div class="post-media">
-                        ${mediaHtml}
-                    </div>
-                    <div class="post-content">
-                        <h3 class="post-title">${post.title}</h3>
-                        <p class="post-desc">${post.desc}</p>
-                        ${reportHtml}
-                        <div class="post-date"><i class="far fa-clock"></i> Posted on ${post.date || new Date().toLocaleDateString()}</div>
-                        ${adminControlsHtml}
-                    </div>
-                `;
-                grid.appendChild(card);
+                console.log('renderPosts() completed successfully. Total posts rendered:', posts.length);
+            } catch (error) {
+                console.error('Fatal error in renderPosts():', error);
+                const grid = document.getElementById('postsGrid');
+                if (grid) {
+                    grid.innerHTML = '<div class="empty-state"><h3>Error loading posts</h3><p>Check console for details.</p></div>';
+                }
             }
         }
 
@@ -1323,6 +1358,11 @@
             document.getElementById('existingUrl').value = '';
             document.getElementById('postTitle').value = '';
             document.getElementById('postDesc').value = '';
+            
+            // Focus on title field
+            setTimeout(() => {
+                document.getElementById('postTitle').focus();
+            }, 100);
         }
 
         function closeModal() {
@@ -1331,14 +1371,14 @@
 
         async function savePost() {
             const index = parseInt(document.getElementById('editIndex').value);
-            const title = document.getElementById('postTitle').value;
-            const desc = document.getElementById('postDesc').value;
+            const title = document.getElementById('postTitle').value.trim();
+            const desc = document.getElementById('postDesc').value.trim();
             const fileInput = document.getElementById('mediaFile');
             const reportInput = document.getElementById('postReportFile');
             const existingUrl = document.getElementById('existingUrl').value;
 
             if (!title) {
-                alert('Please provide a Title.');
+                alert('❌ Please provide a Title.');
                 return;
             }
 
@@ -1347,8 +1387,8 @@
             let type = 'image';
             let isLocal = false;
             let finalUrl = existingUrl;
-            let hasReport = (index !== -1) ? posts[index].hasReport : false;
-            let reportName = (index !== -1) ? posts[index].reportName : '';
+            let hasReport = (index !== -1) ? (posts[index].hasReport || false) : false;
+            let reportName = (index !== -1) ? (posts[index].reportName || '') : '';
 
             // Handle Media File
             if (fileInput.files && fileInput.files[0]) {
@@ -1359,17 +1399,19 @@
                 try {
                     await saveFileToDB(id, file); // Save Blob to IndexedDB
                     finalUrl = 'indexed_db_blob';
+                    console.log('File saved to IndexedDB:', id);
                 } catch (e) {
-                    alert("Error saving media to database: " + e.message);
+                    alert("❌ Error saving media to database: " + e.message);
+                    console.error("DB Save Error:", e);
                     return;
                 }
             } else if (index !== -1) {
-                // Keep existing values
+                // Keep existing values when editing
                 type = posts[index].type;
                 isLocal = posts[index].isLocal;
                 finalUrl = posts[index].url;
             } else {
-                alert('Please upload an image or video.');
+                alert('❌ Please upload an image or video for the post.');
                 return;
             }
 
@@ -1380,9 +1422,9 @@
                     await saveFileToDB(`${id}_report`, reportFile);
                     hasReport = true;
                     reportName = reportFile.name;
+                    console.log('Report saved to IndexedDB:', id);
                 } catch (e) {
                     console.error("Error saving report", e);
-                    alert("Warning: Report could not be saved.");
                 }
             }
 
@@ -1400,13 +1442,80 @@
 
             if (index === -1) {
                 posts.unshift(newPost);
+                console.log('New post added:', newPost);
             } else {
                 posts[index] = newPost;
+                console.log('Post updated:', newPost);
             }
 
+            // Save to localStorage
             localStorage.setItem('dashboardPosts', JSON.stringify(posts));
-            await renderPosts();
+            console.log('Posts saved to localStorage. Total posts:', posts.length);
+
+            // Close modal first
             closeModal();
+            
+            // Render posts
+            await renderPosts();
+            console.log('Posts rendered on screen');
+            
+            // Show success notification
+            showNotification('✅ Post saved successfully!', 'success');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 16px 24px;
+                background: ${type === 'success' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : '#2563eb'};
+                color: white;
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                font-weight: 600;
+                z-index: 10000;
+                animation: slideInRight 0.4s ease-out;
+                max-width: 400px;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.4s ease-in';
+                setTimeout(() => notification.remove(), 400);
+            }, 3000);
+        }
+        
+        // Add animation styles
+        if (!document.getElementById('notificationStyles')) {
+            const style = document.createElement('style');
+            style.id = 'notificationStyles';
+            style.textContent = `
+                @keyframes slideInRight {
+                    from {
+                        opacity: 0;
+                        transform: translateX(400px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                }
+                @keyframes slideOutRight {
+                    from {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                    to {
+                        opacity: 0;
+                        transform: translateX(400px);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
         }
 
         async function downloadPostReport(id, fileName) {
@@ -1676,10 +1785,483 @@
         }
 
         // Init
-        initDB().then(() => {
-            renderPosts();
-            loadAllReports();
-        });
+        (async function initDashboard() {
+            try {
+                await initDB();
+                console.log('IndexedDB initialized');
+                
+                await renderPosts();
+                console.log('Posts rendered');
+                
+                loadAllReports();
+                console.log('Reports loaded');
+            } catch (error) {
+                console.error('Error initializing dashboard:', error);
+            }
+        })();
+    </script>
+
+    <!-- CHATBOT WIDGET -->
+    <style>
+        /* Chatbot Widget Styles */
+        .chatbot-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16);
+            display: none;
+            flex-direction: column;
+            z-index: 999;
+            font-family: 'Poppins', sans-serif;
+            border: 1px solid #e2e8f0;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .chatbot-widget.active {
+            display: flex;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chatbot-header-icons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chatbot-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .chatbot-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f8fafc;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 8px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+
+        .chat-message.bot .message-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .chat-message.bot .message-content {
+            background: white;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .chat-message.user .message-content {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+        }
+
+        .chatbot-input-area {
+            padding: 12px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 8px;
+            background: white;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .chatbot-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .chatbot-send {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .chatbot-send:hover {
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .chatbot-send:active {
+            transform: scale(0.95);
+        }
+
+        .chatbot-toggle-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 998;
+        }
+
+        .chatbot-toggle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+        }
+
+        .chatbot-toggle-btn.active {
+            display: none;
+        }
+
+        .chatbot-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 10px 14px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #cbd5e1;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chatbot-widget {
+                width: calc(100% - 30px);
+                height: 400px;
+                left: 15px;
+                right: 15px;
+                bottom: 80px;
+            }
+
+            .chatbot-toggle-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+
+    <!-- Chatbot Toggle Button -->
+    <button class="chatbot-toggle-btn" id="chatbotToggle" onclick="toggleChatbot()">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <!-- Chatbot Widget -->
+    <div class="chatbot-widget" id="chatbotWidget">
+        <div class="chatbot-header">
+            <h3><i class="fas fa-robot"></i> College Assistant</h3>
+            <div class="chatbot-header-icons">
+                <button class="chatbot-btn" onclick="clearChatHistory()" title="Clear history">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                <button class="chatbot-btn" onclick="toggleChatbot()" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="chatbot-messages" id="chatMessages">
+            <div class="chat-message bot">
+                <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                <div class="message-content">
+                    👋 Hello! I'm your college assistant. Ask me anything about events, calendar, admissions, courses, campus facilities, or how to use the dashboard!
+                </div>
+            </div>
+        </div>
+        <div class="chatbot-input-area">
+            <input 
+                type="text" 
+                class="chatbot-input" 
+                id="chatInput" 
+                placeholder="Type your message..." 
+                onkeypress="handleChatKeyPress(event)"
+            >
+            <button class="chatbot-send" onclick="sendChatMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Chatbot JavaScript -->
+    <script>
+        // Chatbot functions
+        function toggleChatbot() {
+            const widget = document.getElementById('chatbotWidget');
+            const toggle = document.getElementById('chatbotToggle');
+            widget.classList.toggle('active');
+            toggle.classList.toggle('active');
+
+            if (widget.classList.contains('active')) {
+                document.getElementById('chatInput').focus();
+                loadChatHistory();
+            }
+        }
+
+        function loadChatHistory() {
+            fetch('/api/chat/history', {
+                credentials: 'include'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.messages.length > 0) {
+                    const messagesDiv = document.getElementById('chatMessages');
+                    messagesDiv.innerHTML = ''; // Clear initial message
+
+                    data.messages.forEach(msg => {
+                        appendChatMessage(msg.type, msg.text);
+                    });
+
+                    scrollToBottom();
+                }
+            })
+            .catch(err => console.error('Error loading chat history:', err));
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (message === '') {
+                return;
+            }
+
+            // Show user message immediately
+            appendChatMessage('user', message);
+            input.value = '';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Send to server
+            fetch('/api/chat/message', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            })
+            .then(res => res.json())
+            .then(data => {
+                removeTypingIndicator();
+                if (data.success) {
+                    appendChatMessage('bot', data.botResponse);
+                    scrollToBottom();
+                } else {
+                    appendChatMessage('bot', '❌ Sorry, I encountered an error. Please try again.');
+                }
+            })
+            .catch(err => {
+                removeTypingIndicator();
+                console.error('Error:', err);
+                appendChatMessage('bot', '❌ Connection error. Please try again.');
+            });
+        }
+
+        function appendChatMessage(type, text) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageEl = document.createElement('div');
+            messageEl.className = `chat-message ${type}`;
+
+            if (type === 'bot') {
+                messageEl.innerHTML = `
+                    <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                    <div class="message-content">${escapeHtml(text)}</div>
+                `;
+            } else {
+                messageEl.innerHTML = `
+                    <div class="message-content">${escapeHtml(text)}</div>
+                `;
+            }
+
+            messagesDiv.appendChild(messageEl);
+            scrollToBottom();
+        }
+
+        function showTypingIndicator() {
+            const messagesDiv = document.getElementById('chatMessages');
+            const typingEl = document.createElement('div');
+            typingEl.className = 'chat-message bot';
+            typingEl.id = 'typingIndicator';
+            typingEl.innerHTML = `
+                <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            `;
+            messagesDiv.appendChild(typingEl);
+            scrollToBottom();
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        function scrollToBottom() {
+            const messagesDiv = document.getElementById('chatMessages');
+            setTimeout(() => {
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }, 0);
+        }
+
+        function clearChatHistory() {
+            if (confirm('Are you sure you want to clear chat history?')) {
+                fetch('/api/chat/clear', {
+                    method: 'POST',
+                    credentials: 'include'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('chatMessages').innerHTML = `
+                            <div class="chat-message bot">
+                                <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                                <div class="message-content">
+                                    👋 Hello! I'm your college assistant. Ask me anything about events, calendar, admissions, courses, campus facilities, or how to use the dashboard!
+                                </div>
+                            </div>
+                        `;
+                        alert('Chat history cleared!');
+                    }
+                })
+                .catch(err => console.error('Error clearing chat:', err));
+            }
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
     </script>
 </body>
 

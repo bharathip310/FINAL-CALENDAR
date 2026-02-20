@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meenakshi Sundararajan Engineering College</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #000;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Background with animated gradient */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 20%, #2563eb 40%, #1d4ed8 60%, #1e40af 80%, #0f172a 100%);
+            background-size: 400% 400%;
+            z-index: 1;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .splash-container {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        /* Logo Animation */
+        .logo-wrapper {
+            position: relative;
+            margin-bottom: 60px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-container {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            animation: logoScale 2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0;
+        }
+
+        .college-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 30px rgba(37, 99, 235, 0.8)) drop-shadow(0 0 60px rgba(37, 99, 235, 0.4));
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes logoScale {
+            from {
+                opacity: 0;
+                transform: scale(0) rotate(-180deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        @keyframes logoGlow {
+            0%, 100% {
+                filter: drop-shadow(0 0 20px rgba(37, 99, 235, 0.6)) drop-shadow(0 0 40px rgba(59, 130, 246, 0.3));
+            }
+            50% {
+                filter: drop-shadow(0 0 40px rgba(37, 99, 235, 1)) drop-shadow(0 0 80px rgba(59, 130, 246, 0.6));
+            }
+        }
+
+        /* Text Animation */
+        .text-container {
+            margin: 40px 0;
+            position: relative;
+            height: 200px;
+        }
+
+        .college-name {
+            font-size: 56px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 50%, #bfdbfe 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            text-transform: uppercase;
+            text-shadow: 0 0 30px rgba(37, 99, 235, 0.3);
+        }
+
+        .name-line {
+            overflow: hidden;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .name-text {
+            display: block;
+            animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0;
+        }
+
+        .name-line:nth-child(1) .name-text {
+            animation-delay: 0.3s;
+        }
+
+        .name-line:nth-child(2) .name-text {
+            animation-delay: 0.5s;
+        }
+
+        .name-line:nth-child(3) .name-text {
+            animation-delay: 0.7s;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tagline {
+            font-size: 24px;
+            font-weight: 600;
+            background: linear-gradient(90deg, #3b82f6 0%, #0ea5e9 50%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-top: 24px;
+            animation: fadeInScale 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.9s forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.7);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Loading Bar */
+        .loading-container {
+            margin-top: 80px;
+            animation: fadeIn 1s ease-in 1.2s forwards;
+            opacity: 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 5px;
+            background: rgba(224, 242, 254, 0.15);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 25%, #0ea5e9 50%, #06b6d4 75%, #3b82f6 100%);
+            background-size: 200% 100%;
+            border-radius: 3px;
+            animation: progressBar 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), inset 0 0 10px rgba(59, 130, 246, 0.3);
+        }
+
+        @keyframes progressBar {
+            0% {
+                width: 0%;
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                width: 100%;
+                opacity: 1;
+            }
+        }
+
+        .loading-text {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Fade in animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Particles effect */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            5% {
+                opacity: 1;
+            }
+            95% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Scan line effect */
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.8), transparent);
+            z-index: 5;
+            animation: scanDown 2s ease-in 0.5s forwards;
+            opacity: 0;
+        }
+
+        @keyframes scanDown {
+            from {
+                opacity: 1;
+                top: 0;
+            }
+            to {
+                opacity: 0;
+                top: 100vh;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .college-name {
+                font-size: 40px;
+            }
+
+            .logo-container {
+                width: 120px;
+                height: 120px;
+            }
+
+            .tagline {
+                font-size: 18px;
+            }
+
+            .name-line {
+                height: 50px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .splash-container {
+                padding: 20px;
+            }
+
+            .college-name {
+                font-size: 28px;
+            }
+
+            .logo-container {
+                width: 100px;
+                height: 100px;
+            }
+
+            .tagline {
+                font-size: 14px;
+                letter-spacing: 2px;
+            }
+
+            .loading-container {
+                margin-top: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="particles" id="particles"></div>
+    <div class="scan-line"></div>
+
+    <div class="splash-container">
+        <div class="logo-wrapper">
+            <div class="logo-container">
+                <img src="/image/college_logo.jpeg" alt="College Logo" class="college-logo">
+            </div>
+        </div>
+
+        <div class="text-container">
+            <div class="college-name">
+                <div class="name-line">
+                    <span class="name-text">MEENAKSHI</span>
+                </div>
+                <div class="name-line">
+                    <span class="name-text">SUNDARARAJAN</span>
+                </div>
+                <div class="name-line">
+                    <span class="name-text">ENGINEERING</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tagline">COLLEGE</div>
+
+        <div class="loading-container">
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="loading-text">Loading...</div>
+        </div>
+    </div>
+
+    <script>
+        // Create particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 80;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const randomLeft = Math.random() * 100;
+                const randomDelay = Math.random() * 3;
+                const randomDuration = Math.random() * 8 + 12;
+                
+                particle.style.left = randomLeft + '%';
+                particle.style.bottom = '-10px';
+                particle.style.width = (Math.random() * 3 + 1) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = randomDelay + 's';
+                particle.style.animationDuration = randomDuration + 's';
+                particle.style.opacity = Math.random() * 0.5 + 0.2;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Initialize on load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', createParticles);
+        } else {
+            createParticles();
+        }
+
+        // Redirect after 4 seconds
+        setTimeout(() => {
+            window.location.href = '/login.html';
+        }, 4000);
+
+        // Skip on click
+        document.addEventListener('click', () => {
+            window.location.href = '/login.html';
+        });
+
+        // Skip on key press
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                window.location.href = '/login.html';
+            }
+        });
+    </script>
+
+    <!-- CHATBOT WIDGET -->
+    <style>
+        /* Chatbot Widget Styles */
+        .chatbot-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16);
+            display: none;
+            flex-direction: column;
+            z-index: 999;
+            font-family: 'Poppins', sans-serif;
+            border: 1px solid #e2e8f0;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .chatbot-widget.active {
+            display: flex;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chatbot-header-icons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chatbot-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .chatbot-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f8fafc;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 8px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+
+        .chat-message.bot .message-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .chat-message.bot .message-content {
+            background: white;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .chat-message.user .message-content {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+        }
+
+        .chatbot-input-area {
+            padding: 12px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 8px;
+            background: white;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .chatbot-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .chatbot-send {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .chatbot-send:hover {
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .chatbot-send:active {
+            transform: scale(0.95);
+        }
+
+        .chatbot-toggle-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 998;
+        }
+
+        .chatbot-toggle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+        }
+
+        .chatbot-toggle-btn.active {
+            display: none;
+        }
+
+        .chatbot-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 10px 14px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #cbd5e1;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chatbot-widget {
+                width: calc(100% - 30px);
+                height: 400px;
+                left: 15px;
+                right: 15px;
+                bottom: 80px;
+            }
+
+            .chatbot-toggle-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+
+    <!-- Chatbot Toggle Button -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <button class="chatbot-toggle-btn" id="chatbotToggle" onclick="toggleChatbot()">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <!-- Chatbot Widget -->
+    <div class="chatbot-widget" id="chatbotWidget">
+        <div class="chatbot-header">
+            <h3><i class="fas fa-robot"></i> College Assistant</h3>
+            <div class="chatbot-header-icons">
+                <button class="chatbot-btn" onclick="clearChatHistory()" title="Clear history">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                <button class="chatbot-btn" onclick="toggleChatbot()" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="chatbot-messages" id="chatMessages">
+            <div class="chat-message bot">
+                <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                <div class="message-content">
+                    👋 Hello! I'm your college assistant. Ask me anything about admissions, events, calendar, courses, campus facilities, or how to access the dashboard!
+                </div>
+            </div>
+        </div>
+        <div class="chatbot-input-area">
+            <input 
+                type="text" 
+                class="chatbot-input" 
+                id="chatInput" 
+                placeholder="Type your message..." 
+                onkeypress="handleChatKeyPress(event)"
+            >
+            <button class="chatbot-send" onclick="sendChatMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Chatbot JavaScript -->
+    <script>
+        // Chatbot functions
+        function toggleChatbot() {
+            const widget = document.getElementById('chatbotWidget');
+            const toggle = document.getElementById('chatbotToggle');
+            widget.classList.toggle('active');
+            toggle.classList.toggle('active');
+
+            if (widget.classList.contains('active')) {
+                document.getElementById('chatInput').focus();
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (message === '') {
+                return;
+            }
+
+            // Show user message immediately
+            appendChatMessage('user', message);
+            input.value = '';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Send to server
+            fetch('/api/chat/message', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            })
+            .then(res => res.json())
+            .then(data => {
+                removeTypingIndicator();
+                if (data.success) {
+                    appendChatMessage('bot', data.botResponse);
+                    scrollToBottom();
+                } else {
+                    appendChatMessage('bot', '❌ Sorry, I encountered an error. Please try again.');
+                }
+            })
+            .catch(err => {
+                removeTypingIndicator();
+                console.error('Error:', err);
+                appendChatMessage('bot', '❌ Connection error. Please try again.');
+            });
+        }
+
+        function appendChatMessage(type, text) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageEl = document.createElement('div');
+            messageEl.className = `chat-message ${type}`;
+
+            if (type === 'bot') {
+                messageEl.innerHTML = `
+                    <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                    <div class="message-content">${escapeHtml(text)}</div>
+                `;
+            } else {
+                messageEl.innerHTML = `
+                    <div class="message-content">${escapeHtml(text)}</div>
+                `;
+            }
+
+            messagesDiv.appendChild(messageEl);
+            scrollToBottom();
+        }
+
+        function showTypingIndicator() {
+            const messagesDiv = document.getElementById('chatMessages');
+            const typingEl = document.createElement('div');
+            typingEl.className = 'chat-message bot';
+            typingEl.id = 'typingIndicator';
+            typingEl.innerHTML = `
+                <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            `;
+            messagesDiv.appendChild(typingEl);
+            scrollToBottom();
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        function scrollToBottom() {
+            const messagesDiv = document.getElementById('chatMessages');
+            setTimeout(() => {
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }, 0);
+        }
+
+        function clearChatHistory() {
+            if (confirm('Are you sure you want to clear chat history?')) {
+                fetch('/api/chat/clear', {
+                    method: 'POST',
+                    credentials: 'include'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('chatMessages').innerHTML = `
+                            <div class="chat-message bot">
+                                <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                                <div class="message-content">
+                                    👋 Hello! I'm your college assistant. Ask me anything about admissions, events, calendar, courses, campus facilities, or how to access the dashboard!
+                                </div>
+                            </div>
+                        `;
+                        alert('Chat history cleared!');
+                    }
+                })
+                .catch(err => console.error('Error clearing chat:', err));
+            }
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+

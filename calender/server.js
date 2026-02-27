@@ -295,10 +295,16 @@ app.get('/api/user', (req, res) => {
 // Check authentication middleware
 function isAuthenticated(req, res, next) {
     if (!req.session.userId) {
-        return res.status(401).json({
-            success: false,
-            message: 'Not authenticated'
-        });
+        // If request expects JSON (AJAX/mobile), send JSON error
+        const wantsJSON = req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'));
+        if (wantsJSON) {
+            return res.status(401).json({
+                success: false,
+                message: 'Not authenticated'
+            });
+        }
+        // otherwise redirect to login page
+        return res.redirect('/login.html');
     }
     next();
 }

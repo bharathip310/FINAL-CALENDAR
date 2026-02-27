@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "public": ".",
   "builds": [
     {
       "src": "server.js",
@@ -8,6 +7,14 @@
     }
   ],
   "routes": [
+    {
+      "src": "/image/(.*)",
+      "dest": "/image/$1"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "server.js"
+    },
     {
       "src": "/(.*)",
       "dest": "server.js"

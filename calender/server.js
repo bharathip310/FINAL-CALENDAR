@@ -164,6 +164,26 @@ app.get('/splash.html', (req, res) => {
 app.get('/login.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'login.html'));
 });
+
+// Dashboard route
+app.get('/dashboard.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dashboard.html'));
+});
+
+// Admin panel route
+app.get('/admin-panel.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin-panel.html'));
+});
+
+// Calendar route
+app.get('/daily%20calender.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'daily calender.html'));
+});
+
+app.get('/calendar.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'daily calender.html'));
+});
+
 app.post('/api/login', loginLimiter, (req, res) => {
     const { username, password, role } = req.body;
 

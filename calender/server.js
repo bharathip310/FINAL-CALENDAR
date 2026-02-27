@@ -16,6 +16,19 @@ const COOKIE_SECURE = process.env.COOKIE_SECURE === 'true';
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// CORS middleware for mobile/cross-origin requests
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
+});
+
 app.use(express.static(__dirname));
 
 // Explicitly serve image folder for Vercel static files
@@ -49,10 +62,12 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
     cookie: {
-        secure: COOKIE_SECURE,
+        secure: COOKIE_SECURE || false,  // Allow http on Vercel for now
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 // 24 hours
-    }
+        maxAge: 1000 * 60 * 60 * 24,     // 24 hours
+        sameSite: 'lax'                  // Allow mobile requests from same app
+    },
+    name: 'sessionId'  // Explicit session name for mobile compat
 }));
 
 // Database file path

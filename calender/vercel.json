@@ -1,28 +1,16 @@
 {
   "version": 2,
+  "public": ".",
   "builds": [
     {
       "src": "server.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "static/**/*",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "server.js"
-    },
-    {
       "src": "/(.*)",
       "dest": "server.js"
     }
-  ],
-  "env": {
-    "PORT": "3000",
-    "SESSION_SECRET": "@session_secret",
-    "NODE_ENV": "production"
-  }
+  ]
 }

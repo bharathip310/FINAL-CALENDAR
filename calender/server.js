@@ -10,7 +10,7 @@ const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SESSION_SECRET = process.env.SESSION_SECRET || 'your-secret-key-change-in-production';
+const SESSION_SECRET = process.env.SESSION_SECRET || 'H8sj@2K#9xP!Lm$Qz7Vb&4YtR1@kWcX9';
 const COOKIE_SECURE = process.env.COOKIE_SECURE === 'true';
 
 // Middleware

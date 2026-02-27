@@ -18,6 +18,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
+// Explicitly serve image folder for Vercel static files
+app.use('/image', express.static(path.join(__dirname, 'image'), {
+    setHeaders: (res, path) => {
+        res.set('Cache-Control', 'public, max-age=3600');
+        res.set('Access-Control-Allow-Origin', '*');
+    }
+}));
+
 // Rate limiters
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,

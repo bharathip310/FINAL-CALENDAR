@@ -1359,8 +1359,13 @@ initDatabase();
 initReportsDatabase();
 initEventsDatabase();
 
-// Start the Express server and log the port
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// Export app for Vercel serverless
+module.exports = app;
+
+// Start the Express server locally (not in Vercel)
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}
 

@@ -3,21 +3,21 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta id="viewportMeta" name="viewport" content="width=1200">
     <title>Dashboard - Meenakshi Sundararajan Engineering College</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        html {
+            min-width: 1200px;
+        }
+
         :root {
             --primary-blue: #0f172a;
-            /* Slate 900 */
             --accent-blue: #2563eb;
-            /* Blue 600 */
             --primary-red: #dc2626;
-            /* Red 600 */
             --accent-red: #ef4444;
-            /* Red 500 */
             --bg-light: #f8fafc;
             --white: #ffffff;
             --text-dark: #1e293b;
@@ -25,6 +25,17 @@
             --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dashboard-toolbar a {
+            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%) !important;
+            color: white !important;
+            border: 1px solid rgba(20, 184, 166, 0.5);
+        }
+
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
         }
 
         body {
@@ -34,6 +45,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            min-width: 1200px;
             color: var(--text-dark);
         }
 
@@ -903,6 +915,13 @@
             color: #0f172a;
         }
 
+        @media print {
+            nav, .admin-controls, .add-post-btn, .modal-overlay, .chatbot-toggle-btn, .chatbot-widget,
+            [onclick], button:not(.print-hide), .nav-links a[href*="calendar"] { display: none !important; }
+            body { background: white; color: #111; }
+            .post-card, .empty-state { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+        }
+
         @media (max-width: 768px) {
             nav {
                 flex-direction: column;
@@ -940,6 +959,14 @@
                 <h1>Campus Highlights</h1>
                 <p class="dashboard-subtitle">Latest videos, photos, and event overviews from around campus.</p>
             </div>
+            <div class="dashboard-toolbar" style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                <input type="search" id="searchInput" placeholder="Search events and reports..." aria-label="Search events and reports" style="padding: 0.5rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; min-width: 200px; font-family: 'Poppins', sans-serif;">
+                <button type="button" onclick="runSearch()" aria-label="Run search" style="background: #64748b; color: white; padding: 0.5rem 1rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;"><i class="fas fa-search"></i> Search</button>
+                <a href="/api/events/export?format=ical" download="calendar.ics" style="background: #0d9488; color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600;"><i class="fas fa-download"></i> Export iCal</a>
+                <a href="/api/events/export?format=csv" download="events.csv" style="background: #6366f1; color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600;"><i class="fas fa-file-csv"></i> Export CSV</a>
+                <button type="button" onclick="window.print()" style="background: #64748b; color: white; padding: 0.5rem 1rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;"><i class="fas fa-print"></i> Print</button>
+                <button type="button" id="viewToggleBtn" onclick="toggleViewMode()" aria-label="Toggle desktop or mobile view" title="View mode" style="background: #0f172a; color: white; padding: 0.5rem 1rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;"><i class="fas fa-desktop" id="viewToggleIcon"></i> <span id="viewToggleLabel">Desktop</span></button>
+            </div>
             <div class="admin-controls" id="adminControls">
                 <button class="add-post-btn" onclick="openModal()">
                     <i class="fas fa-plus"></i> Add New Post
@@ -950,6 +977,17 @@
                 <button class="add-post-btn" onclick="openReportModal()" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
                     <i class="fas fa-file-pdf"></i> Submit Report
                 </button>
+            </div>
+        </div>
+
+        <!-- Announcements -->
+        <div id="announcementsSection" style="margin: 2rem 2rem 0; padding: 1.25rem; background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); border-radius: 12px; border: 1px solid #bfdbfe;">
+            <h2 style="margin-bottom: 1rem; font-size: 1.2rem; color: #1e40af;"><i class="fas fa-bullhorn"></i> Announcements</h2>
+            <div id="announcementsList">Loading...</div>
+            <div id="announcementForm" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #bfdbfe;">
+                <input type="text" id="annTitle" placeholder="Title" style="width: 100%; padding: 0.5rem; border-radius: 8px; margin-bottom: 0.5rem;">
+                <textarea id="annBody" placeholder="Body" rows="2" style="width: 100%; padding: 0.5rem; border-radius: 8px; margin-bottom: 0.5rem;"></textarea>
+                <button type="button" onclick="submitAnnouncement()" style="background: #2563eb; color: white; padding: 0.5rem 1rem; border: none; border-radius: 8px; cursor: pointer;">Post</button>
             </div>
         </div>
 
@@ -1120,8 +1158,106 @@
 
             if (userRole === 'admin') {
                 document.getElementById('adminControls').style.display = 'block';
+                const af = document.getElementById('announcementForm');
+                if (af) af.style.display = 'block';
+            }
+            loadAnnouncements();
+        }
+
+        function loadAnnouncements() {
+            fetch('/api/announcements', { credentials: 'include' })
+                .then(r => r.json())
+                .then(data => {
+                    const el = document.getElementById('announcementsList');
+                    if (!el) return;
+                    if (!data.success || !data.announcements || data.announcements.length === 0) {
+                        el.innerHTML = '<p style="color: #64748b;">No announcements.</p>';
+                        return;
+                    }
+                    el.innerHTML = data.announcements.map(a => `
+                        <div style="margin-bottom: 0.75rem; padding: 0.75rem; background: white; border-radius: 8px; border-left: 4px solid #2563eb;">
+                            <strong>${escapeHtml(a.title)}</strong>
+                            <p style="margin: 0.25rem 0 0; font-size: 0.9rem; color: #475569;">${escapeHtml(a.body)}</p>
+                            <small style="color: #94a3b8;">${a.createdAt ? new Date(a.createdAt).toLocaleString() : ''}</small>
+                            ${userRole === 'admin' ? `<button type="button" onclick="deleteAnnouncement('${a.id}')" style="margin-left: 8px; color: #dc2626; background: none; border: none; cursor: pointer; font-size: 0.85rem;">Delete</button>` : ''}
+                        </div>
+                    `).join('');
+                })
+                .catch(() => { document.getElementById('announcementsList').innerHTML = '<p style="color: #94a3b8;">Could not load announcements.</p>'; });
+        }
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        function submitAnnouncement() {
+            const title = document.getElementById('annTitle').value.trim();
+            const body = document.getElementById('annBody').value.trim();
+            if (!title || !body) return;
+            fetch('/api/announcements', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, body })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('annTitle').value = '';
+                    document.getElementById('annBody').value = '';
+                    loadAnnouncements();
+                }
+            });
+        }
+        function deleteAnnouncement(id) {
+            if (!confirm('Delete this announcement?')) return;
+            fetch('/api/announcements/' + id, { method: 'DELETE', credentials: 'include' })
+                .then(r => r.json())
+                .then(data => { if (data.success) loadAnnouncements(); });
+        }
+        function runSearch() {
+            const q = document.getElementById('searchInput').value.trim();
+            if (!q) return;
+            fetch('/api/search?q=' + encodeURIComponent(q), { credentials: 'include' })
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.success) return;
+                    const msg = [];
+                    if (data.events && data.events.length) msg.push('Events: ' + data.events.length);
+                    if (data.reports && data.reports.length) msg.push('Reports: ' + data.reports.length);
+                    alert('Search results: ' + (msg.length ? msg.join(', ') : 'No matches.'));
+                });
+        }
+
+        function toggleViewMode() {
+            const meta = document.getElementById('viewportMeta');
+            const label = document.getElementById('viewToggleLabel');
+            const icon = document.getElementById('viewToggleIcon');
+            const isMobile = meta.getAttribute('content').indexOf('device-width') !== -1;
+            if (isMobile) {
+                meta.setAttribute('content', 'width=1200');
+                if (label) label.textContent = 'Desktop';
+                if (icon) icon.className = 'fas fa-desktop';
+                localStorage.setItem('viewMode', 'desktop');
+            } else {
+                meta.setAttribute('content', 'width=device-width, initial-scale=1.0');
+                if (label) label.textContent = 'Mobile';
+                if (icon) icon.className = 'fas fa-mobile-alt';
+                localStorage.setItem('viewMode', 'mobile');
             }
         }
+        (function applySavedViewMode() {
+            const mode = localStorage.getItem('viewMode');
+            const meta = document.getElementById('viewportMeta');
+            const label = document.getElementById('viewToggleLabel');
+            const icon = document.getElementById('viewToggleIcon');
+            if (mode === 'mobile' && meta) {
+                meta.setAttribute('content', 'width=device-width, initial-scale=1.0');
+                if (label) label.textContent = 'Mobile';
+                if (icon) icon.className = 'fas fa-mobile-alt';
+            }
+        })();
 
         // Check authentication on page load
         checkAuthentication();
@@ -1786,17 +1922,18 @@
 
         // Init
         (async function initDashboard() {
+            const grid = document.getElementById('postsGrid');
+            if (grid) grid.innerHTML = '<div class="empty-state" role="status" aria-live="polite"><p><i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Loading posts...</p></div>';
             try {
                 await initDB();
                 console.log('IndexedDB initialized');
-                
                 await renderPosts();
                 console.log('Posts rendered');
-                
                 loadAllReports();
                 console.log('Reports loaded');
             } catch (error) {
                 console.error('Error initializing dashboard:', error);
+                if (grid) grid.innerHTML = '<div class="empty-state"><h3>Error loading content</h3><p>Please refresh the page or check your connection.</p></div>';
             }
         })();
     </script>

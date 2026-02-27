@@ -11,7 +11,7 @@
     {
       "id": 2,
       "username": "student1",
-      "password": "$2a$10$J5SkAb4Q2Ancx9LazvwuV.ZCh0JzfyvS9Zf4HVn6ft/F1xeAmCCZi",
+      "password": "$2a$10$b5hH/LWqkMrv.shcuGolI.QBN9fHXUaM7SUnlcXEBuTY.bWTgcfGO",
       "role": "student",
       "email": "student1@college.edu",
       "name": "John Doe"
@@ -19,7 +19,7 @@
     {
       "id": 3,
       "username": "student2",
-      "password": "$2a$10$/AN72QwY7NIxToQmX3QbEeiumZ4SC1SUibHQgVUwyxUOs3zA7NkZS",
+      "password": "$2a$10$cTc8ZjjcrvNXlQI8p1/Q/eHLb8Y7UsIUCdWuNz4mOI1Ly4aOF47VO",
       "role": "student",
       "email": "student2@college.edu",
       "name": "Jane Smith"

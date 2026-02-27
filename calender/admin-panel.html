@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1200">
     <title>Admin Panel - User Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,45 +13,274 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 25%, #2563eb 50%, #1d4ed8 75%, #1e40af 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            min-height: 100vh;
-            padding: 20px;
+html {
+    min-width: 1200px;
+}
+
+body {
+    min-width: 1200px;
+}
+
+        :root {
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-in-out-smooth: cubic-bezier(0.65, 0, 0.35, 1);
+            --transition-ui: 0.35s var(--ease-out-expo);
+            --accent-from: #6366f1;
+            --accent-to: #8b5cf6;
+            --accent-soft: rgba(99, 102, 241, 0.08);
         }
 
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Attractive light gradient – warm and inviting */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: -50%;
+            z-index: 0;
+            background: linear-gradient(
+                165deg,
+                #faf5ff 0%,
+                #f5f3ff 20%,
+                #eff6ff 38%,
+                #fdf4ff 55%,
+                #fefce8 72%,
+                #f0f9ff 88%,
+                #faf5ff 100%
+            );
+            background-size: 400% 400%;
+            animation: meshMove 22s var(--ease-in-out-smooth) infinite;
+        }
+
+        /* Attractive glow orbs – slightly richer */
+        .bg-blobs {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(72px);
+            opacity: 0.55;
+            animation: blobFloat 24s var(--ease-in-out-smooth) infinite;
+        }
+
+        .bg-blob:nth-child(1) {
+            width: min(72vmax, 520px);
+            height: min(72vmax, 520px);
+            background: rgba(167, 139, 250, 0.55);
+            top: -12%;
+            left: -8%;
+            animation-delay: 0s;
+            animation-duration: 26s;
+        }
+
+        .bg-blob:nth-child(2) {
+            width: min(58vmax, 420px);
+            height: min(58vmax, 420px);
+            background: rgba(251, 191, 36, 0.35);
+            bottom: -8%;
+            right: -4%;
+            animation-delay: -8s;
+            animation-duration: 28s;
+        }
+
+        .bg-blob:nth-child(3) {
+            width: min(48vmax, 340px);
+            height: min(48vmax, 340px);
+            background: rgba(96, 165, 250, 0.45);
+            top: 38%;
+            left: 58%;
+            animation-delay: -14s;
+            animation-duration: 30s;
+        }
+
+        /* Moving bubbles layer */
+        .bg-bubbles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            animation: bubbleRise linear infinite;
+            bottom: -10%;
+        }
+
+        /* Attractive glass bubbles */
+        .bubble:nth-child(1),
+        .bubble:nth-child(4),
+        .bubble:nth-child(7),
+        .bubble:nth-child(10),
+        .bubble:nth-child(13) {
+            background: radial-gradient(
+                circle at 28% 28%,
+                rgba(255, 255, 255, 0.95),
+                rgba(221, 214, 254, 0.6) 45%,
+                rgba(167, 139, 250, 0.25) 100%
+            );
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.12);
+        }
+
+        .bubble:nth-child(2),
+        .bubble:nth-child(5),
+        .bubble:nth-child(8),
+        .bubble:nth-child(11),
+        .bubble:nth-child(14) {
+            background: radial-gradient(
+                circle at 28% 28%,
+                rgba(255, 255, 255, 0.95),
+                rgba(254, 243, 199, 0.6) 45%,
+                rgba(251, 191, 36, 0.22) 100%
+            );
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.12);
+        }
+
+        .bubble:nth-child(3),
+        .bubble:nth-child(6),
+        .bubble:nth-child(9),
+        .bubble:nth-child(12),
+        .bubble:nth-child(15) {
+            background: radial-gradient(
+                circle at 28% 28%,
+                rgba(255, 255, 255, 0.95),
+                rgba(219, 234, 254, 0.6) 45%,
+                rgba(96, 165, 250, 0.25) 100%
+            );
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.12);
+        }
+
+        .bubble:nth-child(1) { left: 8%;  width: 24px;  height: 24px;  animation-duration: 12s; animation-delay: 0s; }
+        .bubble:nth-child(2) { left: 18%; width: 18px;  height: 18px;  animation-duration: 14s; animation-delay: 2s; }
+        .bubble:nth-child(3) { left: 28%; width: 32px;  height: 32px;  animation-duration: 11s; animation-delay: 1s; }
+        .bubble:nth-child(4) { left: 42%; width: 14px;  height: 14px;  animation-duration: 16s; animation-delay: 3s; }
+        .bubble:nth-child(5) { left: 52%; width: 26px;  height: 26px;  animation-duration: 13s; animation-delay: 0.5s; }
+        .bubble:nth-child(6) { left: 62%; width: 20px;  height: 20px;  animation-duration: 15s; animation-delay: 2.5s; }
+        .bubble:nth-child(7) { left: 72%; width: 30px;  height: 30px;  animation-duration: 10s; animation-delay: 1.5s; }
+        .bubble:nth-child(8) { left: 82%; width: 16px;  height: 16px;  animation-duration: 17s; animation-delay: 4s; }
+        .bubble:nth-child(9) { left: 92%; width: 22px;  height: 22px;  animation-duration: 14s; animation-delay: 0.8s; }
+        .bubble:nth-child(10){ left: 35%; width: 28px;  height: 28px; animation-duration: 11.5s; animation-delay: 5s; }
+        .bubble:nth-child(11){ left: 65%; width: 18px;  height: 18px; animation-duration: 15.5s; animation-delay: 3.5s; }
+        .bubble:nth-child(12){ left: 5%;  width: 20px;  height: 20px; animation-duration: 13.5s; animation-delay: 1.2s; }
+        .bubble:nth-child(13){ left: 48%; width: 16px;  height: 16px; animation-duration: 16.5s; animation-delay: 2.8s; }
+        .bubble:nth-child(14){ left: 88%; width: 24px;  height: 24px; animation-duration: 12.5s; animation-delay: 4.2s; }
+        .bubble:nth-child(15){ left: 22%; width: 30px;  height: 30px; animation-duration: 10.5s; animation-delay: 0.3s; }
+
+        @keyframes meshMove {
+            0%, 100% { background-position: 0% 50%; }
+            33% { background-position: 100% 50%; }
+            66% { background-position: 50% 100%; }
+        }
+
+        @keyframes blobFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(5%, -8%) scale(1.05); }
+            50% { transform: translate(-6%, 4%) scale(0.98); }
+            75% { transform: translate(4%, 6%) scale(1.02); }
+        }
+
+        @keyframes bubbleRise {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.5;
+            }
+            15% {
+                transform: translate(6px, -12vh) scale(1.02);
+                opacity: 0.75;
+            }
+            50% {
+                transform: translate(-8px, -50vh) scale(0.98);
+                opacity: 0.65;
+            }
+            85% {
+                transform: translate(5px, -92vh) scale(1);
+                opacity: 0.35;
+            }
+            100% {
+                transform: translate(0, -108vh) scale(0.95);
+                opacity: 0;
+            }
+        }
+
+        @keyframes patternMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 24px 24px; }
+        }
+
+        /* Subtle texture */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            background-image: radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.055) 1px, transparent 0);
+            background-size: 18px 18px;
+            animation: patternMove 85s linear infinite;
+            pointer-events: none;
         }
 
         .container {
+            position: relative;
+            z-index: 2;
             max-width: 1200px;
             margin: 0 auto;
         }
 
         .header {
-            background: white;
-            padding: 32px;
-            border-radius: 16px;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.15);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(250, 250, 255, 0.96) 100%);
+            padding: 28px 36px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(255, 255, 255, 0.9) inset;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(224, 242, 254, 0.4);
-            animation: slideDown 0.6s ease-out;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            animation: slideDown 0.7s var(--ease-out-expo) forwards;
             gap: 32px;
+            transition: box-shadow var(--transition-ui), transform var(--transition-ui);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-from), var(--accent-to));
+            opacity: 0.9;
+        }
+
+        .header:hover {
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.9) inset;
         }
 
         @keyframes slideDown {
             from {
                 opacity: 0;
-                transform: translateY(-30px);
+                transform: translateY(-24px);
             }
             to {
                 opacity: 1;
@@ -60,19 +289,27 @@
         }
 
         .header h1 {
-            color: #0f172a;
-            font-size: 1.8rem;
+            color: #1e293b;
+            font-size: 1.85rem;
+            font-weight: 700;
             margin: 0;
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #4338ca 0%, #6366f1 45%, #8b5cf6 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
+        .header h1 i {
+            margin-right: 6px;
+            opacity: 0.95;
+        }
+
         .header p {
             color: #64748b;
-            margin: 8px 0 0 0;
+            margin: 6px 0 0 0;
             font-size: 0.9rem;
+            font-weight: 500;
         }
 
         .header-buttons {
@@ -83,10 +320,10 @@
         .btn {
             padding: 12px 24px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform var(--transition-ui), box-shadow var(--transition-ui), filter var(--transition-ui);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -110,15 +347,15 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #8b5cf6 100%);
             color: white;
-            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
-            filter: brightness(1.08);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(99, 102, 241, 0.4);
+            filter: brightness(1.06);
         }
 
         .btn-primary:hover::before {
@@ -126,37 +363,70 @@
         }
 
         .btn-danger {
-            background: #dc2626;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
             color: white;
-            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
+            box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
         }
 
         .btn-danger:hover {
-            background: #b91c1c;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(220, 38, 38, 0.4);
+            filter: brightness(1.05);
         }
 
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
+            animation: contentFade 0.8s var(--ease-out-expo) 0.2s backwards;
+        }
+
+        @keyframes contentFade {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .card {
-            background: white;
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.12);
-            border: 1px solid rgba(224, 242, 254, 0.4);
-            backdrop-filter: blur(10px);
-            animation: scaleInCard 0.6s ease-out backwards;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(252, 252, 255, 0.96) 100%);
+            border-radius: 24px;
+            padding: 32px 36px;
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            animation: scaleInCard 0.7s var(--ease-out-expo) backwards;
+            transition: transform var(--transition-ui), box-shadow var(--transition-ui);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--accent-from), var(--accent-to));
+            border-radius: 4px 0 0 4px;
+            opacity: 0.85;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 48px rgba(99, 102, 241, 0.12), 0 6px 16px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
         }
 
         @keyframes scaleInCard {
             from {
                 opacity: 0;
-                transform: scale(0.95) translateY(20px);
+                transform: scale(0.96) translateY(24px);
             }
             to {
                 opacity: 1;
@@ -164,24 +434,26 @@
             }
         }
 
-        .card:nth-child(1) { animation-delay: 0.2s; }
-        .card:nth-child(2) { animation-delay: 0.3s; }
+        .card:nth-child(1) { animation-delay: 0.15s; }
+        .card:nth-child(2) { animation-delay: 0.25s; }
 
         .card h2 {
-            color: #0f172a;
-            margin-bottom: 24px;
-            font-size: 1.4rem;
+            color: #1e293b;
+            margin-bottom: 26px;
+            padding-left: 4px;
+            font-size: 1.35rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 12px;
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            background: linear-gradient(135deg, #4338ca 0%, #6366f1 50%, #8b5cf6 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .card h2 i {
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -201,34 +473,34 @@
         input, select {
             width: 100%;
             padding: 12px 16px;
-            border: 2px solid #e0f2fe;
-            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
             font-family: 'Poppins', sans-serif;
             font-size: 0.95rem;
-            transition: all 0.3s ease;
-            background: #f0f9ff;
+            transition: border-color var(--transition-ui), box-shadow var(--transition-ui), background var(--transition-ui), transform var(--transition-ui);
+            background: #f8fafc;
         }
 
         input:focus, select:focus {
             outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
             background: white;
             transform: translateY(-1px);
         }
 
         .btn-submit {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #1ea0eb 100%);
+            padding: 15px;
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 45%, #8b5cf6 100%);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            margin-top: 12px;
-            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+            transition: transform var(--transition-ui), box-shadow var(--transition-ui), filter var(--transition-ui);
+            margin-top: 14px;
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
             position: relative;
             overflow: hidden;
             font-size: 0.95rem;
@@ -248,9 +520,9 @@
         }
 
         .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
-            filter: brightness(1.1);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(99, 102, 241, 0.45);
+            filter: brightness(1.06);
         }
 
         .btn-submit:hover::before {
@@ -264,31 +536,31 @@
         }
 
         .users-table th {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            padding: 14px 16px;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            padding: 14px 18px;
             text-align: left;
-            color: #0f172a;
+            color: #3730a3;
             font-weight: 700;
-            border-bottom: 2px solid #94c5e3;
-            font-size: 0.9rem;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.25);
+            font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.4px;
         }
 
         .users-table td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #e0f2fe;
+            padding: 14px 18px;
+            border-bottom: 1px solid #f1f5f9;
             color: #475569;
-            transition: background-color 0.2s ease;
+            transition: background var(--transition-ui), color var(--transition-ui);
         }
 
         .users-table tbody tr {
-            transition: all 0.3s ease;
+            transition: background var(--transition-ui), box-shadow var(--transition-ui);
         }
 
         .users-table tbody tr:hover {
-            background: linear-gradient(135deg, #f0f9ff 0%, #f5fdfb 100%);
-            box-shadow: inset 0 0 0 1px #94c5e3;
+            background: linear-gradient(90deg, rgba(238, 242, 255, 0.7) 0%, rgba(245, 243, 255, 0.5) 100%);
+            box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.12);
         }
 
         .role-badge {
@@ -302,15 +574,17 @@
         }
 
         .role-admin {
-            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-            color: #991b1b;
-            border: 1px solid #fecaca;
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            color: #9d174d;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
         .role-student {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-            color: #1e40af;
-            border: 1px solid #93c5fd;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            color: #4338ca;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
         .action-buttons {
@@ -322,9 +596,13 @@
             padding: 6px 12px;
             font-size: 0.85rem;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: transform var(--transition-ui), background var(--transition-ui), color var(--transition-ui);
+        }
+
+        .btn-small:hover {
+            transform: scale(1.02);
         }
 
         .btn-delete {
@@ -344,11 +622,12 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.3s ease;
+            background-color: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(4px);
+            animation: modalBackdropIn 0.4s var(--ease-out-expo) forwards;
         }
 
-        @keyframes fadeIn {
+        @keyframes modalBackdropIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
@@ -357,20 +636,20 @@
             background-color: white;
             margin: 5% auto;
             padding: 30px;
-            border-radius: 12px;
+            border-radius: 20px;
             width: 90%;
             max-width: 500px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s ease;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+            animation: modalSlideUp 0.45s var(--ease-out-expo) forwards;
         }
 
-        @keyframes slideUp {
+        @keyframes modalSlideUp {
             from {
-                transform: translateY(50px);
+                transform: translateY(40px) scale(0.98);
                 opacity: 0;
             }
             to {
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
                 opacity: 1;
             }
         }
@@ -488,28 +767,128 @@
             color: #0f172a;
         }
 
+        /* Tablet and below */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .header {
+                padding: 24px;
+            }
+
+            .card {
+                padding: 24px;
+            }
+        }
+
+        /* Mobile landscape and below */
         @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
             .main-content {
                 grid-template-columns: 1fr;
+                gap: 20px;
             }
 
             .header {
                 flex-direction: column;
                 text-align: center;
+                padding: 20px;
+                gap: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
             }
 
             .header-buttons {
-                margin-top: 20px;
+                margin-top: 15px;
                 justify-content: center;
+                flex-wrap: wrap;
+                width: 100%;
+            }
+
+            .btn {
+                padding: 10px 18px;
+                font-size: 0.85rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .card h2 {
+                font-size: 1.2rem;
+            }
+
+            #usersList {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
 
             .users-table {
+                font-size: 0.85rem;
+                min-width: 600px;
+            }
+
+            .users-table th,
+            .users-table td {
+                padding: 10px 12px;
+            }
+        }
+
+        /* Small mobile */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 16px;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .card h2 {
+                font-size: 1.1rem;
+            }
+
+            .btn {
+                padding: 8px 14px;
+                font-size: 0.8rem;
+            }
+
+            input, select {
+                padding: 10px 14px;
                 font-size: 0.9rem;
+            }
+
+            .btn-submit {
+                padding: 12px;
             }
         }
     </style>
 </head>
 <body>
+    <div class="bg-blobs" aria-hidden="true">
+        <div class="bg-blob"></div>
+        <div class="bg-blob"></div>
+        <div class="bg-blob"></div>
+    </div>
+    <div class="bg-bubbles" aria-hidden="true">
+        <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+        <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+        <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+    </div>
     <div class="container">
         <!-- Header -->
         <div class="header">
@@ -575,6 +954,17 @@
                 <div id="usersAlert"></div>
                 <div id="usersList" style="overflow-x: auto;">
                     <p style="text-align: center; color: #94a3b8;">Loading users...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Password Reset Requests -->
+        <div class="main-content" style="margin-top: 24px;">
+            <div class="card" style="grid-column: 1 / -1;">
+                <h2><i class="fas fa-key"></i> Password Reset Requests</h2>
+                <div id="passwordResetAlert"></div>
+                <div id="passwordResetList" style="overflow-x: auto;">
+                    <p style="text-align: center; color: #94a3b8;">Loading password reset requests...</p>
                 </div>
             </div>
         </div>
@@ -657,6 +1047,80 @@
             usersList.innerHTML = html;
         }
 
+        // Load password reset requests
+        function loadPasswordResetRequests() {
+            fetch('/api/password-reset-requests', {
+                credentials: 'include'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        displayPasswordResetRequests(data.requests || []);
+                    } else {
+                        showAlert('passwordResetAlert', data.message || 'Failed to load password reset requests', 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    showAlert('passwordResetAlert', 'Failed to load password reset requests', 'error');
+                });
+        }
+
+        // Display password reset requests
+        function displayPasswordResetRequests(requests) {
+            const listEl = document.getElementById('passwordResetList');
+
+            if (!requests || requests.length === 0) {
+                listEl.innerHTML = `
+                    <div class="no-users">
+                        <i class="fas fa-key"></i>
+                        <p>No password reset requests.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<table class="users-table"><thead><tr>';
+            html += '<th>Student Name</th><th>Username</th><th>Email</th><th>Requested At</th><th>Status</th><th>Action</th>';
+            html += '</tr></thead><tbody>';
+
+            requests.forEach(req => {
+                let statusLabel = 'Pending';
+                let statusColor = '#f97316';
+
+                if (req.status === 'completed') {
+                    statusLabel = 'Completed';
+                    statusColor = '#16a34a';
+                } else if (req.status === 'cancelled') {
+                    statusLabel = 'Cancelled';
+                    statusColor = '#dc2626';
+                }
+
+                html += `<tr>
+                    <td>${req.studentName || ''}</td>
+                    <td>${req.username}</td>
+                    <td>${req.email}</td>
+                    <td>${new Date(req.createdAt).toLocaleString()}</td>
+                    <td><span style="font-weight: 600; color: ${statusColor}; text-transform: uppercase; font-size: 0.8rem;">${statusLabel}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            ${req.status === 'pending' ? `
+                                <button class="btn-small" style="background:#e0f2fe;color:#1d4ed8;" onclick="openPasswordResetModal(${req.id}, '${req.username}')">
+                                    <i class="fas fa-key"></i>
+                                </button>
+                                <button class="btn-small btn-delete" title="Cancel request" onclick="cancelPasswordResetRequest(${req.id}, '${req.username}')">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            listEl.innerHTML = html;
+        }
+
         // Register user
         function registerUser(event) {
             event.preventDefault();
@@ -686,6 +1150,33 @@
             .catch(err => {
                 showAlert('registerAlert', 'Error registering user', 'error');
             });
+        }
+
+        // Cancel password reset request
+        function cancelPasswordResetRequest(requestId, username) {
+            if (!confirm(`Cancel password reset request for "${username}"?`)) {
+                return;
+            }
+
+            fetch(`/api/password-reset-requests/${requestId}/cancel`, {
+                method: 'POST',
+                credentials: 'include'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('passwordResetAlert', data.message, 'success');
+                        setTimeout(() => {
+                            loadPasswordResetRequests();
+                        }, 800);
+                    } else {
+                        showAlert('passwordResetAlert', data.message || 'Failed to cancel password reset request.', 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    showAlert('passwordResetAlert', 'Failed to cancel password reset request.', 'error');
+                });
         }
 
         // Delete user
@@ -758,10 +1249,82 @@
                 });
         }
 
+        // Password reset modal handling
+        function openPasswordResetModal(requestId, username) {
+            const modal = document.getElementById('passwordResetModal');
+            document.getElementById('passwordResetRequestId').value = requestId;
+            document.getElementById('passwordResetUsername').innerText = username;
+            document.getElementById('passwordResetNewPassword').value = '';
+            document.getElementById('passwordResetModalAlert').innerHTML = '';
+            modal.style.display = 'block';
+        }
+
+        function closePasswordResetModal() {
+            const modal = document.getElementById('passwordResetModal');
+            modal.style.display = 'none';
+        }
+
+        function submitPasswordReset(event) {
+            event.preventDefault();
+            const requestId = document.getElementById('passwordResetRequestId').value;
+            const newPassword = document.getElementById('passwordResetNewPassword').value;
+
+            if (!newPassword || newPassword.length < 6) {
+                showAlert('passwordResetModalAlert', 'New password must be at least 6 characters.', 'error');
+                return;
+            }
+
+            fetch(`/api/password-reset-requests/${requestId}/resolve`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ newPassword })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('passwordResetAlert', data.message, 'success');
+                        closePasswordResetModal();
+                        setTimeout(() => {
+                            loadPasswordResetRequests();
+                        }, 800);
+                    } else {
+                        showAlert('passwordResetModalAlert', data.message || 'Failed to reset password.', 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    showAlert('passwordResetModalAlert', 'Failed to reset password.', 'error');
+                });
+        }
+
         // Initialize
         checkAuth();
         loadUsers();
+        loadPasswordResetRequests();
     </script>
+
+    <!-- Password Reset Modal -->
+    <div id="passwordResetModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width: 420px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-key"></i> Set New Password</h2>
+                <span class="close" onclick="closePasswordResetModal()">&times;</span>
+            </div>
+            <div id="passwordResetModalAlert"></div>
+            <form onsubmit="submitPasswordReset(event)">
+                <input type="hidden" id="passwordResetRequestId">
+                <p style="margin-bottom: 12px; color:#475569;">For user: <strong id="passwordResetUsername"></strong></p>
+                <div class="form-group">
+                    <label for="passwordResetNewPassword">New Password (min 6 characters)</label>
+                    <input type="password" id="passwordResetNewPassword" required>
+                </div>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i> Update Password
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- CHATBOT WIDGET -->
     <style>

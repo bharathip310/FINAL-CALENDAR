@@ -295,15 +295,16 @@ app.get('/api/user', (req, res) => {
 // Check authentication middleware
 function isAuthenticated(req, res, next) {
     if (!req.session.userId) {
-        // If request expects JSON (AJAX/mobile), send JSON error
+        // For API routes and AJAX requests, always return JSON (avoid HTML redirects)
+        const isApiRoute = String(req.path || '').startsWith('/api/');
         const wantsJSON = req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'));
-        if (wantsJSON) {
+        if (isApiRoute || wantsJSON) {
             return res.status(401).json({
                 success: false,
                 message: 'Not authenticated'
             });
         }
-        // otherwise redirect to login page
+        // otherwise redirect to login page for browser page requests
         return res.redirect('/login.html');
     }
     next();

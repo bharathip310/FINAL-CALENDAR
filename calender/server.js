@@ -317,115 +317,130 @@ const registerValidations = [
 ];
 
 // Register new user (admin only)
-app.post('/api/register', registerLimiter, isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can register new users'
-        });
-    }
-    return runValidation(req, res, registerValidations, (req, res) => {
-    const { username, password, email, name, role } = req.body;
-
-    const db = getDatabase();
-
-    // Check if user already exists
-    if (db.users.find(u => u.username === username)) {
-        return res.status(400).json({
-            success: false,
-            message: 'Username already exists'
-        });
-    }
-
-    // Create new user
-    const newUser = {
-        id: Math.max(...db.users.map(u => u.id), 0) + 1,
-        username: username,
-        password: bcrypt.hashSync(password, 10),
-        email: email,
-        name: name,
-        role: role
-    };
-
-    db.users.push(newUser);
-    saveDatabase(db);
-    writeAuditLog('USER_CREATE', { username: newUser.username, role: newUser.role }, req.session.userId);
-
-    res.json({
-        success: true,
-        message: 'User registered successfully',
-        user: {
-            id: newUser.id,
-            username: newUser.username,
-            email: newUser.email,
-            name: newUser.name,
-            role: newUser.role
+app.post('/api/register', registerLimiter, isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can register new users'
+            });
         }
-    });
-    });
+        return runValidation(req, res, registerValidations, async (req, res) => {
+        const { username, password, email, name, role } = req.body;
+
+        const db = await getDatabase();
+
+        // Check if user already exists
+        if (db.users.find(u => u.username === username)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Username already exists'
+            });
+        }
+
+        // Create new user
+        const newUser = {
+            id: Math.max(...db.users.map(u => u.id), 0) + 1,
+            username: username,
+            password: bcrypt.hashSync(password, 10),
+            email: email,
+            name: name,
+            role: role
+        };
+
+        db.users.push(newUser);
+        await saveDatabase(db);
+        writeAuditLog('USER_CREATE', { username: newUser.username, role: newUser.role }, req.session.userId);
+
+        res.json({
+            success: true,
+            message: 'User registered successfully',
+            user: {
+                id: newUser.id,
+                username: newUser.username,
+                email: newUser.email,
+                name: newUser.name,
+                role: newUser.role
+            }
+        });
+        });
+    } catch (err) {
+        console.error('Register error:', err);
+        res.status(500).json({ success: false, message: 'Registration failed: ' + err.message });
+    }
 });
 
 // Get all users (admin only)
-app.get('/api/users', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can view users'
+app.get('/api/users', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can view users'
+            });
+        }
+
+        const db = await getDatabase();
+        const users = db.users.map(u => ({
+            id: u.id,
+            username: u.username,
+            email: u.email,
+            name: u.name,
+            role: u.role
+        }));
+
+        res.json({
+            success: true,
+            users: users
         });
+    } catch (err) {
+        console.error('Get users error:', err);
+        res.status(500).json({ success: false, message: 'Failed to fetch users: ' + err.message });
     }
-
-    const db = getDatabase();
-    const users = db.users.map(u => ({
-        id: u.id,
-        username: u.username,
-        email: u.email,
-        name: u.name,
-        role: u.role
-    }));
-
-    res.json({
-        success: true,
-        users: users
-    });
 });
 
 // Change password
-app.post('/api/change-password', isAuthenticated, (req, res) => {
-    const { currentPassword, newPassword } = req.body;
+app.post('/api/change-password', isAuthenticated, async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
 
-    if (!currentPassword || !newPassword) {
-        return res.status(400).json({
-            success: false,
-            message: 'Current and new passwords are required'
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Current and new passwords are required'
+            });
+        }
+
+        const db = await getDatabase();
+        const user = db.users.find(u => u.id === req.session.userId);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Verify current password
+        if (!bcrypt.compareSync(currentPassword, user.password)) {
+            return res.status(401).json({
+                success: false,
+                message: 'Current password is incorrect'
+            });
+        }
+
+        // Update password
+        user.password = bcrypt.hashSync(newPassword, 10);
+        await saveDatabase(db);
+
+        res.json({
+            success: true,
+            message: 'Password changed successfully'
         });
+    } catch (err) {
+        console.error('Change password error:', err);
+        res.status(500).json({ success: false, message: 'Failed to change password: ' + err.message });
     }
-
-    const db = getDatabase();
-    const user = db.users.find(u => u.id === req.session.userId);
-
-    if (!user) {
-        return res.status(404).json({
-            success: false,
-            message: 'User not found'
-        });
-    }
-
-    // Verify current password
-    if (!bcrypt.compareSync(currentPassword, user.password)) {
-        return res.status(401).json({
-            success: false,
-            message: 'Current password is incorrect'
-        });
-    }
-
-    // Update password
-    user.password = bcrypt.hashSync(newPassword, 10);
-    saveDatabase(db);
-
-    res.json({
-        success: true,
-        message: 'Password changed successfully'
-    });
 });
 
 // Forgot password - create reset request (by email or username, admin will change password)

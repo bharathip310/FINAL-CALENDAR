@@ -1,0 +1,430 @@
+📊 CODE COMPARISON: JSON vs MongoDB
+==================================
+
+This file shows the key differences in how the code was changed.
+
+🔄 DATABASE CONNECTION
+======================
+
+BEFORE (JSON):
+--------------
+const fs = require('fs');
+const path = require('path');
+
+const dbPath = path.join(__dirname, 'database.json');
+
+function getDatabase() {
+    const data = fs.readFileSync(dbPath, 'utf8');
+    return JSON.parse(data);
+}
+
+AFTER (MongoDB):
+----------------
+const { MongoClient, ObjectId } = require('mongodb');
+const MONGODB_URI = process.env.MONGODB_URI;
+
+async function connectToDatabase() {
+    client = new MongoClient(MONGODB_URI);
+    await client.connect();
+    db = client.db('calendar_db');
+    usersCollection = db.collection('users');
+}
+
+Key Differences:
+✓ No file system operations
+✓ Asynchronous connection
+✓ Collections instead of JSON arrays
+✓ Network connection to database
+
+---
+
+🔐 USER LOGIN ENDPOINT
+======================
+
+BEFORE (JSON):
+--------------
+app.post('/api/login', (req, res) => {
+    const { username, password, role } = req.body;
+    
+    const db = getDatabase();  // Read entire file
+    const user = db.users.find(u => 
+        u.username === username && u.role === role
+    );  // Search in memory
+    
+    const isPasswordValid = bcrypt.compareSync(password, user.password);
+    
+    req.session.userId = user.id;  // ID from array
+    res.json({ success: true, user: {...} });
+});
+
+AFTER (MongoDB):
+----------------
+app.post('/api/login', async (req, res) => {
+    try {
+        const { username, password, role } = req.body;
+        
+        const user = await usersCollection.findOne({  // Query database
+            username: username,
+            role: role
+        });
+        
+        const isPasswordValid = bcrypt.compareSync(password, user.password);
+        
+        req.session.userId = user._id.toString();  // MongoDB ObjectId
+        res.json({ success: true, user: {...} });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error });
+    }
+});
+
+Key Differences:
+✓ async/await for database call
+✓ findOne() instead of array find()
+✓ MongoDB ObjectId instead of numeric ID
+✓ Try-catch error handling
+✓ Query sent to database, not loaded in memory
+
+---
+
+👤 REGISTER NEW USER
+====================
+
+BEFORE (JSON):
+--------------
+app.post('/api/register', isAuthenticated, (req, res) => {
+    const db = getDatabase();
+    
+    if (db.users.find(u => u.username === username)) {
+        return res.status(400).json({...});
+    }
+    
+    const newUser = {
+        id: Math.max(...db.users.map(u => u.id), 0) + 1,
+        username: username,
+        password: bcrypt.hashSync(password, 10),
+        email: email,
+        name: name,
+        role: role
+    };
+    
+    db.users.push(newUser);
+    saveDatabase(db);  // Write entire file
+    
+    res.json({ success: true, user: newUser });
+});
+
+AFTER (MongoDB):
+----------------
+app.post('/api/register', isAuthenticated, async (req, res) => {
+    try {
+        const existingUser = await usersCollection.findOne({
+            username: username
+        });  // Database checks uniqueness
+        
+        if (existingUser) {
+            return res.status(400).json({...});
+        }
+        
+        const newUser = {
+            username: username,
+            password: bcrypt.hashSync(password, 10),
+            email: email,
+            name: name,
+            role: role,
+            createdAt: new Date()
+        };
+        
+        const result = await usersCollection.insertOne(newUser);
+        // MongoDB auto-generates _id
+        
+        res.json({ 
+            success: true, 
+            user: { id: result.insertedId.toString(), ...newUser }
+        });
+    } catch (error) {
+        res.status(500).json({...});
+    }
+});
+
+Key Differences:
+✓ Async database query
+✓ Unique index enforced by MongoDB
+✓ Auto ID generation by MongoDB
+✓ insertOne() instead of array push
+✓ No need to rewrite entire file
+
+---
+
+🗑️ DELETE OPERATION
+====================
+
+BEFORE (JSON):
+--------------
+app.delete('/api/users/:userId', isAuthenticated, (req, res) => {
+    const userId = parseInt(req.params.userId);
+    const db = getDatabase();
+    
+    const userIndex = db.users.findIndex(u => u.id === userId);
+    if (userIndex === -1) {
+        return res.status(404).json({...});
+    }
+    
+    db.users.splice(userIndex, 1);  // Remove from array
+    saveDatabase(db);  // Rewrite entire file
+    
+    res.json({ success: true });
+});
+
+AFTER (MongoDB):
+----------------
+app.delete('/api/users/:userId', isAuthenticated, async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        
+        const result = await usersCollection.deleteOne({
+            _id: new ObjectId(userId)  // MongoDB query
+        });
+        
+        if (result.deletedCount === 0) {
+            return res.status(404).json({...});
+        }
+        
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({...});
+    }
+});
+
+Key Differences:
+✓ Async operation
+✓ Direct database deletion
+✓ deleteOne() instead of splice
+✓ ObjectId handling for IDs
+✓ Returns deletedCount instead of array search
+
+---
+
+📝 UPDATE OPERATION
+===================
+
+BEFORE (JSON):
+--------------
+app.put('/api/events/:id', isAuthenticated, (req, res) => {
+    const event = events.events[eventIndex];
+    event.title = title || event.title;
+    event.description = description || event.description;
+    event.type = type || event.type;
+    event.updated = true;
+    event.updatedDate = new Date().toISOString();
+    
+    saveEvents(events);  // Entire file rewritten
+    
+    res.json({ success: true, event: event });
+});
+
+AFTER (MongoDB):
+----------------
+app.put('/api/events/:id', isAuthenticated, async (req, res) => {
+    try {
+        const updateData = {};
+        if (title) updateData.title = title;
+        if (description !== undefined) updateData.description = description;
+        if (type) updateData.type = type;
+        updateData.updated = true;
+        updateData.updatedDate = new Date();
+        
+        const result = await eventsCollection.findOneAndUpdate(
+            { _id: new ObjectId(eventId) },
+            { $set: updateData },
+            { returnDocument: 'after' }
+        );
+        
+        res.json({ success: true, event: {...result.value} });
+    } catch (error) {
+        res.status(500).json({...});
+    }
+});
+
+Key Differences:
+✓ Async/await
+✓ MongoDB $set operator
+✓ Partial update (only changed fields)
+✓ findOneAndUpdate() returns updated doc
+✓ No need to rewrite entire file
+
+---
+
+💾 SESSION MANAGEMENT
+====================
+
+BEFORE (JSON):
+--------------
+app.use(session({
+    secret: 'your-secret-key-change-in-production',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        secure: false,
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24
+    }
+}));
+// Sessions stored in memory - lost on restart
+
+AFTER (MongoDB):
+----------------
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    store: new MongoStore({
+        mongoUrl: MONGODB_URI,
+        collectionName: 'sessions'
+    }),
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24
+    }
+}));
+// Sessions stored in MongoDB - persist across restarts
+
+Key Differences:
+✓ Sessions in MongoDB, not memory
+✓ Survives server restarts
+✓ Scalable to multiple servers
+✓ Secret from environment variable
+✓ Secure flag automated
+
+---
+
+📚 COLLECTION QUERIES
+====================
+
+BEFORE (JSON):
+--------------
+// Get all reports
+const reports = getReports();  // Load entire file
+const dateReports = reports.reports.filter(r => 
+    r.eventDate === eventDate
+);  // Filter in memory
+
+AFTER (MongoDB):
+----------------
+// Get reports by date
+const reports = await reportsCollection.find({
+    eventDate: eventDate  // Query in database
+}).toArray();  // Only fetch matching records
+
+Key Differences:
+✓ Database filtering (faster)
+✓ Async operation
+✓ Indexed queries
+✓ Scalable (handles millions)
+✓ Memory efficient
+
+---
+
+⚙️ PACKAGE.JSON CHANGES
+=======================
+
+BEFORE:
+-------
+{
+  "dependencies": {
+    "express": "^4.18.2",
+    "bcryptjs": "^2.4.3",
+    "express-session": "^1.17.3"
+  }
+}
+
+AFTER:
+------
+{
+  "dependencies": {
+    "express": "^4.18.2",
+    "bcryptjs": "^2.4.3",
+    "express-session": "^1.17.3",
+    "mongodb": "^6.3.0",
+    "connect-mongo": "^5.1.0",
+    "dotenv": "^16.3.1"
+  }
+}
+
+New Dependencies:
+✓ mongodb - Database driver
+✓ connect-mongo - Session store
+✓ dotenv - Environment variables
+
+---
+
+🔄 STARTUP SEQUENCE
+===================
+
+BEFORE (JSON):
+--------------
+initDatabase();      // Check if file exists
+initReportsDatabase();
+initEventsDatabase();
+
+app.listen(PORT, () => {
+    console.log('Server Running...');
+});
+
+AFTER (MongoDB):
+----------------
+async function startServer() {
+    await connectToDatabase();      // Connect to MongoDB
+    await initializeDefaultUsers(); // Populate if empty
+    
+    app.listen(PORT, () => {
+        console.log('Server Running...');
+    });
+}
+
+startServer();
+
+Key Differences:
+✓ Async connection required
+✓ Database connection before server start
+✓ Default users initialized on first run
+✓ Graceful shutdown added
+
+---
+
+📌 KEY TAKEAWAYS
+================
+
+1. Operations are now ASYNC
+   - All database calls use await
+   - Error handling with try-catch
+
+2. No more file I/O
+   - No fs.readFileSync
+   - No fs.writeFileSync
+   - No full file rewrites
+
+3. Database enforcement
+   - Indexes for performance
+   - Unique constraints
+   - Transactions possible
+
+4. Scalability
+   - Handle concurrent users
+   - Cloud ready
+   - Production ready
+
+5. Reliability
+   - Data persists reliably
+   - Better error handling
+   - Graceful shutdown
+
+6. Configuration
+   - Environment variables
+   - Easy to deploy
+   - Secrets management
+
+All functionality remains the same from user perspective!
+Only the backend implementation changed from JSON to MongoDB.
+
+✨

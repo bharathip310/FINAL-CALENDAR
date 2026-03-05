@@ -1,0 +1,71 @@
+{
+  "events": [
+    {
+      "id": "1770622881453",
+      "eventDate": "2026-02-09",
+      "title": "iat1",
+      "description": "study well",
+      "type": "exam",
+      "createdBy": "bharathi",
+      "createdByName": "bharathi",
+      "createdDate": "2026-02-09T07:41:21.453Z",
+      "updated": false
+    },
+    {
+      "id": "1770622947657",
+      "eventDate": "2026-02-10",
+      "title": "enjoy",
+      "description": "",
+      "type": "holiday",
+      "createdBy": "bharathi",
+      "createdByName": "bharathi",
+      "createdDate": "2026-02-09T07:42:27.657Z",
+      "updated": false
+    },
+    {
+      "id": "1770628919679",
+      "eventDate": "2026-02-11",
+      "title": "hod",
+      "description": "",
+      "type": "meeting",
+      "createdBy": "admin",
+      "createdByName": "Administrator",
+      "createdDate": "2026-02-09T09:21:59.679Z",
+      "updated": false
+    },
+    {
+      "id": "1770723703548",
+      "eventDate": "2026-02-12",
+      "title": "sympo",
+      "description": "",
+      "type": "event",
+      "createdBy": "bharathi",
+      "createdByName": "bharathi",
+      "createdDate": "2026-02-10T11:41:43.549Z",
+      "updated": false
+    },
+    {
+      "id": "1770728103148",
+      "eventDate": "2026-02-20",
+      "title": "Lecture",
+      "description": "",
+      "type": "event",
+      "createdBy": "bharathi",
+      "createdByName": "bharathi",
+      "createdDate": "2026-02-10T12:55:03.148Z",
+      "updated": false
+    },
+    {
+      "id": "1770830549358",
+      "eventDate": "2026-02-14",
+      "title": "lovers day",
+      "description": "propose to your crush bye",
+      "type": "holiday",
+      "createdBy": "bharathi",
+      "createdByName": "bharathi",
+      "createdDate": "2026-02-11T17:22:29.358Z",
+      "updated": true,
+      "updatedDate": "2026-02-11T17:23:30.338Z"
+    }
+  ]
+}

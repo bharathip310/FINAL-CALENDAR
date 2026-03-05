@@ -1,0 +1,9 @@
+node_modules/
+.env
+*.log
+audit.log
+backups/
+password_reset_tokens.json
+chat_*.json
+.vercel
+.env*.local

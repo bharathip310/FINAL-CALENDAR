@@ -7,11 +7,15 @@ const { body, validationResult } = require('express-validator');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const supabase = require('./supabaseClient');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const SESSION_SECRET = process.env.SESSION_SECRET || 'H8sj@2K#9xP!Lm$Qz7Vb&4YtR1@kWcX9';
 const COOKIE_SECURE = process.env.COOKIE_SECURE === 'true';
+
+// Check if Supabase is configured
+const USE_SUPABASE = !!(process.env.SUPABASE_URL && process.env.SUPABASE_KEY && supabase);
 
 // Middleware
 app.use(express.json());
@@ -89,6 +93,34 @@ function writeAuditLog(action, details, userId) {
 
 // Database functions - Supabase ONLY (no JSON fallback)
 // These will be overridden below with async Supabase versions
+
+// Users database - Supabase ONLY
+async function getDatabase() {
+    if (!USE_SUPABASE || !supabase) {
+        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
+    }
+    const { data, error } = await supabase.from('users').select('*');
+    if (error) throw error;
+    return { users: data || [] };
+}
+
+async function saveDatabase(data) {
+    if (!USE_SUPABASE || !supabase) {
+        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
+    }
+    const users = data.users || [];
+    const { error: upsertErr } = await supabase.from('users').upsert(users, { onConflict: 'id' });
+    if (upsertErr) throw upsertErr;
+    const { data: existing, error: existingErr } = await supabase.from('users').select('id');
+    if (existingErr) throw existingErr;
+    const existingIds = (existing || []).map(u => u.id);
+    const ids = users.map(u => u.id).filter(x => x !== undefined && x !== null);
+    const toDelete = existingIds.filter(id => !ids.includes(id));
+    if (toDelete.length > 0) {
+        const { error: delErr } = await supabase.from('users').delete().in('id', toDelete);
+        if (delErr) throw delErr;
+    }
+}
 
 // Password reset requests - Supabase ONLY
 async function getPasswordResetRequests() {
@@ -837,39 +869,60 @@ app.delete('/api/reports/:id', isAuthenticated, async (req, res) => {
 const eventsDbPath = path.join(__dirname, 'events.json');
 
 // Initialize events database
-function initEventsDatabase() {
-    if (!fs.existsSync(eventsDbPath)) {
-        const defaultEvents = {
-            events: []
-        };
-        fs.writeFileSync(eventsDbPath, JSON.stringify(defaultEvents, null, 2));
+// Events database - Supabase ONLY
+async function getEvents() {
+    if (!USE_SUPABASE || !supabase) {
+        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
+    }
+    const { data, error } = await supabase.from('events').select('*');
+    if (error) throw error;
+    return { events: data || [] };
+}
+
+async function saveEvents(data) {
+    if (!USE_SUPABASE || !supabase) {
+        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
+    }
+    const events = data.events || [];
+    const { error: upsertErr } = await supabase.from('events').upsert(events, { onConflict: 'id' });
+    if (upsertErr) throw upsertErr;
+    const { data: existing, error: existingErr } = await supabase.from('events').select('id');
+    if (existingErr) throw existingErr;
+    const existingIds = (existing || []).map(r => r.id);
+    const ids = events.map(e => e.id).filter(x => x !== undefined && x !== null);
+    const toDelete = existingIds.filter(id => !ids.includes(id));
+    if (toDelete.length > 0) {
+        const { error: delErr } = await supabase.from('events').delete().in('id', toDelete);
+        if (delErr) throw delErr;
     }
 }
 
-// Read events database
-function getEvents() {
-    if (!fs.existsSync(eventsDbPath)) {
-        initEventsDatabase();
+// Announcements database - Supabase ONLY
+async function getAnnouncements() {
+    if (!USE_SUPABASE || !supabase) {
+        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
     }
-    const data = fs.readFileSync(eventsDbPath, 'utf8');
-    return JSON.parse(data);
+    const { data, error } = await supabase.from('announcements').select('*');
+    if (error) throw error;
+    return { announcements: data || [] };
 }
 
-// Write events database
-function saveEvents(data) {
-    fs.writeFileSync(eventsDbPath, JSON.stringify(data, null, 2));
-}
-
-// Announcements database
-const announcementsPath = path.join(__dirname, 'announcements.json');
-function getAnnouncements() {
-    if (!fs.existsSync(announcementsPath)) {
-        fs.writeFileSync(announcementsPath, JSON.stringify({ announcements: [] }, null, 2));
+async function saveAnnouncements(data) {
+    if (!USE_SUPABASE || !supabase) {
+        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
     }
-    return JSON.parse(fs.readFileSync(announcementsPath, 'utf8'));
-}
-function saveAnnouncements(data) {
-    fs.writeFileSync(announcementsPath, JSON.stringify(data, null, 2));
+    const announcements = data.announcements || [];
+    const { error: upsertErr } = await supabase.from('announcements').upsert(announcements, { onConflict: 'id' });
+    if (upsertErr) throw upsertErr;
+    const { data: existing, error: existingErr } = await supabase.from('announcements').select('id');
+    if (existingErr) throw existingErr;
+    const existingIds = (existing || []).map(r => r.id);
+    const ids = announcements.map(a => a.id).filter(x => x !== undefined && x !== null);
+    const toDelete = existingIds.filter(id => !ids.includes(id));
+    if (toDelete.length > 0) {
+        const { error: delErr } = await supabase.from('announcements').delete().in('id', toDelete);
+        if (delErr) throw delErr;
+    }
 }
 
 // =================================
@@ -877,36 +930,47 @@ function saveAnnouncements(data) {
 // =================================
 
 // Get all events (no auth required - all users can view)
-app.get('/api/events', (req, res) => {
-    const events = getEvents();
-    res.json({
-        success: true,
-        events: events.events
-    });
+app.get('/api/events', async (req, res) => {
+    try {
+        const events = await getEvents();
+        res.json({
+            success: true,
+            events: events.events
+        });
+    } catch (err) {
+        console.error('Get events error:', err);
+        res.status(500).json({ success: false, message: 'Failed to fetch events: ' + err.message });
+    }
 });
 
 // Get events for a specific date (no auth required)
-app.get('/api/events/date/:eventDate', (req, res) => {
-    const eventDate = req.params.eventDate;
-    const events = getEvents();
-    const dateEvents = events.events.filter(e => e.eventDate === eventDate);
-    
-    res.json({
-        success: true,
-        events: dateEvents
-    });
+app.get('/api/events/date/:eventDate', async (req, res) => {
+    try {
+        const eventDate = req.params.eventDate;
+        const events = await getEvents();
+        const dateEvents = events.events.filter(e => e.eventDate === eventDate);
+
+        res.json({
+            success: true,
+            events: dateEvents
+        });
+    } catch (err) {
+        console.error('Get events by date error:', err);
+        res.status(500).json({ success: false, message: 'Failed to fetch events: ' + err.message });
+    }
 });
 
 // Search events and reports
-app.get('/api/search', (req, res) => {
-    const q = (req.query.q || '').trim().toLowerCase();
-    if (!q) {
-        return res.json({ success: true, events: [], reports: [] });
-    }
-    const events = getEvents();
-    const reports = getReports();
-    const eventsMatch = events.events.filter(e =>
-        (e.title && e.title.toLowerCase().includes(q)) ||
+app.get('/api/search', async (req, res) => {
+    try {
+        const q = (req.query.q || '').trim().toLowerCase();
+        if (!q) {
+            return res.json({ success: true, events: [], reports: [] });
+        }
+        const events = await getEvents();
+        const reports = await getReports();
+        const eventsMatch = events.events.filter(e =>
+            (e.title && e.title.toLowerCase().includes(q)) ||
         (e.description && e.description.toLowerCase().includes(q)) ||
         (e.eventDate && e.eventDate.includes(q))
     );
@@ -916,21 +980,26 @@ app.get('/api/search', (req, res) => {
         (r.eventDate && r.eventDate.includes(q))
     );
     res.json({ success: true, events: eventsMatch, reports: reportsMatch });
+    } catch (err) {
+        console.error('Search error:', err);
+        res.status(500).json({ success: false, message: 'Search failed: ' + err.message });
+    }
 });
 
 // Calendar export (iCal or CSV)
-app.get('/api/events/export', (req, res) => {
-    const format = (req.query.format || 'csv').toLowerCase();
-    const from = req.query.from || '';
-    const to = req.query.to || '';
-    const events = getEvents();
-    let list = events.events;
-    if (from) list = list.filter(e => (e.eventDate || '') >= from);
-    if (to) list = list.filter(e => (e.eventDate || '') <= to);
-    list.sort((a, b) => (a.eventDate || '').localeCompare(b.eventDate || ''));
+app.get('/api/events/export', async (req, res) => {
+    try {
+        const format = (req.query.format || 'csv').toLowerCase();
+        const from = req.query.from || '';
+        const to = req.query.to || '';
+        const events = await getEvents();
+        let list = events.events;
+        if (from) list = list.filter(e => (e.eventDate || '') >= from);
+        if (to) list = list.filter(e => (e.eventDate || '') <= to);
+        list.sort((a, b) => (a.eventDate || '').localeCompare(b.eventDate || ''));
 
-    if (format === 'ical') {
-        let ical = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//College Calendar//EN\r\n';
+        if (format === 'ical') {
+            let ical = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//College Calendar//EN\r\n';
         list.forEach(e => {
             ical += 'BEGIN:VEVENT\r\n';
             ical += 'UID:' + (e.id || Date.now()) + '@calendar\r\n';
@@ -952,111 +1021,136 @@ app.get('/api/events/export', (req, res) => {
         '"' + (e.description || '').replace(/"/g, '""') + '"',
         e.type || ''
     ].join(',')).join('\r\n');
-    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', 'attachment; filename="events.csv"');
-    res.send('\uFEFF' + header + rows);
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition', 'attachment; filename="events.csv"');
+        res.send('\uFEFF' + header + rows);
+    } catch (err) {
+        console.error('Export events error:', err);
+        res.status(500).json({ success: false, message: 'Export failed: ' + err.message });
+    }
 });
 
 // Announcements: list (all)
-app.get('/api/announcements', (req, res) => {
-    const data = getAnnouncements();
-    const list = (data.announcements || []).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-    res.json({ success: true, announcements: list });
+app.get('/api/announcements', async (req, res) => {
+    try {
+        const data = await getAnnouncements();
+        const list = (data.announcements || []).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        res.json({ success: true, announcements: list });
+    } catch (err) {
+        console.error('Get announcements error:', err);
+        res.status(500).json({ success: false, message: 'Failed to fetch announcements: ' + err.message });
+    }
 });
 
 // Announcements: create (admin only)
-app.post('/api/announcements', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({ success: false, message: 'Admin only' });
+app.post('/api/announcements', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Admin only' });
+        }
+        const { title, body } = req.body;
+        if (!title || !body) {
+            return res.status(400).json({ success: false, message: 'Title and body required' });
+        }
+        const data = await getAnnouncements();
+        const ann = {
+            id: Date.now().toString(),
+            title: title.trim(),
+            body: body.trim(),
+            createdBy: req.session.username,
+            createdAt: new Date().toISOString()
+        };
+        data.announcements = data.announcements || [];
+        data.announcements.push(ann);
+        await saveAnnouncements(data);
+        writeAuditLog('ANNOUNCEMENT_CREATE', { id: ann.id, title: ann.title }, req.session.userId);
+        res.json({ success: true, announcement: ann });
+    } catch (err) {
+        console.error('Create announcement error:', err);
+        res.status(500).json({ success: false, message: 'Failed to create announcement: ' + err.message });
     }
-    const { title, body } = req.body;
-    if (!title || !body) {
-        return res.status(400).json({ success: false, message: 'Title and body required' });
-    }
-    const data = getAnnouncements();
-    const ann = {
-        id: Date.now().toString(),
-        title: title.trim(),
-        body: body.trim(),
-        createdBy: req.session.username,
-        createdAt: new Date().toISOString()
-    };
-    data.announcements = data.announcements || [];
-    data.announcements.push(ann);
-    saveAnnouncements(data);
-    writeAuditLog('ANNOUNCEMENT_CREATE', { id: ann.id, title: ann.title }, req.session.userId);
-    res.json({ success: true, announcement: ann });
 });
 
 // Announcements: update (admin only)
-app.put('/api/announcements/:id', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({ success: false, message: 'Admin only' });
+app.put('/api/announcements/:id', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Admin only' });
+        }
+        const id = req.params.id;
+        const { title, body } = req.body;
+        const data = await getAnnouncements();
+        const idx = (data.announcements || []).findIndex(a => a.id === id);
+        if (idx === -1) return res.status(404).json({ success: false, message: 'Not found' });
+        if (title !== undefined) data.announcements[idx].title = title.trim();
+        if (body !== undefined) data.announcements[idx].body = body.trim();
+        await saveAnnouncements(data);
+        res.json({ success: true, announcement: data.announcements[idx] });
+    } catch (err) {
+        console.error('Update announcement error:', err);
+        res.status(500).json({ success: false, message: 'Failed to update announcement: ' + err.message });
     }
-    const id = req.params.id;
-    const { title, body } = req.body;
-    const data = getAnnouncements();
-    const idx = (data.announcements || []).findIndex(a => a.id === id);
-    if (idx === -1) return res.status(404).json({ success: false, message: 'Not found' });
-    if (title !== undefined) data.announcements[idx].title = title.trim();
-    if (body !== undefined) data.announcements[idx].body = body.trim();
-    saveAnnouncements(data);
-    res.json({ success: true, announcement: data.announcements[idx] });
 });
 
 // Announcements: delete (admin only)
-app.delete('/api/announcements/:id', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({ success: false, message: 'Admin only' });
+app.delete('/api/announcements/:id', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Admin only' });
+        }
+        const id = req.params.id;
+        const data = await getAnnouncements();
+        const idx = (data.announcements || []).findIndex(a => a.id === id);
+        if (idx === -1) return res.status(404).json({ success: false, message: 'Not found' });
+        const removed = data.announcements.splice(idx, 1)[0];
+        await saveAnnouncements(data);
+        writeAuditLog('ANNOUNCEMENT_DELETE', { id }, req.session.userId);
+        res.json({ success: true, message: 'Deleted' });
+    } catch (err) {
+        console.error('Delete announcement error:', err);
+        res.status(500).json({ success: false, message: 'Failed to delete announcement: ' + err.message });
     }
-    const id = req.params.id;
-    const data = getAnnouncements();
-    const idx = (data.announcements || []).findIndex(a => a.id === id);
-    if (idx === -1) return res.status(404).json({ success: false, message: 'Not found' });
-    const removed = data.announcements.splice(idx, 1)[0];
-    saveAnnouncements(data);
-    writeAuditLog('ANNOUNCEMENT_DELETE', { id }, req.session.userId);
-    res.json({ success: true, message: 'Deleted' });
 });
 
 // Create new event (admin only)
-app.post('/api/events', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can create events'
-        });
-    }
+app.post('/api/events', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can create events'
+            });
+        }
 
-    const { eventDate, title, description, type } = req.body;
-    if (!eventDate || !title || !type) {
-        return res.status(400).json({
-            success: false,
-            message: 'Event date, title, and type are required'
-        });
-    }
-    if (String(title).length > 200 || (description && String(description).length > 2000)) {
-        return res.status(400).json({
-            success: false,
-            message: 'Title or description too long'
-        });
-    }
+        const { eventDate, title, description, type } = req.body;
+        if (!eventDate || !title || !type) {
+            return res.status(400).json({
+                success: false,
+                message: 'Event date, title, and type are required'
+            });
+        }
+        if (String(title).length > 200 || (description && String(description).length > 2000)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Title or description too long'
+            });
+        }
 
-    const events = getEvents();
-    const newEvent = {
-        id: Date.now().toString(),
-        eventDate: eventDate,
-        title: title,
-        description: description || '',
-        type: type,
-        createdBy: req.session.username,
-        createdByName: req.session.name,
-        createdDate: new Date().toISOString(),
+        const events = await getEvents();
+        const newEvent = {
+            id: Date.now().toString(),
+            eventDate: eventDate,
+            title: title,
+            description: description || '',
+            type: type,
+            createdBy: req.session.username,
+            createdByName: req.session.name,
+            createdDate: new Date().toISOString(),
         updated: false
     };
 
     events.events.push(newEvent);
-    saveEvents(events);
+    await saveEvents(events);
     writeAuditLog('EVENT_CREATE', { id: newEvent.id, title: newEvent.title, eventDate: newEvent.eventDate }, req.session.userId);
 
     res.json({
@@ -1064,76 +1158,90 @@ app.post('/api/events', isAuthenticated, (req, res) => {
         message: 'Event created successfully',
         event: newEvent
     });
+    } catch (err) {
+        console.error('Create event error:', err);
+        res.status(500).json({ success: false, message: 'Failed to create event: ' + err.message });
+    }
 });
 
 // Update event (admin only)
-app.put('/api/events/:id', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can update events'
+app.put('/api/events/:id', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can update events'
+            });
+        }
+
+        const eventId = req.params.id;
+        const { title, description, type } = req.body;
+
+        const events = await getEvents();
+        const eventIndex = events.events.findIndex(e => e.id === eventId);
+
+        if (eventIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                message: 'Event not found'
+            });
+        }
+
+        const event = events.events[eventIndex];
+        event.title = title || event.title;
+        event.description = description !== undefined ? description : event.description;
+        event.type = type || event.type;
+        event.updated = true;
+        event.updatedDate = new Date().toISOString();
+
+        await saveEvents(events);
+        writeAuditLog('EVENT_UPDATE', { id: eventId, title: event.title }, req.session.userId);
+
+        res.json({
+            success: true,
+            message: 'Event updated successfully',
+            event: event
         });
+    } catch (err) {
+        console.error('Update event error:', err);
+        res.status(500).json({ success: false, message: 'Failed to update event: ' + err.message });
     }
-
-    const eventId = req.params.id;
-    const { title, description, type } = req.body;
-
-    const events = getEvents();
-    const eventIndex = events.events.findIndex(e => e.id === eventId);
-
-    if (eventIndex === -1) {
-        return res.status(404).json({
-            success: false,
-            message: 'Event not found'
-        });
-    }
-
-    const event = events.events[eventIndex];
-    event.title = title || event.title;
-    event.description = description !== undefined ? description : event.description;
-    event.type = type || event.type;
-    event.updated = true;
-    event.updatedDate = new Date().toISOString();
-
-    saveEvents(events);
-    writeAuditLog('EVENT_UPDATE', { id: eventId, title: event.title }, req.session.userId);
-
-    res.json({
-        success: true,
-        message: 'Event updated successfully',
-        event: event
-    });
 });
 
 // Delete event (admin only)
-app.delete('/api/events/:id', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can delete events'
+app.delete('/api/events/:id', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can delete events'
+            });
+        }
+
+        const eventId = req.params.id;
+        const events = await getEvents();
+        const eventIndex = events.events.findIndex(e => e.id === eventId);
+
+        if (eventIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                message: 'Event not found'
+            });
+        }
+
+        const deletedEvent = events.events[eventIndex];
+        events.events.splice(eventIndex, 1);
+        await saveEvents(events);
+        writeAuditLog('EVENT_DELETE', { id: eventId, title: deletedEvent.title }, req.session.userId);
+
+        res.json({
+            success: true,
+            message: 'Event deleted successfully'
         });
+    } catch (err) {
+        console.error('Delete event error:', err);
+        res.status(500).json({ success: false, message: 'Failed to delete event: ' + err.message });
     }
-
-    const eventId = req.params.id;
-    const events = getEvents();
-    const eventIndex = events.events.findIndex(e => e.id === eventId);
-
-    if (eventIndex === -1) {
-        return res.status(404).json({
-            success: false,
-            message: 'Event not found'
-        });
-    }
-
-    const deletedEvent = events.events[eventIndex];
-    events.events.splice(eventIndex, 1);
-    saveEvents(events);
-    writeAuditLog('EVENT_DELETE', { id: eventId, title: deletedEvent.title }, req.session.userId);
-
-    res.json({
-        success: true,
-        message: 'Event deleted successfully'
-    });
 });
 
 // ========== CHATBOT ENDPOINTS ==========
@@ -1453,9 +1561,10 @@ function generateChatbotResponse(userMessage) {
 }
 
 // Initialize database and start server
-initDatabase();
-initReportsDatabase();
-initEventsDatabase();
+// Note: Using Supabase - no local file initialization needed
+// initDatabase(); // Removed - using Supabase
+// initReportsDatabase(); // Removed - using Supabase
+// initEventsDatabase(); // Removed - using Supabase
 
 // Export app for Vercel serverless
 module.exports = app;

@@ -87,173 +87,156 @@ function writeAuditLog(action, details, userId) {
     } catch (err) { console.error('Audit log error:', err); }
 }
 
-// Initialize database with default users if it doesn't exist
-function initDatabase() {
-    if (!fs.existsSync(dbPath)) {
-        const defaultUsers = {
-            users: [
-                {
-                    id: 1,
-                    username: 'admin',
-                    password: bcrypt.hashSync('admin123', 10),
-                    role: 'admin',
-                    email: 'admin@college.edu',
-                    name: 'Administrator'
-                },
-                {
-                    id: 2,
-                    username: 'student1',
-                    password: bcrypt.hashSync('student123', 10),
-                    role: 'student',
-                    email: 'student1@college.edu',
-                    name: 'John Doe'
-                },
-                {
-                    id: 3,
-                    username: 'student2',
-                    password: bcrypt.hashSync('password123', 10),
-                    role: 'student',
-                    email: 'student2@college.edu',
-                    name: 'Jane Smith'
-                }
-            ]
-        };
-        fs.writeFileSync(dbPath, JSON.stringify(defaultUsers, null, 2));
+// Database functions - Supabase ONLY (no JSON fallback)
+// These will be overridden below with async Supabase versions
+
+// Password reset requests - Supabase ONLY
+async function getPasswordResetRequests() {
+    if (!USE_SUPABASE || !supabase) {
+        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
+    }
+    const { data, error } = await supabase.from('password_reset_requests').select('*');
+    if (error) throw error;
+    return { requests: data || [] };
+}
+
+async function savePasswordResetRequests(data) {
+    if (!USE_SUPABASE || !supabase) {
+        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
+    }
+    const items = data.requests || [];
+    const { error: upsertErr } = await supabase.from('password_reset_requests').upsert(items, { onConflict: 'id' });
+    if (upsertErr) throw upsertErr;
+    // delete absent
+    const { data: existing, error: existingErr } = await supabase.from('password_reset_requests').select('id');
+    if (existingErr) throw existingErr;
+    const existingIds = (existing || []).map(r => r.id);
+    const ids = items.map(i => i.id).filter(x => x !== undefined && x !== null);
+    const toDelete = existingIds.filter(id => !ids.includes(id));
+    if (toDelete.length > 0) {
+        const { error: delErr } = await supabase.from('password_reset_requests').delete().in('id', toDelete);
+        if (delErr) throw delErr;
     }
 }
 
-// Read database
-function getDatabase() {
-    const data = fs.readFileSync(dbPath, 'utf8');
-    return JSON.parse(data);
-}
-
-// Write database
-function saveDatabase(data) {
-    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
-}
-
-// Password reset requests (file path and helpers)
-const passwordResetRequestsPath = path.join(__dirname, 'password_reset_requests.json');
-
-function getPasswordResetRequests() {
-    if (!fs.existsSync(passwordResetRequestsPath)) {
-        fs.writeFileSync(passwordResetRequestsPath, JSON.stringify({ requests: [] }, null, 2));
+// Reports database - Supabase ONLY
+async function getReports() {
+    if (!USE_SUPABASE || !supabase) {
+        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
     }
-    return JSON.parse(fs.readFileSync(passwordResetRequestsPath, 'utf8'));
+    const { data, error } = await supabase.from('reports').select('*');
+    if (error) throw error;
+    return { reports: data || [] };
 }
 
-function savePasswordResetRequests(data) {
-    fs.writeFileSync(passwordResetRequestsPath, JSON.stringify(data, null, 2));
-}
-
-// Initialize reports database
-function initReportsDatabase() {
-    if (!fs.existsSync(reportsDbPath)) {
-        const defaultReports = {
-            reports: []
-        };
-        fs.writeFileSync(reportsDbPath, JSON.stringify(defaultReports, null, 2));
+async function saveReports(data) {
+    if (!USE_SUPABASE || !supabase) {
+        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
     }
-}
-
-// Read reports database
-function getReports() {
-    if (!fs.existsSync(reportsDbPath)) {
-        initReportsDatabase();
+    const items = data.reports || [];
+    const { error: upsertErr } = await supabase.from('reports').upsert(items, { onConflict: 'id' });
+    if (upsertErr) throw upsertErr;
+    const { data: existing, error: existingErr } = await supabase.from('reports').select('id');
+    if (existingErr) throw existingErr;
+    const existingIds = (existing || []).map(r => r.id);
+    const ids = items.map(i => i.id).filter(x => x !== undefined && x !== null);
+    const toDelete = existingIds.filter(id => !ids.includes(id));
+    if (toDelete.length > 0) {
+        const { error: delErr } = await supabase.from('reports').delete().in('id', toDelete);
+        if (delErr) throw delErr;
     }
-    const data = fs.readFileSync(reportsDbPath, 'utf8');
-    return JSON.parse(data);
-}
-
-// Write reports database
-function saveReports(data) {
-    fs.writeFileSync(reportsDbPath, JSON.stringify(data, null, 2));
 }
 
 // Routes
 
+// Helper function to serve HTML files safely on serverless
+function serveHTML(filePath) {
+    return (req, res) => {
+        try {
+            const html = fs.readFileSync(filePath, 'utf8');
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+            res.send(html);
+        } catch (err) {
+            console.error(`Error serving ${filePath}:`, err);
+            res.status(500).send('Error loading page');
+        }
+    };
+}
+
 // Root route - serve splash screen
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'splash.html'));
-});
+app.get('/', serveHTML(path.join(__dirname, 'splash.html')));
 
 // Splash route
-app.get('/splash.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'splash.html'));
-});
+app.get('/splash.html', serveHTML(path.join(__dirname, 'splash.html')));
 
 // Login page route
-app.get('/login.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login.html'));
-});
+app.get('/login.html', serveHTML(path.join(__dirname, 'login.html')));
 
 // Dashboard route
-app.get('/dashboard.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dashboard.html'));
-});
+app.get('/dashboard.html', serveHTML(path.join(__dirname, 'dashboard.html')));
 
 // Admin panel route
-app.get('/admin-panel.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin-panel.html'));
-});
+app.get('/admin-panel.html', serveHTML(path.join(__dirname, 'admin-panel.html')));
 
 // Calendar route
-app.get('/daily%20calender.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'daily calender.html'));
-});
+app.get('/daily%20calender.html', serveHTML(path.join(__dirname, 'daily calender.html')));
 
 app.get('/calendar.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'daily calender.html'));
 });
 
-app.post('/api/login', loginLimiter, (req, res) => {
-    const { username, password, role } = req.body;
+app.post('/api/login', loginLimiter, async (req, res) => {
+    try {
+        const { username, password, role } = req.body;
 
-    if (!username || !password) {
-        return res.status(400).json({
-            success: false,
-            message: 'Username and password are required'
-        });
-    }
-
-    const db = getDatabase();
-    const user = db.users.find(u => u.username === username && u.role === role);
-
-    if (!user) {
-        return res.status(401).json({
-            success: false,
-            message: 'User not found or incorrect role'
-        });
-    }
-
-    // Compare password with hashed password
-    const isPasswordValid = bcrypt.compareSync(password, user.password);
-
-    if (!isPasswordValid) {
-        return res.status(401).json({
-            success: false,
-            message: 'Invalid password'
-        });
-    }
-
-    // Set session
-    req.session.userId = user.id;
-    req.session.username = user.username;
-    req.session.role = user.role;
-    req.session.name = user.name;
-
-    res.json({
-        success: true,
-        message: 'Login successful',
-        user: {
-            id: user.id,
-            username: user.username,
-            name: user.name,
-            role: user.role,
-            email: user.email
+        if (!username || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Username and password are required'
+            });
         }
-    });
+
+        const db = await getDatabase();
+        const user = db.users.find(u => u.username === username && u.role === role);
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'User not found or incorrect role'
+            });
+        }
+
+        // Compare password with hashed password
+        const isPasswordValid = bcrypt.compareSync(password, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid password'
+            });
+        }
+
+        // Set session
+        req.session.userId = user.id;
+        req.session.username = user.username;
+        req.session.role = user.role;
+        req.session.name = user.name;
+
+        res.json({
+            success: true,
+            message: 'Login successful',
+            user: {
+                id: user.id,
+                username: user.username,
+                name: user.name,
+                role: user.role,
+                email: user.email
+            }
+        });
+    } catch (err) {
+        console.error('Login error:', err);
+        res.status(500).json({ success: false, message: 'Login failed: ' + err.message });
+    }
 });
 
 // Logout route
@@ -334,407 +317,463 @@ const registerValidations = [
 ];
 
 // Register new user (admin only)
-app.post('/api/register', registerLimiter, isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can register new users'
-        });
-    }
-    return runValidation(req, res, registerValidations, (req, res) => {
-    const { username, password, email, name, role } = req.body;
-
-    const db = getDatabase();
-
-    // Check if user already exists
-    if (db.users.find(u => u.username === username)) {
-        return res.status(400).json({
-            success: false,
-            message: 'Username already exists'
-        });
-    }
-
-    // Create new user
-    const newUser = {
-        id: Math.max(...db.users.map(u => u.id), 0) + 1,
-        username: username,
-        password: bcrypt.hashSync(password, 10),
-        email: email,
-        name: name,
-        role: role
-    };
-
-    db.users.push(newUser);
-    saveDatabase(db);
-    writeAuditLog('USER_CREATE', { username: newUser.username, role: newUser.role }, req.session.userId);
-
-    res.json({
-        success: true,
-        message: 'User registered successfully',
-        user: {
-            id: newUser.id,
-            username: newUser.username,
-            email: newUser.email,
-            name: newUser.name,
-            role: newUser.role
+app.post('/api/register', registerLimiter, isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can register new users'
+            });
         }
-    });
-    });
+        return runValidation(req, res, registerValidations, async (req, res) => {
+        const { username, password, email, name, role } = req.body;
+
+        const db = await getDatabase();
+
+        // Check if user already exists
+        if (db.users.find(u => u.username === username)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Username already exists'
+            });
+        }
+
+        // Create new user
+        const newUser = {
+            id: Math.max(...db.users.map(u => u.id), 0) + 1,
+            username: username,
+            password: bcrypt.hashSync(password, 10),
+            email: email,
+            name: name,
+            role: role
+        };
+
+        db.users.push(newUser);
+        await saveDatabase(db);
+        writeAuditLog('USER_CREATE', { username: newUser.username, role: newUser.role }, req.session.userId);
+
+        res.json({
+            success: true,
+            message: 'User registered successfully',
+            user: {
+                id: newUser.id,
+                username: newUser.username,
+                email: newUser.email,
+                name: newUser.name,
+                role: newUser.role
+            }
+        });
+        });
+    } catch (err) {
+        console.error('Register error:', err);
+        res.status(500).json({ success: false, message: 'Registration failed: ' + err.message });
+    }
 });
 
 // Get all users (admin only)
-app.get('/api/users', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can view users'
+app.get('/api/users', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can view users'
+            });
+        }
+
+        const db = await getDatabase();
+        const users = db.users.map(u => ({
+            id: u.id,
+            username: u.username,
+            email: u.email,
+            name: u.name,
+            role: u.role
+        }));
+
+        res.json({
+            success: true,
+            users: users
         });
+    } catch (err) {
+        console.error('Get users error:', err);
+        res.status(500).json({ success: false, message: 'Failed to fetch users: ' + err.message });
     }
-
-    const db = getDatabase();
-    const users = db.users.map(u => ({
-        id: u.id,
-        username: u.username,
-        email: u.email,
-        name: u.name,
-        role: u.role
-    }));
-
-    res.json({
-        success: true,
-        users: users
-    });
 });
 
 // Change password
-app.post('/api/change-password', isAuthenticated, (req, res) => {
-    const { currentPassword, newPassword } = req.body;
+app.post('/api/change-password', isAuthenticated, async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
 
-    if (!currentPassword || !newPassword) {
-        return res.status(400).json({
-            success: false,
-            message: 'Current and new passwords are required'
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Current and new passwords are required'
+            });
+        }
+
+        const db = await getDatabase();
+        const user = db.users.find(u => u.id === req.session.userId);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Verify current password
+        if (!bcrypt.compareSync(currentPassword, user.password)) {
+            return res.status(401).json({
+                success: false,
+                message: 'Current password is incorrect'
+            });
+        }
+
+        // Update password
+        user.password = bcrypt.hashSync(newPassword, 10);
+        await saveDatabase(db);
+
+        res.json({
+            success: true,
+            message: 'Password changed successfully'
         });
+    } catch (err) {
+        console.error('Change password error:', err);
+        res.status(500).json({ success: false, message: 'Failed to change password: ' + err.message });
     }
-
-    const db = getDatabase();
-    const user = db.users.find(u => u.id === req.session.userId);
-
-    if (!user) {
-        return res.status(404).json({
-            success: false,
-            message: 'User not found'
-        });
-    }
-
-    // Verify current password
-    if (!bcrypt.compareSync(currentPassword, user.password)) {
-        return res.status(401).json({
-            success: false,
-            message: 'Current password is incorrect'
-        });
-    }
-
-    // Update password
-    user.password = bcrypt.hashSync(newPassword, 10);
-    saveDatabase(db);
-
-    res.json({
-        success: true,
-        message: 'Password changed successfully'
-    });
 });
 
 // Forgot password - create reset request (by email or username, admin will change password)
-app.post('/api/forgot-password', loginLimiter, (req, res) => {
-    const { email, username } = req.body;
-    const identifier = email || username;
+app.post('/api/forgot-password', loginLimiter, async (req, res) => {
+    try {
+        const { email, username } = req.body;
+        const identifier = email || username;
 
-    if (!identifier) {
-        return res.status(400).json({ success: false, message: 'Email or username is required' });
-    }
+        if (!identifier) {
+            return res.status(400).json({ success: false, message: 'Email or username is required' });
+        }
 
-    const db = getDatabase();
-    const user = db.users.find(u => u.email === identifier || u.username === identifier);
+        const db = await getDatabase();
+        const user = db.users.find(u => u.email === identifier || u.username === identifier);
 
-    if (!user) {
-        return res.status(404).json({ success: false, message: 'No account found with that email or username' });
-    }
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'No account found with that email or username' });
+        }
 
-    const requestsData = getPasswordResetRequests();
+        const requestsData = await getPasswordResetRequests();
 
-    // Prevent duplicate pending requests for the same user
-    const alreadyPending = requestsData.requests.some(r => r.userId === user.id && r.status === 'pending');
-    if (alreadyPending) {
-        return res.status(200).json({
+        // Prevent duplicate pending requests for the same user
+        const alreadyPending = requestsData.requests.some(r => r.userId === user.id && r.status === 'pending');
+        if (alreadyPending) {
+            return res.status(200).json({
+                success: true,
+                message: 'A password reset request is already pending for this account. Please wait for the admin to update your password.'
+            });
+        }
+
+        const newId = (requestsData.requests.reduce((max, r) => Math.max(max, r.id || 0), 0) || 0) + 1;
+
+        const requestEntry = {
+            id: newId,
+            userId: user.id,
+            username: user.username,
+            email: user.email,
+            createdAt: new Date().toISOString(),
+            status: 'pending'
+        };
+
+        requestsData.requests.push(requestEntry);
+        await savePasswordResetRequests(requestsData);
+
+        writeAuditLog('PASSWORD_RESET_REQUEST_CREATED', { userId: user.id, username: user.username }, null);
+
+        return res.json({
             success: true,
-            message: 'A password reset request is already pending for this account. Please wait for the admin to update your password.'
+            message: 'Your password reset request has been sent to the admin. They will update your password and inform you.'
         });
+    } catch (err) {
+        console.error('Forgot password error:', err);
+        res.status(500).json({ success: false, message: 'Failed to process password reset request: ' + err.message });
     }
-
-    const newId = (requestsData.requests.reduce((max, r) => Math.max(max, r.id || 0), 0) || 0) + 1;
-
-    const requestEntry = {
-        id: newId,
-        userId: user.id,
-        username: user.username,
-        email: user.email,
-        createdAt: new Date().toISOString(),
-        status: 'pending'
-    };
-
-    requestsData.requests.push(requestEntry);
-    savePasswordResetRequests(requestsData);
-
-    writeAuditLog('PASSWORD_RESET_REQUEST_CREATED', { userId: user.id, username: user.username }, null);
-
-    return res.json({
-        success: true,
-        message: 'Your password reset request has been sent to the admin. They will update your password and inform you.'
-    });
 });
 
 // Admin: get all password reset requests
-app.get('/api/password-reset-requests', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can view password reset requests'
-        });
-    }
+app.get('/api/password-reset-requests', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can view password reset requests'
+            });
+        }
 
-    const data = getPasswordResetRequests();
-    return res.json({
-        success: true,
-        requests: data.requests || []
-    });
+        const data = await getPasswordResetRequests();
+        return res.json({
+            success: true,
+            requests: data.requests || []
+        });
+    } catch (err) {
+        console.error('Get password reset requests error:', err);
+        res.status(500).json({ success: false, message: 'Failed to fetch requests: ' + err.message });
+    }
 });
 
 // Admin: resolve a password reset request and set new password for the student
-app.post('/api/password-reset-requests/:requestId/resolve', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can resolve password reset requests'
+app.post('/api/password-reset-requests/:requestId/resolve', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can resolve password reset requests'
+            });
+        }
+
+        const { newPassword } = req.body;
+        const requestId = parseInt(req.params.requestId, 10);
+
+        if (!newPassword || newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'New password is required and must be at least 6 characters long'
+            });
+        }
+
+        const requestsData = await getPasswordResetRequests();
+        const request = requestsData.requests.find(r => r.id === requestId);
+
+        if (!request) {
+            return res.status(404).json({
+                success: false,
+                message: 'Password reset request not found'
+            });
+        }
+
+        if (request.status !== 'pending') {
+            return res.status(400).json({
+                success: false,
+                message: 'This request has already been resolved'
+            });
+        }
+
+        const db = await getDatabase();
+        const user = db.users.find(u => u.id === request.userId);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User associated with this request no longer exists'
+            });
+        }
+
+        user.password = bcrypt.hashSync(newPassword, 10);
+        await saveDatabase(db);
+
+        request.status = 'completed';
+        request.resolvedAt = new Date().toISOString();
+        request.resolvedBy = req.session.userId;
+        await savePasswordResetRequests(requestsData);
+
+        writeAuditLog('PASSWORD_RESET_REQUEST_RESOLVED', { requestId, userId: user.id, username: user.username }, req.session.userId);
+
+        return res.json({
+            success: true,
+            message: `Password for user "${user.username}" has been updated.`
         });
+    } catch (err) {
+        console.error('Resolve password reset error:', err);
+        res.status(500).json({ success: false, message: 'Failed to resolve password reset: ' + err.message });
     }
-
-    const { newPassword } = req.body;
-    const requestId = parseInt(req.params.requestId, 10);
-
-    if (!newPassword || newPassword.length < 6) {
-        return res.status(400).json({
-            success: false,
-            message: 'New password is required and must be at least 6 characters long'
-        });
-    }
-
-    const requestsData = getPasswordResetRequests();
-    const request = requestsData.requests.find(r => r.id === requestId);
-
-    if (!request) {
-        return res.status(404).json({
-            success: false,
-            message: 'Password reset request not found'
-        });
-    }
-
-    if (request.status !== 'pending') {
-        return res.status(400).json({
-            success: false,
-            message: 'This request has already been resolved'
-        });
-    }
-
-    const db = getDatabase();
-    const user = db.users.find(u => u.id === request.userId);
-
-    if (!user) {
-        return res.status(404).json({
-            success: false,
-            message: 'User associated with this request no longer exists'
-        });
-    }
-
-    user.password = bcrypt.hashSync(newPassword, 10);
-    saveDatabase(db);
-
-    request.status = 'completed';
-    request.resolvedAt = new Date().toISOString();
-    request.resolvedBy = req.session.userId;
-    savePasswordResetRequests(requestsData);
-
-    writeAuditLog('PASSWORD_RESET_REQUEST_RESOLVED', { requestId, userId: user.id, username: user.username }, req.session.userId);
-
-    return res.json({
-        success: true,
-        message: `Password for user "${user.username}" has been updated.`
-    });
 });
 
 // Admin: cancel a password reset request
-app.post('/api/password-reset-requests/:requestId/cancel', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can cancel password reset requests'
+app.post('/api/password-reset-requests/:requestId/cancel', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can cancel password reset requests'
+            });
+        }
+
+        const requestId = parseInt(req.params.requestId, 10);
+        const requestsData = await getPasswordResetRequests();
+        const request = requestsData.requests.find(r => r.id === requestId);
+
+        if (!request) {
+            return res.status(404).json({
+                success: false,
+                message: 'Password reset request not found'
+            });
+        }
+
+        if (request.status !== 'pending') {
+            return res.status(400).json({
+                success: false,
+                message: 'Only pending requests can be cancelled'
+            });
+        }
+
+        request.status = 'cancelled';
+        request.resolvedAt = new Date().toISOString();
+        request.resolvedBy = req.session.userId;
+        await savePasswordResetRequests(requestsData);
+
+        writeAuditLog('PASSWORD_RESET_REQUEST_CANCELLED', { requestId, userId: request.userId, username: request.username }, req.session.userId);
+
+        return res.json({
+            success: true,
+            message: `Password reset request for user "${request.username}" has been cancelled.`
         });
+    } catch (err) {
+        console.error('Cancel password reset error:', err);
+        res.status(500).json({ success: false, message: 'Failed to cancel password reset: ' + err.message });
     }
-
-    const requestId = parseInt(req.params.requestId, 10);
-    const requestsData = getPasswordResetRequests();
-    const request = requestsData.requests.find(r => r.id === requestId);
-
-    if (!request) {
-        return res.status(404).json({
-            success: false,
-            message: 'Password reset request not found'
-        });
-    }
-
-    if (request.status !== 'pending') {
-        return res.status(400).json({
-            success: false,
-            message: 'Only pending requests can be cancelled'
-        });
-    }
-
-    request.status = 'cancelled';
-    request.resolvedAt = new Date().toISOString();
-    request.resolvedBy = req.session.userId;
-    savePasswordResetRequests(requestsData);
-
-    writeAuditLog('PASSWORD_RESET_REQUEST_CANCELLED', { requestId, userId: request.userId, username: request.username }, req.session.userId);
-
-    return res.json({
-        success: true,
-        message: `Password reset request for user "${request.username}" has been cancelled.`
-    });
 });
 
 // Delete user (admin only)
-app.delete('/api/users/:userId', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can delete users'
+app.delete('/api/users/:userId', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can delete users'
+            });
+        }
+
+        const userId = parseInt(req.params.userId);
+        const db = await getDatabase();
+
+        // Prevent deleting yourself
+        if (userId === req.session.userId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cannot delete your own account'
+            });
+        }
+
+        const userIndex = db.users.findIndex(u => u.id === userId);
+        if (userIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        const deletedUser = db.users[userIndex];
+        db.users.splice(userIndex, 1);
+        await saveDatabase(db);
+        writeAuditLog('USER_DELETE', { userId, username: deletedUser.username }, req.session.userId);
+
+        res.json({
+            success: true,
+            message: `User "${deletedUser.username}" deleted successfully`
         });
+    } catch (err) {
+        console.error('Delete user error:', err);
+        res.status(500).json({ success: false, message: 'Failed to delete user: ' + err.message });
     }
-
-    const userId = parseInt(req.params.userId);
-    const db = getDatabase();
-
-    // Prevent deleting yourself
-    if (userId === req.session.userId) {
-        return res.status(400).json({
-            success: false,
-            message: 'Cannot delete your own account'
-        });
-    }
-
-    const userIndex = db.users.findIndex(u => u.id === userId);
-    if (userIndex === -1) {
-        return res.status(404).json({
-            success: false,
-            message: 'User not found'
-        });
-    }
-
-    const deletedUser = db.users[userIndex];
-    db.users.splice(userIndex, 1);
-    saveDatabase(db);
-    writeAuditLog('USER_DELETE', { userId, username: deletedUser.username }, req.session.userId);
-
-    res.json({
-        success: true,
-        message: `User "${deletedUser.username}" deleted successfully`
-    });
 });
 
 // Report endpoints
 
 // Submit report (admin only)
-app.post('/api/reports', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can submit reports'
+app.post('/api/reports', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can submit reports'
+            });
+        }
+
+        const { eventDate, reportTitle, reportContent, eventName } = req.body;
+        if (!eventDate || !reportTitle || !reportContent) {
+            return res.status(400).json({
+                success: false,
+                message: 'Event date, title, and content are required'
+            });
+        }
+        if (String(reportTitle).length > 200 || String(reportContent).length > 50000) {
+            return res.status(400).json({
+                success: false,
+                message: 'Title or content too long'
+            });
+        }
+
+        const reports = await getReports();
+        const newReport = {
+            id: Date.now().toString(),
+            eventDate: eventDate,
+            eventName: eventName || 'Unnamed Event',
+            reportTitle: reportTitle,
+            reportContent: reportContent,
+            submittedBy: req.session.name,
+            submittedByUsername: req.session.username,
+            submittedDate: new Date().toISOString(),
+            status: 'submitted'
+        };
+
+        reports.reports.push(newReport);
+        await saveReports(reports);
+        writeAuditLog('REPORT_SUBMIT', { id: newReport.id, eventDate: newReport.eventDate }, req.session.userId);
+
+        res.json({
+            success: true,
+            message: 'Report submitted successfully',
+            report: newReport
         });
+    } catch (err) {
+        console.error('Submit report error:', err);
+        res.status(500).json({ success: false, message: 'Failed to submit report: ' + err.message });
     }
-
-    const { eventDate, reportTitle, reportContent, eventName } = req.body;
-    if (!eventDate || !reportTitle || !reportContent) {
-        return res.status(400).json({
-            success: false,
-            message: 'Event date, title, and content are required'
-        });
-    }
-    if (String(reportTitle).length > 200 || String(reportContent).length > 50000) {
-        return res.status(400).json({
-            success: false,
-            message: 'Title or content too long'
-        });
-    }
-
-    const reports = getReports();
-    const newReport = {
-        id: Date.now().toString(),
-        eventDate: eventDate,
-        eventName: eventName || 'Unnamed Event',
-        reportTitle: reportTitle,
-        reportContent: reportContent,
-        submittedBy: req.session.name,
-        submittedByUsername: req.session.username,
-        submittedDate: new Date().toISOString(),
-        status: 'submitted'
-    };
-
-    reports.reports.push(newReport);
-    saveReports(reports);
-    writeAuditLog('REPORT_SUBMIT', { id: newReport.id, eventDate: newReport.eventDate }, req.session.userId);
-
-    res.json({
-        success: true,
-        message: 'Report submitted successfully',
-        report: newReport
-    });
 });
 
 // Get all reports
-app.get('/api/reports', (req, res) => {
-    const reports = getReports();
-    res.json({
-        success: true,
-        reports: reports.reports
-    });
+app.get('/api/reports', async (req, res) => {
+    try {
+        const reports = await getReports();
+        res.json({
+            success: true,
+            reports: reports.reports
+        });
+    } catch (err) {
+        console.error('Get reports error:', err);
+        res.status(500).json({ success: false, message: 'Failed to fetch reports: ' + err.message });
+    }
 });
 
 // Get report by date
-app.get('/api/reports/date/:eventDate', (req, res) => {
-    const eventDate = req.params.eventDate;
-    const reports = getReports();
-    const dateReports = reports.reports.filter(r => r.eventDate === eventDate);
+app.get('/api/reports/date/:eventDate', async (req, res) => {
+    try {
+        const eventDate = req.params.eventDate;
+        const reports = await getReports();
+        const dateReports = reports.reports.filter(r => r.eventDate === eventDate);
 
-    res.json({
-        success: true,
-        reports: dateReports
-    });
+        res.json({
+            success: true,
+            reports: dateReports
+        });
+    } catch (err) {
+        console.error('Get reports by date error:', err);
+        res.status(500).json({ success: false, message: 'Failed to fetch reports: ' + err.message });
+    }
 });
 
 // Download report
-app.get('/api/reports/download/:id', (req, res) => {
-    const reportId = req.params.id;
-    const reports = getReports();
-    const report = reports.reports.find(r => r.id === reportId);
+app.get('/api/reports/download/:id', async (req, res) => {
+    try {
+        const reportId = req.params.id;
+        const reports = await getReports();
+        const report = reports.reports.find(r => r.id === reportId);
 
-    if (!report) {
-        return res.status(404).json({
-            success: false,
-            message: 'Report not found'
-        });
-    }
+        if (!report) {
+            return res.status(404).json({
+                success: false,
+                message: 'Report not found'
+            });
+        }
 
-    const reportContent = `
+        const reportContent = `
 Event Report
 ============
 Event Name: ${report.eventName}
@@ -749,40 +788,49 @@ Submitted by: ${report.submittedBy}
 Submitted on: ${new Date(report.submittedDate).toLocaleString()}
 `;
 
-    res.setHeader('Content-Type', 'text/plain');
-    res.setHeader('Content-Disposition', `attachment; filename="Report_${reportId}.txt"`);
-    res.send(reportContent);
+        res.setHeader('Content-Type', 'text/plain');
+        res.setHeader('Content-Disposition', `attachment; filename="Report_${reportId}.txt"`);
+        res.send(reportContent);
+    } catch (err) {
+        console.error('Download report error:', err);
+        res.status(500).json({ success: false, message: 'Failed to download report: ' + err.message });
+    }
 });
 
 // Delete report (admin only)
-app.delete('/api/reports/:id', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can delete reports'
+app.delete('/api/reports/:id', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can delete reports'
+            });
+        }
+
+        const reportId = req.params.id;
+        const reports = await getReports();
+        const reportIndex = reports.reports.findIndex(r => r.id === reportId);
+
+        if (reportIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                message: 'Report not found'
+            });
+        }
+
+        const deletedReport = reports.reports[reportIndex];
+        reports.reports.splice(reportIndex, 1);
+        await saveReports(reports);
+        writeAuditLog('REPORT_DELETE', { id: reportId, title: deletedReport.reportTitle }, req.session.userId);
+
+        res.json({
+            success: true,
+            message: 'Report deleted successfully'
         });
+    } catch (err) {
+        console.error('Delete report error:', err);
+        res.status(500).json({ success: false, message: 'Failed to delete report: ' + err.message });
     }
-
-    const reportId = req.params.id;
-    const reports = getReports();
-    const reportIndex = reports.reports.findIndex(r => r.id === reportId);
-
-    if (reportIndex === -1) {
-        return res.status(404).json({
-            success: false,
-            message: 'Report not found'
-        });
-    }
-
-    const deletedReport = reports.reports[reportIndex];
-    reports.reports.splice(reportIndex, 1);
-    saveReports(reports);
-    writeAuditLog('REPORT_DELETE', { id: reportId, title: deletedReport.reportTitle }, req.session.userId);
-
-    res.json({
-        success: true,
-        message: 'Report deleted successfully'
-    });
 });
 
 // Events database file path

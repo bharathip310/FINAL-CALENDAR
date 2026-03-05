@@ -149,35 +149,37 @@ async function saveReports(data) {
 
 // Routes
 
+// Helper function to serve HTML files safely on serverless
+function serveHTML(filePath) {
+    return (req, res) => {
+        try {
+            const html = fs.readFileSync(filePath, 'utf8');
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+            res.send(html);
+        } catch (err) {
+            console.error(`Error serving ${filePath}:`, err);
+            res.status(500).send('Error loading page');
+        }
+    };
+}
+
 // Root route - serve splash screen
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'splash.html'));
-});
+app.get('/', serveHTML(path.join(__dirname, 'splash.html')));
 
 // Splash route
-app.get('/splash.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'splash.html'));
-});
+app.get('/splash.html', serveHTML(path.join(__dirname, 'splash.html')));
 
 // Login page route
-app.get('/login.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login.html'));
-});
+app.get('/login.html', serveHTML(path.join(__dirname, 'login.html')));
 
 // Dashboard route
-app.get('/dashboard.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dashboard.html'));
-});
+app.get('/dashboard.html', serveHTML(path.join(__dirname, 'dashboard.html')));
 
 // Admin panel route
-app.get('/admin-panel.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin-panel.html'));
-});
+app.get('/admin-panel.html', serveHTML(path.join(__dirname, 'admin-panel.html')));
 
 // Calendar route
-app.get('/daily%20calender.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'daily calender.html'));
-});
+app.get('/daily%20calender.html', serveHTML(path.join(__dirname, 'daily calender.html')));
 
 app.get('/calendar.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'daily calender.html'));

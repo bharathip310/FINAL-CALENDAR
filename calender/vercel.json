@@ -6,6 +6,10 @@
       "use": "@vercel/node"
     },
     {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
       "src": "image/**",
       "use": "@vercel/static"
     }
@@ -23,8 +27,12 @@
       "dest": "server.js"
     },
     {
+      "src": "^/$",
+      "dest": "/splash.html"
+    },
+    {
       "src": "/(.*\\.html)$",
-      "dest": "server.js"
+      "dest": "/$1.html"
     },
     {
       "src": "/(.*)",

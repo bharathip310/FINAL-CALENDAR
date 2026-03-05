@@ -87,88 +87,64 @@ function writeAuditLog(action, details, userId) {
     } catch (err) { console.error('Audit log error:', err); }
 }
 
-// Initialize database with default users if it doesn't exist
-function initDatabase() {
-    if (!fs.existsSync(dbPath)) {
-        const defaultUsers = {
-            users: [
-                {
-                    id: 1,
-                    username: 'admin',
-                    password: bcrypt.hashSync('admin123', 10),
-                    role: 'admin',
-                    email: 'admin@college.edu',
-                    name: 'Administrator'
-                },
-                {
-                    id: 2,
-                    username: 'student1',
-                    password: bcrypt.hashSync('student123', 10),
-                    role: 'student',
-                    email: 'student1@college.edu',
-                    name: 'John Doe'
-                },
-                {
-                    id: 3,
-                    username: 'student2',
-                    password: bcrypt.hashSync('password123', 10),
-                    role: 'student',
-                    email: 'student2@college.edu',
-                    name: 'Jane Smith'
-                }
-            ]
-        };
-        fs.writeFileSync(dbPath, JSON.stringify(defaultUsers, null, 2));
+// Database functions - Supabase ONLY (no JSON fallback)
+// These will be overridden below with async Supabase versions
+
+// Password reset requests - Supabase ONLY
+async function getPasswordResetRequests() {
+    if (!USE_SUPABASE || !supabase) {
+        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
+    }
+    const { data, error } = await supabase.from('password_reset_requests').select('*');
+    if (error) throw error;
+    return { requests: data || [] };
+}
+
+async function savePasswordResetRequests(data) {
+    if (!USE_SUPABASE || !supabase) {
+        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
+    }
+    const items = data.requests || [];
+    const { error: upsertErr } = await supabase.from('password_reset_requests').upsert(items, { onConflict: 'id' });
+    if (upsertErr) throw upsertErr;
+    // delete absent
+    const { data: existing, error: existingErr } = await supabase.from('password_reset_requests').select('id');
+    if (existingErr) throw existingErr;
+    const existingIds = (existing || []).map(r => r.id);
+    const ids = items.map(i => i.id).filter(x => x !== undefined && x !== null);
+    const toDelete = existingIds.filter(id => !ids.includes(id));
+    if (toDelete.length > 0) {
+        const { error: delErr } = await supabase.from('password_reset_requests').delete().in('id', toDelete);
+        if (delErr) throw delErr;
     }
 }
 
-// Read database
-function getDatabase() {
-    const data = fs.readFileSync(dbPath, 'utf8');
-    return JSON.parse(data);
-}
-
-// Write database
-function saveDatabase(data) {
-    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
-}
-
-// Password reset requests (file path and helpers)
-const passwordResetRequestsPath = path.join(__dirname, 'password_reset_requests.json');
-
-function getPasswordResetRequests() {
-    if (!fs.existsSync(passwordResetRequestsPath)) {
-        fs.writeFileSync(passwordResetRequestsPath, JSON.stringify({ requests: [] }, null, 2));
+// Reports database - Supabase ONLY
+async function getReports() {
+    if (!USE_SUPABASE || !supabase) {
+        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
     }
-    return JSON.parse(fs.readFileSync(passwordResetRequestsPath, 'utf8'));
+    const { data, error } = await supabase.from('reports').select('*');
+    if (error) throw error;
+    return { reports: data || [] };
 }
 
-function savePasswordResetRequests(data) {
-    fs.writeFileSync(passwordResetRequestsPath, JSON.stringify(data, null, 2));
-}
-
-// Initialize reports database
-function initReportsDatabase() {
-    if (!fs.existsSync(reportsDbPath)) {
-        const defaultReports = {
-            reports: []
-        };
-        fs.writeFileSync(reportsDbPath, JSON.stringify(defaultReports, null, 2));
+async function saveReports(data) {
+    if (!USE_SUPABASE || !supabase) {
+        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
     }
-}
-
-// Read reports database
-function getReports() {
-    if (!fs.existsSync(reportsDbPath)) {
-        initReportsDatabase();
+    const items = data.reports || [];
+    const { error: upsertErr } = await supabase.from('reports').upsert(items, { onConflict: 'id' });
+    if (upsertErr) throw upsertErr;
+    const { data: existing, error: existingErr } = await supabase.from('reports').select('id');
+    if (existingErr) throw existingErr;
+    const existingIds = (existing || []).map(r => r.id);
+    const ids = items.map(i => i.id).filter(x => x !== undefined && x !== null);
+    const toDelete = existingIds.filter(id => !ids.includes(id));
+    if (toDelete.length > 0) {
+        const { error: delErr } = await supabase.from('reports').delete().in('id', toDelete);
+        if (delErr) throw delErr;
     }
-    const data = fs.readFileSync(reportsDbPath, 'utf8');
-    return JSON.parse(data);
-}
-
-// Write reports database
-function saveReports(data) {
-    fs.writeFileSync(reportsDbPath, JSON.stringify(data, null, 2));
 }
 
 // Routes
@@ -207,53 +183,58 @@ app.get('/calendar.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'daily calender.html'));
 });
 
-app.post('/api/login', loginLimiter, (req, res) => {
-    const { username, password, role } = req.body;
+app.post('/api/login', loginLimiter, async (req, res) => {
+    try {
+        const { username, password, role } = req.body;
 
-    if (!username || !password) {
-        return res.status(400).json({
-            success: false,
-            message: 'Username and password are required'
-        });
-    }
-
-    const db = getDatabase();
-    const user = db.users.find(u => u.username === username && u.role === role);
-
-    if (!user) {
-        return res.status(401).json({
-            success: false,
-            message: 'User not found or incorrect role'
-        });
-    }
-
-    // Compare password with hashed password
-    const isPasswordValid = bcrypt.compareSync(password, user.password);
-
-    if (!isPasswordValid) {
-        return res.status(401).json({
-            success: false,
-            message: 'Invalid password'
-        });
-    }
-
-    // Set session
-    req.session.userId = user.id;
-    req.session.username = user.username;
-    req.session.role = user.role;
-    req.session.name = user.name;
-
-    res.json({
-        success: true,
-        message: 'Login successful',
-        user: {
-            id: user.id,
-            username: user.username,
-            name: user.name,
-            role: user.role,
-            email: user.email
+        if (!username || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Username and password are required'
+            });
         }
-    });
+
+        const db = await getDatabase();
+        const user = db.users.find(u => u.username === username && u.role === role);
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'User not found or incorrect role'
+            });
+        }
+
+        // Compare password with hashed password
+        const isPasswordValid = bcrypt.compareSync(password, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid password'
+            });
+        }
+
+        // Set session
+        req.session.userId = user.id;
+        req.session.username = user.username;
+        req.session.role = user.role;
+        req.session.name = user.name;
+
+        res.json({
+            success: true,
+            message: 'Login successful',
+            user: {
+                id: user.id,
+                username: user.username,
+                name: user.name,
+                role: user.role,
+                email: user.email
+            }
+        });
+    } catch (err) {
+        console.error('Login error:', err);
+        res.status(500).json({ success: false, message: 'Login failed: ' + err.message });
+    }
 });
 
 // Logout route

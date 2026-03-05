@@ -444,295 +444,336 @@ app.post('/api/change-password', isAuthenticated, async (req, res) => {
 });
 
 // Forgot password - create reset request (by email or username, admin will change password)
-app.post('/api/forgot-password', loginLimiter, (req, res) => {
-    const { email, username } = req.body;
-    const identifier = email || username;
+app.post('/api/forgot-password', loginLimiter, async (req, res) => {
+    try {
+        const { email, username } = req.body;
+        const identifier = email || username;
 
-    if (!identifier) {
-        return res.status(400).json({ success: false, message: 'Email or username is required' });
-    }
+        if (!identifier) {
+            return res.status(400).json({ success: false, message: 'Email or username is required' });
+        }
 
-    const db = getDatabase();
-    const user = db.users.find(u => u.email === identifier || u.username === identifier);
+        const db = await getDatabase();
+        const user = db.users.find(u => u.email === identifier || u.username === identifier);
 
-    if (!user) {
-        return res.status(404).json({ success: false, message: 'No account found with that email or username' });
-    }
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'No account found with that email or username' });
+        }
 
-    const requestsData = getPasswordResetRequests();
+        const requestsData = await getPasswordResetRequests();
 
-    // Prevent duplicate pending requests for the same user
-    const alreadyPending = requestsData.requests.some(r => r.userId === user.id && r.status === 'pending');
-    if (alreadyPending) {
-        return res.status(200).json({
+        // Prevent duplicate pending requests for the same user
+        const alreadyPending = requestsData.requests.some(r => r.userId === user.id && r.status === 'pending');
+        if (alreadyPending) {
+            return res.status(200).json({
+                success: true,
+                message: 'A password reset request is already pending for this account. Please wait for the admin to update your password.'
+            });
+        }
+
+        const newId = (requestsData.requests.reduce((max, r) => Math.max(max, r.id || 0), 0) || 0) + 1;
+
+        const requestEntry = {
+            id: newId,
+            userId: user.id,
+            username: user.username,
+            email: user.email,
+            createdAt: new Date().toISOString(),
+            status: 'pending'
+        };
+
+        requestsData.requests.push(requestEntry);
+        await savePasswordResetRequests(requestsData);
+
+        writeAuditLog('PASSWORD_RESET_REQUEST_CREATED', { userId: user.id, username: user.username }, null);
+
+        return res.json({
             success: true,
-            message: 'A password reset request is already pending for this account. Please wait for the admin to update your password.'
+            message: 'Your password reset request has been sent to the admin. They will update your password and inform you.'
         });
+    } catch (err) {
+        console.error('Forgot password error:', err);
+        res.status(500).json({ success: false, message: 'Failed to process password reset request: ' + err.message });
     }
-
-    const newId = (requestsData.requests.reduce((max, r) => Math.max(max, r.id || 0), 0) || 0) + 1;
-
-    const requestEntry = {
-        id: newId,
-        userId: user.id,
-        username: user.username,
-        email: user.email,
-        createdAt: new Date().toISOString(),
-        status: 'pending'
-    };
-
-    requestsData.requests.push(requestEntry);
-    savePasswordResetRequests(requestsData);
-
-    writeAuditLog('PASSWORD_RESET_REQUEST_CREATED', { userId: user.id, username: user.username }, null);
-
-    return res.json({
-        success: true,
-        message: 'Your password reset request has been sent to the admin. They will update your password and inform you.'
-    });
 });
 
 // Admin: get all password reset requests
-app.get('/api/password-reset-requests', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can view password reset requests'
-        });
-    }
+app.get('/api/password-reset-requests', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can view password reset requests'
+            });
+        }
 
-    const data = getPasswordResetRequests();
-    return res.json({
-        success: true,
-        requests: data.requests || []
-    });
+        const data = await getPasswordResetRequests();
+        return res.json({
+            success: true,
+            requests: data.requests || []
+        });
+    } catch (err) {
+        console.error('Get password reset requests error:', err);
+        res.status(500).json({ success: false, message: 'Failed to fetch requests: ' + err.message });
+    }
 });
 
 // Admin: resolve a password reset request and set new password for the student
-app.post('/api/password-reset-requests/:requestId/resolve', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can resolve password reset requests'
+app.post('/api/password-reset-requests/:requestId/resolve', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can resolve password reset requests'
+            });
+        }
+
+        const { newPassword } = req.body;
+        const requestId = parseInt(req.params.requestId, 10);
+
+        if (!newPassword || newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'New password is required and must be at least 6 characters long'
+            });
+        }
+
+        const requestsData = await getPasswordResetRequests();
+        const request = requestsData.requests.find(r => r.id === requestId);
+
+        if (!request) {
+            return res.status(404).json({
+                success: false,
+                message: 'Password reset request not found'
+            });
+        }
+
+        if (request.status !== 'pending') {
+            return res.status(400).json({
+                success: false,
+                message: 'This request has already been resolved'
+            });
+        }
+
+        const db = await getDatabase();
+        const user = db.users.find(u => u.id === request.userId);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User associated with this request no longer exists'
+            });
+        }
+
+        user.password = bcrypt.hashSync(newPassword, 10);
+        await saveDatabase(db);
+
+        request.status = 'completed';
+        request.resolvedAt = new Date().toISOString();
+        request.resolvedBy = req.session.userId;
+        await savePasswordResetRequests(requestsData);
+
+        writeAuditLog('PASSWORD_RESET_REQUEST_RESOLVED', { requestId, userId: user.id, username: user.username }, req.session.userId);
+
+        return res.json({
+            success: true,
+            message: `Password for user "${user.username}" has been updated.`
         });
+    } catch (err) {
+        console.error('Resolve password reset error:', err);
+        res.status(500).json({ success: false, message: 'Failed to resolve password reset: ' + err.message });
     }
-
-    const { newPassword } = req.body;
-    const requestId = parseInt(req.params.requestId, 10);
-
-    if (!newPassword || newPassword.length < 6) {
-        return res.status(400).json({
-            success: false,
-            message: 'New password is required and must be at least 6 characters long'
-        });
-    }
-
-    const requestsData = getPasswordResetRequests();
-    const request = requestsData.requests.find(r => r.id === requestId);
-
-    if (!request) {
-        return res.status(404).json({
-            success: false,
-            message: 'Password reset request not found'
-        });
-    }
-
-    if (request.status !== 'pending') {
-        return res.status(400).json({
-            success: false,
-            message: 'This request has already been resolved'
-        });
-    }
-
-    const db = getDatabase();
-    const user = db.users.find(u => u.id === request.userId);
-
-    if (!user) {
-        return res.status(404).json({
-            success: false,
-            message: 'User associated with this request no longer exists'
-        });
-    }
-
-    user.password = bcrypt.hashSync(newPassword, 10);
-    saveDatabase(db);
-
-    request.status = 'completed';
-    request.resolvedAt = new Date().toISOString();
-    request.resolvedBy = req.session.userId;
-    savePasswordResetRequests(requestsData);
-
-    writeAuditLog('PASSWORD_RESET_REQUEST_RESOLVED', { requestId, userId: user.id, username: user.username }, req.session.userId);
-
-    return res.json({
-        success: true,
-        message: `Password for user "${user.username}" has been updated.`
-    });
 });
 
 // Admin: cancel a password reset request
-app.post('/api/password-reset-requests/:requestId/cancel', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can cancel password reset requests'
+app.post('/api/password-reset-requests/:requestId/cancel', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can cancel password reset requests'
+            });
+        }
+
+        const requestId = parseInt(req.params.requestId, 10);
+        const requestsData = await getPasswordResetRequests();
+        const request = requestsData.requests.find(r => r.id === requestId);
+
+        if (!request) {
+            return res.status(404).json({
+                success: false,
+                message: 'Password reset request not found'
+            });
+        }
+
+        if (request.status !== 'pending') {
+            return res.status(400).json({
+                success: false,
+                message: 'Only pending requests can be cancelled'
+            });
+        }
+
+        request.status = 'cancelled';
+        request.resolvedAt = new Date().toISOString();
+        request.resolvedBy = req.session.userId;
+        await savePasswordResetRequests(requestsData);
+
+        writeAuditLog('PASSWORD_RESET_REQUEST_CANCELLED', { requestId, userId: request.userId, username: request.username }, req.session.userId);
+
+        return res.json({
+            success: true,
+            message: `Password reset request for user "${request.username}" has been cancelled.`
         });
+    } catch (err) {
+        console.error('Cancel password reset error:', err);
+        res.status(500).json({ success: false, message: 'Failed to cancel password reset: ' + err.message });
     }
-
-    const requestId = parseInt(req.params.requestId, 10);
-    const requestsData = getPasswordResetRequests();
-    const request = requestsData.requests.find(r => r.id === requestId);
-
-    if (!request) {
-        return res.status(404).json({
-            success: false,
-            message: 'Password reset request not found'
-        });
-    }
-
-    if (request.status !== 'pending') {
-        return res.status(400).json({
-            success: false,
-            message: 'Only pending requests can be cancelled'
-        });
-    }
-
-    request.status = 'cancelled';
-    request.resolvedAt = new Date().toISOString();
-    request.resolvedBy = req.session.userId;
-    savePasswordResetRequests(requestsData);
-
-    writeAuditLog('PASSWORD_RESET_REQUEST_CANCELLED', { requestId, userId: request.userId, username: request.username }, req.session.userId);
-
-    return res.json({
-        success: true,
-        message: `Password reset request for user "${request.username}" has been cancelled.`
-    });
 });
 
 // Delete user (admin only)
-app.delete('/api/users/:userId', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can delete users'
+app.delete('/api/users/:userId', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can delete users'
+            });
+        }
+
+        const userId = parseInt(req.params.userId);
+        const db = await getDatabase();
+
+        // Prevent deleting yourself
+        if (userId === req.session.userId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cannot delete your own account'
+            });
+        }
+
+        const userIndex = db.users.findIndex(u => u.id === userId);
+        if (userIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        const deletedUser = db.users[userIndex];
+        db.users.splice(userIndex, 1);
+        await saveDatabase(db);
+        writeAuditLog('USER_DELETE', { userId, username: deletedUser.username }, req.session.userId);
+
+        res.json({
+            success: true,
+            message: `User "${deletedUser.username}" deleted successfully`
         });
+    } catch (err) {
+        console.error('Delete user error:', err);
+        res.status(500).json({ success: false, message: 'Failed to delete user: ' + err.message });
     }
-
-    const userId = parseInt(req.params.userId);
-    const db = getDatabase();
-
-    // Prevent deleting yourself
-    if (userId === req.session.userId) {
-        return res.status(400).json({
-            success: false,
-            message: 'Cannot delete your own account'
-        });
-    }
-
-    const userIndex = db.users.findIndex(u => u.id === userId);
-    if (userIndex === -1) {
-        return res.status(404).json({
-            success: false,
-            message: 'User not found'
-        });
-    }
-
-    const deletedUser = db.users[userIndex];
-    db.users.splice(userIndex, 1);
-    saveDatabase(db);
-    writeAuditLog('USER_DELETE', { userId, username: deletedUser.username }, req.session.userId);
-
-    res.json({
-        success: true,
-        message: `User "${deletedUser.username}" deleted successfully`
-    });
 });
 
 // Report endpoints
 
 // Submit report (admin only)
-app.post('/api/reports', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can submit reports'
+app.post('/api/reports', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can submit reports'
+            });
+        }
+
+        const { eventDate, reportTitle, reportContent, eventName } = req.body;
+        if (!eventDate || !reportTitle || !reportContent) {
+            return res.status(400).json({
+                success: false,
+                message: 'Event date, title, and content are required'
+            });
+        }
+        if (String(reportTitle).length > 200 || String(reportContent).length > 50000) {
+            return res.status(400).json({
+                success: false,
+                message: 'Title or content too long'
+            });
+        }
+
+        const reports = await getReports();
+        const newReport = {
+            id: Date.now().toString(),
+            eventDate: eventDate,
+            eventName: eventName || 'Unnamed Event',
+            reportTitle: reportTitle,
+            reportContent: reportContent,
+            submittedBy: req.session.name,
+            submittedByUsername: req.session.username,
+            submittedDate: new Date().toISOString(),
+            status: 'submitted'
+        };
+
+        reports.reports.push(newReport);
+        await saveReports(reports);
+        writeAuditLog('REPORT_SUBMIT', { id: newReport.id, eventDate: newReport.eventDate }, req.session.userId);
+
+        res.json({
+            success: true,
+            message: 'Report submitted successfully',
+            report: newReport
         });
+    } catch (err) {
+        console.error('Submit report error:', err);
+        res.status(500).json({ success: false, message: 'Failed to submit report: ' + err.message });
     }
-
-    const { eventDate, reportTitle, reportContent, eventName } = req.body;
-    if (!eventDate || !reportTitle || !reportContent) {
-        return res.status(400).json({
-            success: false,
-            message: 'Event date, title, and content are required'
-        });
-    }
-    if (String(reportTitle).length > 200 || String(reportContent).length > 50000) {
-        return res.status(400).json({
-            success: false,
-            message: 'Title or content too long'
-        });
-    }
-
-    const reports = getReports();
-    const newReport = {
-        id: Date.now().toString(),
-        eventDate: eventDate,
-        eventName: eventName || 'Unnamed Event',
-        reportTitle: reportTitle,
-        reportContent: reportContent,
-        submittedBy: req.session.name,
-        submittedByUsername: req.session.username,
-        submittedDate: new Date().toISOString(),
-        status: 'submitted'
-    };
-
-    reports.reports.push(newReport);
-    saveReports(reports);
-    writeAuditLog('REPORT_SUBMIT', { id: newReport.id, eventDate: newReport.eventDate }, req.session.userId);
-
-    res.json({
-        success: true,
-        message: 'Report submitted successfully',
-        report: newReport
-    });
 });
 
 // Get all reports
-app.get('/api/reports', (req, res) => {
-    const reports = getReports();
-    res.json({
-        success: true,
-        reports: reports.reports
-    });
+app.get('/api/reports', async (req, res) => {
+    try {
+        const reports = await getReports();
+        res.json({
+            success: true,
+            reports: reports.reports
+        });
+    } catch (err) {
+        console.error('Get reports error:', err);
+        res.status(500).json({ success: false, message: 'Failed to fetch reports: ' + err.message });
+    }
 });
 
 // Get report by date
-app.get('/api/reports/date/:eventDate', (req, res) => {
-    const eventDate = req.params.eventDate;
-    const reports = getReports();
-    const dateReports = reports.reports.filter(r => r.eventDate === eventDate);
+app.get('/api/reports/date/:eventDate', async (req, res) => {
+    try {
+        const eventDate = req.params.eventDate;
+        const reports = await getReports();
+        const dateReports = reports.reports.filter(r => r.eventDate === eventDate);
 
-    res.json({
-        success: true,
-        reports: dateReports
-    });
+        res.json({
+            success: true,
+            reports: dateReports
+        });
+    } catch (err) {
+        console.error('Get reports by date error:', err);
+        res.status(500).json({ success: false, message: 'Failed to fetch reports: ' + err.message });
+    }
 });
 
 // Download report
-app.get('/api/reports/download/:id', (req, res) => {
-    const reportId = req.params.id;
-    const reports = getReports();
-    const report = reports.reports.find(r => r.id === reportId);
+app.get('/api/reports/download/:id', async (req, res) => {
+    try {
+        const reportId = req.params.id;
+        const reports = await getReports();
+        const report = reports.reports.find(r => r.id === reportId);
 
-    if (!report) {
-        return res.status(404).json({
-            success: false,
-            message: 'Report not found'
-        });
-    }
+        if (!report) {
+            return res.status(404).json({
+                success: false,
+                message: 'Report not found'
+            });
+        }
 
-    const reportContent = `
+        const reportContent = `
 Event Report
 ============
 Event Name: ${report.eventName}
@@ -747,40 +788,49 @@ Submitted by: ${report.submittedBy}
 Submitted on: ${new Date(report.submittedDate).toLocaleString()}
 `;
 
-    res.setHeader('Content-Type', 'text/plain');
-    res.setHeader('Content-Disposition', `attachment; filename="Report_${reportId}.txt"`);
-    res.send(reportContent);
+        res.setHeader('Content-Type', 'text/plain');
+        res.setHeader('Content-Disposition', `attachment; filename="Report_${reportId}.txt"`);
+        res.send(reportContent);
+    } catch (err) {
+        console.error('Download report error:', err);
+        res.status(500).json({ success: false, message: 'Failed to download report: ' + err.message });
+    }
 });
 
 // Delete report (admin only)
-app.delete('/api/reports/:id', isAuthenticated, (req, res) => {
-    if (req.session.role !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Only admins can delete reports'
+app.delete('/api/reports/:id', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only admins can delete reports'
+            });
+        }
+
+        const reportId = req.params.id;
+        const reports = await getReports();
+        const reportIndex = reports.reports.findIndex(r => r.id === reportId);
+
+        if (reportIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                message: 'Report not found'
+            });
+        }
+
+        const deletedReport = reports.reports[reportIndex];
+        reports.reports.splice(reportIndex, 1);
+        await saveReports(reports);
+        writeAuditLog('REPORT_DELETE', { id: reportId, title: deletedReport.reportTitle }, req.session.userId);
+
+        res.json({
+            success: true,
+            message: 'Report deleted successfully'
         });
+    } catch (err) {
+        console.error('Delete report error:', err);
+        res.status(500).json({ success: false, message: 'Failed to delete report: ' + err.message });
     }
-
-    const reportId = req.params.id;
-    const reports = getReports();
-    const reportIndex = reports.reports.findIndex(r => r.id === reportId);
-
-    if (reportIndex === -1) {
-        return res.status(404).json({
-            success: false,
-            message: 'Report not found'
-        });
-    }
-
-    const deletedReport = reports.reports[reportIndex];
-    reports.reports.splice(reportIndex, 1);
-    saveReports(reports);
-    writeAuditLog('REPORT_DELETE', { id: reportId, title: deletedReport.reportTitle }, req.session.userId);
-
-    res.json({
-        success: true,
-        message: 'Report deleted successfully'
-    });
 });
 
 // Events database file path

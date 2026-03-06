@@ -1,12 +1,27 @@
-require('dotenv').config();
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const session = require('express-session');
-const rateLimit = require('express-rate-limit');
-const { body, validationResult } = require('express-validator');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+
+function loadEnvFile() {
+    const envPath = path.join(__dirname, '.env');
+    if (!fs.existsSync(envPath)) return;
+    const lines = fs.readFileSync(envPath, 'utf8').split(/\r?\n/);
+    for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) continue;
+        const idx = trimmed.indexOf('=');
+        if (idx < 1) continue;
+        const key = trimmed.slice(0, idx).trim();
+        const value = trimmed.slice(idx + 1).trim().replace(/^"|"$/g, '');
+        if (!(key in process.env)) process.env[key] = value;
+    }
+}
+
+loadEnvFile();
+
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const session = require('express-session');
 const supabase = require('./supabaseClient');
 
 const app = express();
@@ -43,18 +58,40 @@ app.use('/image', express.static(path.join(__dirname, 'image'), {
     }
 }));
 
-// Rate limiters
-const loginLimiter = rateLimit({
+// Simple in-memory rate limiter (dependency-free fallback)
+function createRateLimiter({ windowMs, max, message }) {
+    const hits = new Map();
+    return (req, res, next) => {
+        const now = Date.now();
+        const key = req.ip || req.connection?.remoteAddress || 'unknown';
+        const entry = hits.get(key) || { count: 0, resetAt: now + windowMs };
+
+        if (now > entry.resetAt) {
+            entry.count = 0;
+            entry.resetAt = now + windowMs;
+        }
+
+        entry.count += 1;
+        hits.set(key, entry);
+
+        if (entry.count > max) {
+            return res.status(429).json(message);
+        }
+        next();
+    };
+}
+
+const loginLimiter = createRateLimiter({
     windowMs: 15 * 60 * 1000,
     max: 10,
     message: { success: false, message: 'Too many login attempts. Try again later.' }
 });
-const registerLimiter = rateLimit({
+const registerLimiter = createRateLimiter({
     windowMs: 15 * 60 * 1000,
     max: 5,
     message: { success: false, message: 'Too many registration attempts. Try again later.' }
 });
-const chatLimiter = rateLimit({
+const chatLimiter = createRateLimiter({
     windowMs: 1 * 60 * 1000,
     max: 30,
     message: { success: false, message: 'Too many messages. Slow down.' }
@@ -91,92 +128,83 @@ function writeAuditLog(action, details, userId) {
     } catch (err) { console.error('Audit log error:', err); }
 }
 
-// Database functions - Supabase ONLY (no JSON fallback)
-// These will be overridden below with async Supabase versions
-
-// Users database - Supabase ONLY
-async function getDatabase() {
-    if (!USE_SUPABASE || !supabase) {
-        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
+// JSON database helpers
+function readJsonFile(filePath, fallbackData) {
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, JSON.stringify(fallbackData, null, 2));
+        return fallbackData;
     }
-    const { data, error } = await supabase.from('users').select('*');
-    if (error) throw error;
-    return { users: data || [] };
+    try {
+        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch (err) {
+        console.error(`Invalid JSON in ${filePath}. Resetting file.`);
+        fs.writeFileSync(filePath, JSON.stringify(fallbackData, null, 2));
+        return fallbackData;
+    }
+}
+
+function writeJsonFile(filePath, data) {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+}
+
+// Users database
+async function getDatabase() {
+    if (USE_SUPABASE && supabase) {
+        const { data, error } = await supabase.from('users').select('*');
+        if (error) throw error;
+        return { users: data || [] };
+    }
+    return readJsonFile(dbPath, { users: [] });
 }
 
 async function saveDatabase(data) {
-    if (!USE_SUPABASE || !supabase) {
-        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
+    if (USE_SUPABASE && supabase) {
+        const users = data.users || [];
+        const { error: upsertErr } = await supabase.from('users').upsert(users, { onConflict: 'id' });
+        if (upsertErr) throw upsertErr;
+        return;
     }
-    const users = data.users || [];
-    const { error: upsertErr } = await supabase.from('users').upsert(users, { onConflict: 'id' });
-    if (upsertErr) throw upsertErr;
-    const { data: existing, error: existingErr } = await supabase.from('users').select('id');
-    if (existingErr) throw existingErr;
-    const existingIds = (existing || []).map(u => u.id);
-    const ids = users.map(u => u.id).filter(x => x !== undefined && x !== null);
-    const toDelete = existingIds.filter(id => !ids.includes(id));
-    if (toDelete.length > 0) {
-        const { error: delErr } = await supabase.from('users').delete().in('id', toDelete);
-        if (delErr) throw delErr;
-    }
+    writeJsonFile(dbPath, data);
 }
 
-// Password reset requests - Supabase ONLY
+// Password reset requests
 async function getPasswordResetRequests() {
-    if (!USE_SUPABASE || !supabase) {
-        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
+    if (USE_SUPABASE && supabase) {
+        const { data, error } = await supabase.from('password_reset_requests').select('*');
+        if (error) throw error;
+        return { requests: data || [] };
     }
-    const { data, error } = await supabase.from('password_reset_requests').select('*');
-    if (error) throw error;
-    return { requests: data || [] };
+    return readJsonFile(path.join(__dirname, 'password_reset_requests.json'), { requests: [] });
 }
 
 async function savePasswordResetRequests(data) {
-    if (!USE_SUPABASE || !supabase) {
-        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
+    if (USE_SUPABASE && supabase) {
+        const items = data.requests || [];
+        const { error: upsertErr } = await supabase.from('password_reset_requests').upsert(items, { onConflict: 'id' });
+        if (upsertErr) throw upsertErr;
+        return;
     }
-    const items = data.requests || [];
-    const { error: upsertErr } = await supabase.from('password_reset_requests').upsert(items, { onConflict: 'id' });
-    if (upsertErr) throw upsertErr;
-    // delete absent
-    const { data: existing, error: existingErr } = await supabase.from('password_reset_requests').select('id');
-    if (existingErr) throw existingErr;
-    const existingIds = (existing || []).map(r => r.id);
-    const ids = items.map(i => i.id).filter(x => x !== undefined && x !== null);
-    const toDelete = existingIds.filter(id => !ids.includes(id));
-    if (toDelete.length > 0) {
-        const { error: delErr } = await supabase.from('password_reset_requests').delete().in('id', toDelete);
-        if (delErr) throw delErr;
-    }
+    writeJsonFile(path.join(__dirname, 'password_reset_requests.json'), data);
 }
 
-// Reports database - Supabase ONLY
+// Reports database
 async function getReports() {
-    if (!USE_SUPABASE || !supabase) {
-        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
+    if (USE_SUPABASE && supabase) {
+        const { data, error } = await supabase.from('reports').select('*');
+        if (error) throw error;
+        return { reports: data || [] };
     }
-    const { data, error } = await supabase.from('reports').select('*');
-    if (error) throw error;
-    return { reports: data || [] };
+    return readJsonFile(reportsDbPath, { reports: [] });
 }
 
 async function saveReports(data) {
-    if (!USE_SUPABASE || !supabase) {
-        throw new Error('Supabase is not configured. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
+    if (USE_SUPABASE && supabase) {
+        const items = data.reports || [];
+        const { error: upsertErr } = await supabase.from('reports').upsert(items, { onConflict: 'id' });
+        if (upsertErr) throw upsertErr;
+        return;
     }
-    const items = data.reports || [];
-    const { error: upsertErr } = await supabase.from('reports').upsert(items, { onConflict: 'id' });
-    if (upsertErr) throw upsertErr;
-    const { data: existing, error: existingErr } = await supabase.from('reports').select('id');
-    if (existingErr) throw existingErr;
-    const existingIds = (existing || []).map(r => r.id);
-    const ids = items.map(i => i.id).filter(x => x !== undefined && x !== null);
-    const toDelete = existingIds.filter(id => !ids.includes(id));
-    if (toDelete.length > 0) {
-        const { error: delErr } = await supabase.from('reports').delete().in('id', toDelete);
-        if (delErr) throw delErr;
-    }
+    writeJsonFile(reportsDbPath, data);
 }
 
 // Routes
@@ -325,28 +353,26 @@ function isAuthenticated(req, res, next) {
     next();
 }
 
-// Validation runner helper
-function runValidation(req, res, validations, nextHandler) {
-    return Promise.all(validations.map(v => v.run(req))).then(() => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({
-                success: false,
-                message: 'Validation failed',
-                errors: errors.array().map(e => ({ field: e.path, msg: e.msg }))
-            });
-        }
-        nextHandler(req, res);
-    }).catch(err => res.status(500).json({ success: false, message: 'Validation error' }));
-}
+// Validation helper (dependency-free fallback)
+function validateRegistrationInput(data) {
+    const errors = [];
+    const username = String(data.username || '').trim();
+    const password = String(data.password || '');
+    const email = String(data.email || '').trim();
+    const name = String(data.name || '').trim();
+    const role = String(data.role || '').trim();
 
-const registerValidations = [
-    body('username').trim().isLength({ min: 2, max: 50 }).withMessage('Username must be 2-50 characters'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-    body('email').isEmail().normalizeEmail().withMessage('Valid email required'),
-    body('name').trim().isLength({ min: 1, max: 100 }).withMessage('Name is required'),
-    body('role').isIn(['admin', 'student']).withMessage('Role must be admin or student')
-];
+    if (username.length < 2 || username.length > 50) errors.push({ field: 'username', msg: 'Username must be 2-50 characters' });
+    if (password.length < 6) errors.push({ field: 'password', msg: 'Password must be at least 6 characters' });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push({ field: 'email', msg: 'Valid email required' });
+    if (name.length < 1 || name.length > 100) errors.push({ field: 'name', msg: 'Name is required' });
+    if (!['admin', 'student'].includes(role)) errors.push({ field: 'role', msg: 'Role must be admin or student' });
+
+    return {
+        errors,
+        clean: { username, password, email, name, role }
+    };
+}
 
 // Register new user (admin only)
 app.post('/api/register', registerLimiter, isAuthenticated, async (req, res) => {
@@ -357,9 +383,16 @@ app.post('/api/register', registerLimiter, isAuthenticated, async (req, res) => 
                 message: 'Only admins can register new users'
             });
         }
-        return runValidation(req, res, registerValidations, async (req, res) => {
-        const { username, password, email, name, role } = req.body;
+        const validation = validateRegistrationInput(req.body || {});
+        if (validation.errors.length) {
+            return res.status(400).json({
+                success: false,
+                message: 'Validation failed',
+                errors: validation.errors
+            });
+        }
 
+        const { username, password, email, name, role } = validation.clean;
         const db = await getDatabase();
 
         // Check if user already exists
@@ -394,7 +427,6 @@ app.post('/api/register', registerLimiter, isAuthenticated, async (req, res) => 
                 name: newUser.name,
                 role: newUser.role
             }
-        });
         });
     } catch (err) {
         console.error('Register error:', err);
